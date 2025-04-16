@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
     @GetMapping("/yello")
     public String hello() {
-        return "Bye world";
+        return "Hi world";
     }
 }
