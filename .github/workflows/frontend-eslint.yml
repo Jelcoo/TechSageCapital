@@ -2,6 +2,8 @@ name: ESLint
 
 on:
   push:
+    paths:
+      - 'frontend/**'
 
 jobs:
   lint:
