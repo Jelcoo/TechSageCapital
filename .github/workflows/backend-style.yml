@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'backend/**'
+      - '.github/workflows/backend-style.yml'
 
 jobs:
   checkstyle:
