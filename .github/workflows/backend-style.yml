@@ -21,7 +21,11 @@ jobs:
           java-version: '21'
 
       - name: Build with Maven (skip tests)
-        run: mvn compile
+        run: |
+          cd backend
+          mvn compile
 
       - name: Run Checkstyle
-        run: mvn checkstyle:check
+        run:  |
+          cd backend
+          mvn checkstyle:check
