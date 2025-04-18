@@ -1,6 +1,5 @@
 package com.techsage.banking.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -22,7 +21,7 @@ public class User {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String bsn;
+    private Integer bsn;
 
     @JsonIgnore
     private String passwordHash;
@@ -42,7 +41,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<BankAccount> bankAccounts;
 

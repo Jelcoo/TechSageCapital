@@ -29,11 +29,11 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        User user = new User(null,"s","s", "s","s","s","s","s", User.Role.ADMIN, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User user = new User(null,"s","s", "s","s",1,"s","s", User.Role.ADMIN, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
         userService.create(user);
-        User user2 = new User(null,"s","s", "s","s","s","s","s", User.Role.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User user2 = new User(null,"s","s", "s","s",1,"s","s", User.Role.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
         userService.create(user2);
-        User user3 = new User(null,"s","s", "s","s","s","s","s", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User user3 = new User(null,"s","s", "s","s",1,"s","s", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
         userService.create(user3);
 
         Iban iban1 = new Iban.Builder().countryCode(CountryCode.NL).bankCode("INHO").buildRandom();
