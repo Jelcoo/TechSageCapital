@@ -1,10 +1,8 @@
 package com.techsage.banking.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.info.BankAccountInfo;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +17,7 @@ public class UserDto {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String bsn;
+    private Integer bsn;
 
     @JsonIgnore
     private String passwordHash;
