@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import type { User } from "../../../types/User";
 
-const customer = ref([]);  //make this a stored customer object
+const customer = ref<User[]>([]);  //make this a stored customer object
 const errorMessage = ref("");
 const loading = ref(false);
 
