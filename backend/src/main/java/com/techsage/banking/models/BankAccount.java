@@ -1,5 +1,6 @@
 package com.techsage.banking.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.converters.IbanConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,8 @@ import java.util.List;
 @Entity
 public class BankAccount {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     private User user;
