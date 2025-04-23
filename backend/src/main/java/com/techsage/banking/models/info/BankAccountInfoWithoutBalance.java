@@ -9,7 +9,7 @@ import org.iban4j.Iban;
 @Data
 @NoArgsConstructor
 public class BankAccountInfoWithoutBalance {
-    private Integer id;
+    private Long id;
     private Iban iban;
 
     @JsonIgnore

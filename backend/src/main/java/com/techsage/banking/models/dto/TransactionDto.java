@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class TransactionDto {
-    private Integer id;
+    private Long id;
     private BankAccountInfoWithoutBalance fromAccount;
     private BankAccountInfoWithoutBalance toAccount;
     private UserInfo initiator;

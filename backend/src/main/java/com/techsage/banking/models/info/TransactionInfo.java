@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class TransactionInfo {
-    private Integer id;
+    private Long id;
     private BankAccountInfo fromAccount;
 //    private BankAccountInfo toAccount;
     private UserInfo initiator; // user id who initiated the transaction

@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class BankAccountInfo {
-    private Integer id;
+    private Long id;
     private Iban iban;
     private Double balance;
     private int absoluteMinimumBalance;

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class UserInfo {
-    private Integer id;
+    private Long id;
     private String firstName;
     private String lastName;
 
