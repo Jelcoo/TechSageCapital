@@ -2,6 +2,7 @@ package com.techsage.banking.models.info;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.models.BankAccount;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.iban4j.Iban;
@@ -10,11 +11,7 @@ import org.iban4j.Iban;
 @NoArgsConstructor
 public class BankAccountInfoWithoutBalance {
     private Long id;
-    private Iban iban;
-
-    @JsonIgnore
-    private Double balance;
-
-    private int absoluteMinimumBalance;
-    private BankAccount.Type type;
+    private String iban;
+    private String firstName;
+    private String lastName;
 }

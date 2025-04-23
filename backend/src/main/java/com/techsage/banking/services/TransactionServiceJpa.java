@@ -4,6 +4,7 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.dto.BankAccountDto;
 import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.repositories.TransactionRepository;
 import com.techsage.banking.services.interfaces.TransactionService;
 import org.modelmapper.ModelMapper;
@@ -19,6 +20,11 @@ public class TransactionServiceJpa implements TransactionService {
     public TransactionServiceJpa(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
         this.modelMapper = new ModelMapper();
+        modelMapper.typeMap(BankAccount.class, BankAccountInfoWithoutBalance.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getFirstName(), BankAccountInfoWithoutBalance::setFirstName);
+            mapper.map(src -> src.getUser().getLastName(), BankAccountInfoWithoutBalance::setLastName);
+            mapper.map(src -> src.getIban() == null ? "" : src.getIban().getAccountNumber(), BankAccountInfoWithoutBalance::setIban);
+        });
     }
 
     @Override
