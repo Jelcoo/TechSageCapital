@@ -66,7 +66,7 @@ public class DataSeeder implements ApplicationRunner {
         Transaction senderTransaction = new Transaction(
                 null,
                 fromAccount,
-                null,
+                toAccount,
                 initiator,
                 amount,
                 now,
@@ -78,7 +78,7 @@ public class DataSeeder implements ApplicationRunner {
         // Receiver transaction - deposit
         Transaction receiverTransaction = new Transaction(
                 null,
-                null,
+                fromAccount,
                 toAccount,
                 initiator,
                 amount,
