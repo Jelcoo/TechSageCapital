@@ -4,5 +4,11 @@ export interface BankAccount {
     IBAN: string; 
     Balance: number; 
     AbsoluteMinimum: number; // Minimum balance required in the account
-    Type: string; // 'savings' | 'checking' | optional ATM
+    Type: BankAccountType; // 'savings' | 'checking' | optional ATM
+}
+
+export enum BankAccountType {
+    SAVINGS = 'Savings',
+    CHECKING = 'Checking',
+    ATM = 'ATM',
 }
