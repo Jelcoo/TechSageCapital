@@ -21,7 +21,7 @@ public class User {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private Integer bsn;
+    private String bsn;
 
     @JsonIgnore
     private String passwordHash;

@@ -1,5 +1,6 @@
 package com.techsage.banking.configuration;
 
+import com.techsage.banking.helpers.*;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
@@ -29,29 +30,62 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        User user = new User(null,"s","s", "s","s",1,"s","s", User.Role.ADMIN, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
-        userService.create(user);
-        User user2 = new User(null,"s","s", "s","s",1,"s","s", User.Role.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
-        userService.create(user2);
-        User user3 = new User(null,"s","s", "s","s",1,"s","s", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),"s", LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
-        userService.create(user3);
+        User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","emptyhash","emptypassword", User.Role.ADMIN, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        userService.create(adminUser);
+        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","emptyhash","emptypassword", User.Role.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        userService.create(employeeUser);
+        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        userService.create(customer1User);
+        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        userService.create(customer2User);
 
-        Iban iban1 = new Iban.Builder().countryCode(CountryCode.NL).bankCode("INHO").buildRandom();
-        Iban iban2 = new Iban.Builder().countryCode(CountryCode.NL).bankCode("INHO").buildRandom();
-        Iban iban3 = new Iban.Builder().countryCode(CountryCode.NL).bankCode("INHO").buildRandom();
+        Iban customer1CheckingIban = IbanHelper.generateIban();
+        Iban customer1SavingsIban = IbanHelper.generateIban();
+        Iban customer2CheckingIban = IbanHelper.generateIban();
+        Iban customer2SavingsIban = IbanHelper.generateIban();
 
-        BankAccount bankAccount = new BankAccount(null, user, iban1, 100.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(bankAccount);
-        BankAccount bankAccount2 = new BankAccount(null, user2, iban2, 100.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(bankAccount2);
-        BankAccount bankAccount3 = new BankAccount(null, user3, iban3, 100.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(bankAccount3);
+        BankAccount customer1BankAccount = new BankAccount(null, customer1User, customer1CheckingIban, 100.0, 100, BankAccount.Type.CHECKING, new ArrayList<>(), new ArrayList<>());
+        bankAccountService.create(customer1BankAccount);
+        BankAccount customer1SavingsAccount = new BankAccount(null, customer1User, customer1SavingsIban, 3500.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
+        bankAccountService.create(customer1SavingsAccount);
 
-        Transaction transaction1 = new Transaction(null, bankAccount, bankAccount2, user, 100.0, LocalDateTime.now(), Transaction.Type.DEPOSIT, "Deposit");
-        transactionService.create(transaction1);
-        Transaction transaction2 = new Transaction(null, bankAccount2, bankAccount, user2, 100.0, LocalDateTime.now(), Transaction.Type.WITHDRAWAL, "Withdrawal");
-        transactionService.create(transaction2);
-        Transaction transaction3 = new Transaction(null, bankAccount3, bankAccount, user3, 100.0, LocalDateTime.now(), Transaction.Type.WITHDRAWAL, "Withdrawal");
-        transactionService.create(transaction3);
+        BankAccount customer2BankAccount = new BankAccount(null, customer2User, customer2CheckingIban, 100.0, 100, BankAccount.Type.CHECKING, new ArrayList<>(), new ArrayList<>());
+        bankAccountService.create(customer2BankAccount);
+        BankAccount customer2SavingsAccount = new BankAccount(null, customer2User, customer2SavingsIban, 15000.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
+        bankAccountService.create(customer2SavingsAccount);
+
+        createTestTransactions(customer1User, customer1BankAccount, customer2BankAccount, 50.0);
+        createTestTransactions(customer1User, customer1SavingsAccount, customer1BankAccount, 500.0);
+        createTestTransactions(customer2User, customer2BankAccount, customer2SavingsAccount, 50.0);
+    }
+
+    private void createTestTransactions(User initiator, BankAccount fromAccount, BankAccount toAccount, double amount) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Sender transaction - withdrawal
+        Transaction senderTransaction = new Transaction(
+                null,
+                fromAccount,
+                null,
+                initiator,
+                amount,
+                now,
+                Transaction.Type.WITHDRAWAL,
+                "Transfer to " + toAccount.getIban()
+        );
+        transactionService.create(senderTransaction);
+
+        // Receiver transaction - deposit
+        Transaction receiverTransaction = new Transaction(
+                null,
+                null,
+                toAccount,
+                initiator,
+                amount,
+                now,
+                Transaction.Type.DEPOSIT,
+                "Transfer from " + fromAccount.getIban()
+        );
+        transactionService.create(receiverTransaction);
     }
 }
