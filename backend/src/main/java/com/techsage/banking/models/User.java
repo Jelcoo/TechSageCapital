@@ -1,5 +1,7 @@
 package com.techsage.banking.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,17 +11,22 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Entity
+@Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
     private String bsn;
+
+    @JsonIgnore
     private String passwordHash;
+
+    @JsonIgnore
     private String passwordSalt;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +42,7 @@ public class User {
     private Status status;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<BankAccount> bankAccounts;
 
     public enum Role {

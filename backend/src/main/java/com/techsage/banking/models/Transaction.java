@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 public class Transaction {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "from_account_id", nullable = true)
@@ -24,7 +24,7 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "initiator_id")
-    private User initiatorId; // user id who initiated the transaction
+    private User initiator; // user id who initiated the transaction
 
     private Double amount;
     private LocalDateTime createdAt;
