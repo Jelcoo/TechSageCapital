@@ -1,42 +1,43 @@
 package com.techsage.banking.controllers;
 
+import com.techsage.banking.models.dto.UserDto;
+import com.techsage.banking.services.interfaces.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.techsage.banking.models.User;
+
+import java.util.List;
 
 //basic template for user controller
 @RestController
 public class UserController {
+
+    @Autowired
+    private final UserService userService;
+
+
     @GetMapping("/user/{id}")
-    @ResponseBody
-    public User getUser(@PathVariable int id) {
-        User user = new User();
-
-        user.setId(id); //remove this later. now it doesn't give ane error
-
-        return user;
+    public User getUser(@PathVariable long id) {
+       return userService.getById(id);
     }
 
     @GetMapping("/users")
-    @ResponseBody
-    public User[] getUsers() {
-        User[] users = new User[2];
-        users[0] = new User();
-        users[0].setId(1);
-        users[1] = new User();
-        users[1].setId(2);
-        return users;
+    public List<UserDto> getUsers() {
+        return userService.getAll();
     }
 
-
-    @GetMapping("/updateUser")
-    @ResponseStatus
+    @PatchMapping("/updateUser")
     public void updateUser (User user) {
-        //return a 200 or 404 or other code based on if query succeeded
+        userService.update(user);
     }
 
     @PostMapping("/createUser")
-    @ResponseStatus
     public void createUser (User user) {
-        //return a 200 or 404 or other code based on if query succeeded
+        userService.create(user);
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteUser(@PathVariable long id) {
+        userService.delete(id);
     }
 }

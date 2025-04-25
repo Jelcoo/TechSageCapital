@@ -34,7 +34,7 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public Transaction getById(int id) {
+    public Transaction getById(long id) {
         return transactionRepository.findById(id).get();
     }
 
@@ -49,7 +49,7 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         transactionRepository.deleteById(id);
     }
 }

@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface TransactionService {
     List<TransactionDto> getAll();
-    Transaction getById(int id);
+    Transaction getById(long id);
     Transaction create(Transaction transaction);
     Transaction update(Transaction transaction);
-    void delete(int id);
+    void delete(long id);
 }

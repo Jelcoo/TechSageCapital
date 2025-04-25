@@ -27,7 +27,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public User getById(int id) {
+    public User getById(long id) {
         return userRepository.findById(id).get();
     }
 
@@ -42,7 +42,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         userRepository.deleteById(id);
     }
 }
