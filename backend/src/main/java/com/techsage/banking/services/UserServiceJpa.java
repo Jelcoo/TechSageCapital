@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
 import javax.naming.*;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceJpa implements UserService {
@@ -43,7 +43,7 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public User create(User user) {
-        if (!userRepository.findUserByEmail(user.getEmail()).isEmpty()) {
+        if (userRepository.getByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email is already taken");
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -63,7 +63,7 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
-        User user = userRepository.findUserByEmail(loginRequest.getEmail()).orElseThrow(() -> new AuthenticationException("User not found"));
+        User user = userRepository.getByEmail(loginRequest.getEmail()).orElseThrow(() -> new AuthenticationException("User not found"));
 
         if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new AuthenticationException("Invalid username/password");
@@ -75,8 +75,13 @@ public class UserServiceJpa implements UserService {
         return response;
     }
 
-    public List<UserDto> findAllAccountsByStatus(UserStatus status) {
-        List<User> users = userRepository.findAllAccountsByStatus(status);
+    @Override
+    public UserDto getByEmail(String email) {
+        return userRepository.getByEmail(email).map(user -> modelMapper.map(user, UserDto.class)).orElse(null);
+    }
+
+    public List<UserDto> findByStatus(UserStatus status) {
+        List<User> users = userRepository.findByStatus(status);
         return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
     }
 }

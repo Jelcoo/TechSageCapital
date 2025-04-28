@@ -1,7 +1,6 @@
 package com.techsage.banking.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.techsage.banking.models.User;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfo;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class UserDto extends BaseDto {
     @JsonIgnore
     private String passwordSalt;
 
-    private UserRole role;
+    private List<UserRole> roles;
 
     private Double dailyLimit;
     private Double transferLimit;

@@ -9,6 +9,6 @@ import java.util.*;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer> {
-    Optional<User> findUserByEmail(String email);
-    List<User> findAllAccountsByStatus(UserStatus status);
+    Optional<User> getByEmail(String email);
+    List<User> findByStatus(UserStatus status);
 }

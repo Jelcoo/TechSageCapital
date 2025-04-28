@@ -5,7 +5,7 @@ export interface User {
     email: string;
     phoneNumber: string;
     bsn: string;
-    role: Role;
+    roles: Role[];
     dailyLimit: number;
     transferLimit: number;
     createdAt: Date;

@@ -49,7 +49,7 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
     userStore
         .login(values.email, values.password, turnstileRef.value)
         .then(() => {
-            router.back();
+            router.push({ name: 'home' });
         })
 };
 </script>

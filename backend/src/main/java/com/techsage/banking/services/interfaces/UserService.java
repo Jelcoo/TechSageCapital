@@ -7,7 +7,7 @@ import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.enums.*;
 
 import javax.naming.*;
-import java.util.List;
+import java.util.*;
 
 public interface UserService {
     List<UserDto> getAll();
@@ -16,5 +16,6 @@ public interface UserService {
     User update(User user);
     void delete(int id);
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;
-    List<UserDto> findAllAccountsByStatus(UserStatus status);
+    UserDto getByEmail(String email);
+    List<UserDto> findByStatus(UserStatus status);
 }
