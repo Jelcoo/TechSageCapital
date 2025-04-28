@@ -3,9 +3,9 @@ package com.techsage.banking.models.enums;
 import org.springframework.security.core.*;
 
 public enum UserRole implements GrantedAuthority {
-    CUSTOMER,
-    EMPLOYEE,
-    ADMIN;
+    ROLE_CUSTOMER,
+    ROLE_EMPLOYEE,
+    ROLE_ADMIN;
 
     public String getAuthority() {
         return name();

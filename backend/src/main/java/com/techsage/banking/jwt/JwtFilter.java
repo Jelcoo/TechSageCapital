@@ -43,6 +43,8 @@ public class JwtFilter extends OncePerRequestFilter {
             response.getWriter().flush();
             return;
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private String getToken(HttpServletRequest request) {
