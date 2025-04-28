@@ -1,4 +1,4 @@
-package com.techsage.banking.configuration;
+package com.techsage.banking.config;
 
 import com.techsage.banking.helpers.*;
 import com.techsage.banking.models.BankAccount;
@@ -7,7 +7,6 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
-import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
