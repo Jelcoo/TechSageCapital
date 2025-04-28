@@ -4,6 +4,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
+import org.springframework.security.access.prepost.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findAllAccountsByStatus(status);
     }

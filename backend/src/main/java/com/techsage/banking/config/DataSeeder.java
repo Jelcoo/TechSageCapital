@@ -38,7 +38,7 @@ public class DataSeeder implements ApplicationRunner {
         userService.create(customer1User);
         User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","password123", List.of(UserRole.CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer2User);
-        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.PENDING, new ArrayList<>());
+        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
         userService.create(customer3User);
 
         Iban customer1CheckingIban = IbanHelper.generateIban();

@@ -16,7 +16,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto loginRequest) throws AuthenticationException {
         return userService.login(loginRequest);
     }
