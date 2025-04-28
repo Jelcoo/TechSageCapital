@@ -23,6 +23,22 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path: '/employee',
+            name: 'about',
+            children: [
+                {
+                    path: '',
+                    name: 'employee-dashboard',
+                    component: () => import('@/views/employee/EmployeeDashboard.vue'),
+                },
+                {
+                    path: 'customers-overview',
+                    name: 'customers-overview',
+                    component: () => import('@/views/employee/CustomerOverview.vue'),
+                },
+            ],
+        },
     ],
 });
 

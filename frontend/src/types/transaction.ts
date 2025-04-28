@@ -11,16 +11,16 @@ export interface Transaction {
 }
 
 export enum Type {
-    DEPOSIT = 'Deposit',
-    WITHDRAWAL = 'Withdrawal',
-    ATM_WITHDRAWAL = 'ATM Withdrawal',
-    ATM_DEPOSIT = 'ATM Deposit',
+    DEPOSIT = 'DEPOSIT',
+    WITHDRAWAL = 'WITHDRAWAL',
+    ATM_WITHDRAWAL = 'ATM_WITHDRAWAL',
+    ATM_DEPOSIT = 'ATM_DEPOSIT',
 }
 
 export enum TransactionStatus {
-    PENDING = 'Pending',
-    COMPLETED = 'Completed',
-    FAILED = 'Failed',
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
 }
 
 export interface CreateTransaction {

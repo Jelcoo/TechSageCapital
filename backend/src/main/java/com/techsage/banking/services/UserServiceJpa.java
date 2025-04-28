@@ -5,6 +5,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.UserRepository;
 import com.techsage.banking.services.interfaces.UserService;
 import org.modelmapper.ModelMapper;
@@ -72,5 +73,10 @@ public class UserServiceJpa implements UserService {
         response.setToken(jwtProvider.createToken(user.getEmail(), user.getRoles()));
 
         return response;
+    }
+
+    public List<UserDto> findAllAccountsByStatus(UserStatus status) {
+        List<User> users = userRepository.findAllAccountsByStatus(status);
+        return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
     }
 }

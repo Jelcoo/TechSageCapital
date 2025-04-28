@@ -8,7 +8,7 @@ export interface BankAccount {
 }
 
 export enum BankAccountType {
-    SAVINGS = 'savings',
-    CHECKING = 'checking',
-    ATM = 'atm',
+    SAVINGS = 'SAVINGS',
+    CHECKING = 'CHECKING',
+    ATM = 'ATM',
 }
