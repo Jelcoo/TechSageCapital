@@ -2,6 +2,7 @@ package com.techsage.banking.models.info;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.models.User;
+import com.techsage.banking.models.enums.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +31,7 @@ public class UserInfo {
     private String passwordSalt;
 
     @JsonIgnore
-    private User.Role role;
+    private UserRole role;
     private Double dailyLimit;
     private Double transferLimit;
 
@@ -44,5 +45,5 @@ public class UserInfo {
     private LocalDateTime refreshTokenCreatedAt;
 
     @JsonIgnore
-    private User.Status status;
+    private UserStatus status;
 }

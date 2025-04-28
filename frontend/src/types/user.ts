@@ -5,7 +5,7 @@ export interface User {
     email: string;
     phoneNumber: string;
     bsn: string;
-    role: Role;
+    roles: Role[];
     dailyLimit: number;
     transferLimit: number;
     createdAt: Date;
@@ -41,9 +41,9 @@ export interface UpdateUser {
 }
 
 export enum Role {
-    ADMIN = 'ADMIN',
-    EMPLOYEE = 'EMPLOYEE',
-    CUSTOMER = 'CUSTOMER',
+    ADMIN = 'ROLE_ADMIN',
+    EMPLOYEE = 'ROLE_EMPLOYEE',
+    CUSTOMER = 'ROLE_CUSTOMER',
 }
 
 export enum AccountStatus {

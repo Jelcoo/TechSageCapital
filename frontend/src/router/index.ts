@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/user';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -9,8 +10,26 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue'),
         },
         {
+            path: '/auth',
+            name: 'auth',
+            meta: { isGuest: true },
+            children: [
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: () => import('@/views/auth/LoginView.vue'),
+                },
+                {
+                    path: 'register',
+                    name: 'register',
+                    component: () => import('@/views/auth/RegisterView.vue'),
+                },
+            ],
+        },
+        {
             path: '/employee',
             name: 'about',
+            meta: { requiresAuth: true },
             children: [
                 {
                     path: '',
@@ -22,9 +41,20 @@ const router = createRouter({
                     name: 'customers-overview',
                     component: () => import('@/views/employee/CustomerOverview.vue'),
                 },
-            ]
-        }
+            ],
+        },
     ],
+});
+
+router.beforeEach((to, from, next) => {
+    const store = useUserStore();
+    if (to.meta.requiresAuth && !store.isAuthenticated) {
+        next({ name: 'auth.login', replace: true });
+    } else if (store.isAuthenticated && to.meta.isGuest) {
+        next({ name: 'home', replace: true });
+    } else {
+        next();
+    }
 });
 
 export default router;

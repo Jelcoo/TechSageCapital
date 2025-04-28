@@ -1,6 +1,7 @@
 package com.techsage.banking.models.info;
 
 import com.techsage.banking.models.BankAccount;
+import com.techsage.banking.models.enums.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.iban4j.Iban;
@@ -14,5 +15,5 @@ public class BankAccountInfo {
     private Iban iban;
     private Double balance;
     private int absoluteMinimumBalance;
-    private BankAccount.Type type;
+    private BankAccountType type;
 }

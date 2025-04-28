@@ -4,6 +4,7 @@ import com.techsage.banking.helpers.*;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
@@ -13,7 +14,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.*;
 
 @Component
 public class DataSeeder implements ApplicationRunner {
@@ -29,15 +30,15 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","emptyhash","emptypassword", User.Role.ADMIN, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","password123", Arrays.asList(UserRole.ROLE_EMPLOYEE, UserRole.ROLE_ADMIN), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(adminUser);
-        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","emptyhash","emptypassword", User.Role.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","password123", List.of(UserRole.ROLE_EMPLOYEE), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(employeeUser);
-        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","password123", List.of(UserRole.ROLE_CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer1User);
-        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.ACTIVE, new ArrayList<>());
+        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","password123", List.of(UserRole.ROLE_CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer2User);
-        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","emptyhash","emptypassword", User.Role.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), User.Status.PENDING, new ArrayList<>());
+        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.ROLE_CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
         userService.create(customer3User);
 
         Iban customer1CheckingIban = IbanHelper.generateIban();
@@ -45,14 +46,14 @@ public class DataSeeder implements ApplicationRunner {
         Iban customer2CheckingIban = IbanHelper.generateIban();
         Iban customer2SavingsIban = IbanHelper.generateIban();
 
-        BankAccount customer1BankAccount = new BankAccount(null, customer1User, customer1CheckingIban, 100.0, 100, BankAccount.Type.CHECKING, new ArrayList<>(), new ArrayList<>());
+        BankAccount customer1BankAccount = new BankAccount(null, customer1User, customer1CheckingIban, 100.0, 100, BankAccountType.CHECKING, new ArrayList<>(), new ArrayList<>());
         bankAccountService.create(customer1BankAccount);
-        BankAccount customer1SavingsAccount = new BankAccount(null, customer1User, customer1SavingsIban, 3500.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
+        BankAccount customer1SavingsAccount = new BankAccount(null, customer1User, customer1SavingsIban, 3500.0, 100, BankAccountType.SAVINGS, new ArrayList<>(), new ArrayList<>());
         bankAccountService.create(customer1SavingsAccount);
 
-        BankAccount customer2BankAccount = new BankAccount(null, customer2User, customer2CheckingIban, 100.0, 100, BankAccount.Type.CHECKING, new ArrayList<>(), new ArrayList<>());
+        BankAccount customer2BankAccount = new BankAccount(null, customer2User, customer2CheckingIban, 100.0, 100, BankAccountType.CHECKING, new ArrayList<>(), new ArrayList<>());
         bankAccountService.create(customer2BankAccount);
-        BankAccount customer2SavingsAccount = new BankAccount(null, customer2User, customer2SavingsIban, 15000.0, 100, BankAccount.Type.SAVINGS, new ArrayList<>(), new ArrayList<>());
+        BankAccount customer2SavingsAccount = new BankAccount(null, customer2User, customer2SavingsIban, 15000.0, 100, BankAccountType.SAVINGS, new ArrayList<>(), new ArrayList<>());
         bankAccountService.create(customer2SavingsAccount);
 
         createTestTransactions(customer1User, customer1BankAccount, customer2BankAccount, 50.0);
@@ -71,7 +72,7 @@ public class DataSeeder implements ApplicationRunner {
                 initiator,
                 amount,
                 now,
-                Transaction.Type.WITHDRAWAL,
+                TransactionType.WITHDRAWAL,
                 "Transfer to " + toAccount.getIban()
         );
         transactionService.create(senderTransaction);
@@ -84,7 +85,7 @@ public class DataSeeder implements ApplicationRunner {
                 initiator,
                 amount,
                 now,
-                Transaction.Type.DEPOSIT,
+                TransactionType.DEPOSIT,
                 "Transfer from " + fromAccount.getIban()
         );
         transactionService.create(receiverTransaction);

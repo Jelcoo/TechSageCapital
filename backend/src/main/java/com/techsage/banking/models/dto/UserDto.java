@@ -1,7 +1,7 @@
 package com.techsage.banking.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.techsage.banking.models.User;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class UserDto {
+public class UserDto extends BaseDto {
     private Long id;
     private String firstName;
     private String lastName;
@@ -25,14 +25,14 @@ public class UserDto {
     @JsonIgnore
     private String passwordSalt;
 
-    private User.Role role;
+    private List<UserRole> roles;
 
     private Double dailyLimit;
     private Double transferLimit;
     private LocalDateTime createdAt;
     private String refreshToken;
     private LocalDateTime refreshTokenCreatedAt;
-    private User.Status status;
+    private UserStatus status;
 
     private List<BankAccountInfo> bankAccounts;
 }

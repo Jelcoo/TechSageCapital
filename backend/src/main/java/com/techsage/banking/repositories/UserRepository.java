@@ -1,13 +1,14 @@
 package com.techsage.banking.repositories;
 
 import com.techsage.banking.models.User;
+import com.techsage.banking.models.enums.*;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer> {
-    // Find Accounts by Status
-    List<User> findAllAccountsByStatus(User.Status status);
+    Optional<User> getByEmail(String email);
+    List<User> findByStatus(UserStatus status);
 }
