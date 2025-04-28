@@ -14,16 +14,16 @@ const router = createRouter({
             children: [
                 {
                     path: '',
-                    name: 'employee',
+                    name: 'employee-dashboard',
                     component: () => import('@/views/employee/EmployeeDashboard.vue'),
                 },
                 {
-                    path: 'customer-overview',``
-                    name: 'customer-overview',
-                component: () => import('@/views/employee/CustomerOverview.vue'),
+                    path: 'customers-overview',
+                    name: 'customers-overview',
+                    component: () => import('@/views/employee/CustomerOverview.vue'),
                 },
-    ]
-}
+            ]
+        }
     ],
 });
 
