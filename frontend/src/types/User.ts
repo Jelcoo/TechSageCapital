@@ -1,15 +1,15 @@
 export interface User {
     id: number;
-    FirstName: string;
-    LastName: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    PhoneNumber: string;
-    BSN: string;
-    Role: Role;
-    DailyLimit: number;
-    TransferLimit: number;
+    phoneNumber: string;
+    bsn: string;
+    role: Role;
+    dailyLimit: number;
+    transferLimit: number;
     createdAt: Date;
-    Status: Status;
+    status: AccountStatus;
 }
 
 export interface Login {
@@ -18,26 +18,26 @@ export interface Login {
 }
 
 export interface Register extends Login {
-    FirstName: string;
-    LastName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     PhoneNumber: string;
-    BSN: string;
+    bsn: string;
     password: string;
-    Role: Role;
+    role: Role;
 }
 
 export interface UpdateUser {
     id: number;
-    FirstName?: string;
-    LastName?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
-    PhoneNumber?: string;
-    BSN?: string;
-    Role?: Role;
-    DailyLimit?: number;
-    TransferLimit?: number;
-    Status?: Status; 
+    phoneNumber?: string;
+    bsn?: string;
+    role?: Role;
+    dailyLimit?: number;
+    transferLimit?: number;
+    status?: AccountStatus;
 }
 
 export enum Role {
@@ -46,7 +46,7 @@ export enum Role {
     CUSTOMER = 'customer',
 }
 
-export enum Status {
+export enum AccountStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
     SUSPENDED = 'suspended',
