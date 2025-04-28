@@ -8,6 +8,22 @@ const router = createRouter({
             name: 'home',
             component: () => import('@/views/HomeView.vue'),
         },
+        {
+            path: '/employee',
+            name: 'about',
+            children: [
+                {
+                    path: '',
+                    name: 'employee',
+                    component: () => import('@/views/employee/EmployeeDashboard.vue'),
+                },
+                {
+                    path: 'customer-overview',``
+                    name: 'customer-overview',
+                component: () => import('@/views/employee/CustomerOverview.vue'),
+                },
+    ]
+}
     ],
 });
 
