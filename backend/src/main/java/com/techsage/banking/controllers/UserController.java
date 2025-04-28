@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 @RestController
 public class UserController {
     private final UserService userService;

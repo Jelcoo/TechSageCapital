@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class UserDto {
+public class UserDto extends BaseDto {
     private Long id;
     private String firstName;
     private String lastName;

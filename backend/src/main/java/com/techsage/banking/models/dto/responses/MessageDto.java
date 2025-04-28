@@ -4,6 +4,8 @@ import com.techsage.banking.models.dto.*;
 import lombok.*;
 
 @Data
-public class LoginResponseDto extends BaseDto {
-    private String token;
+@AllArgsConstructor
+public class MessageDto extends BaseDto {
+    private int status;
+    private String message;
 }

@@ -9,7 +9,7 @@ import org.iban4j.Iban;
 
 @Data
 @NoArgsConstructor
-public class BankAccountDto {
+public class BankAccountDto extends BaseDto {
     private Long id;
     private UserInfo user;
     private Iban iban;

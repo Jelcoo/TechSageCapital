@@ -28,8 +28,6 @@ public class WebSecurityConfiguration {
         httpSecurity.csrf(csrf -> csrf.disable());
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.authorizeHttpRequests(requests -> requests.requestMatchers("/login").permitAll());
-        httpSecurity.authorizeHttpRequests(requests -> requests.requestMatchers("/demo").authenticated());
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
