@@ -26,13 +26,10 @@ public class User {
     private String bsn;
 
     @JsonIgnore
-    private String passwordHash;
+    private String password;
 
-    @JsonIgnore
-    private String passwordSalt;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<UserRole> roles;
 
     private Double dailyLimit;
     private Double transferLimit;

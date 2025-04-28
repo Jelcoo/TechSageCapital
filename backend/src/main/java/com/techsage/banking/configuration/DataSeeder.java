@@ -15,7 +15,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.*;
 
 @Component
 public class DataSeeder implements ApplicationRunner {
@@ -31,13 +31,13 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","emptyhash","emptypassword", UserRole.ADMIN, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","password123", Arrays.asList(UserRole.EMPLOYEE, UserRole.ADMIN), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(adminUser);
-        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","emptyhash","emptypassword", UserRole.EMPLOYEE, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","password123", List.of(UserRole.EMPLOYEE), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(employeeUser);
-        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","emptyhash","emptypassword", UserRole.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","password123", List.of(UserRole.CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer1User);
-        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","emptyhash","emptypassword", UserRole.CUSTOMER, 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","password123", List.of(UserRole.CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer2User);
 
         Iban customer1CheckingIban = IbanHelper.generateIban();
