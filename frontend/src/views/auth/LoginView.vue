@@ -3,24 +3,53 @@
         <div class="row justify-content-center">
             <div class="col col-md-6 col-lg-4 col-xl-3 py-4">
                 <main class="form-signin w-100 m-auto">
-                    <form>
-                        <h1 class="h3 fw-normal">Sign in</h1>
-                        <p class="text-body-secondary">Please sign in with your credentials.</p>
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="email" placeholder="Email address">
-                            <label for="email">Email</label>
-                        </div>
+                    <h1 class="h3 fw-normal">Sign in</h1>
+                    <p class="text-body-secondary">Please sign in with your credentials.</p>
 
-                        <div class="form-floating my-1">
-                            <input type="password" class="form-control" name="password" placeholder="Password">
-                            <label for="password">Password</label>
-                        </div>
+                    <VeeForm v-slot="{ handleSubmit }" :validation-schema="validationSchema" as="div">
+                        <form @submit="handleSubmit($event, onSubmit)">
+                            <FormInput name="email" label="Email" type="text" placeholder="Email address" />
 
-                        <button class="btn btn-primary w-100 py-2 my-3" type="submit">Sign in</button>
-                    </form>
+                            <FormInput name="password" label="Password" type="password" placeholder="Password" />
+
+                            <VueTurnstile ref="turnstile" :site-key="turnstileToken" v-model="turnstileRef" />
+
+                            <button class="btn btn-primary w-100 py-2 my-3" type="submit">Sign in</button>
+                        </form>
+                    </VeeForm>
                 </main>
             </div>
         </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+import FormInput from '@/components/forms/FormInput.vue';
+import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
+import { ref, useTemplateRef } from 'vue';
+import * as yup from 'yup';
+import VueTurnstile from 'vue-turnstile';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const validationSchema = yup.object({
+    email: yup.string().required().email(),
+    password: yup.string().required(),
+});
+
+const userStore = useUserStore();
+const router = useRouter();
+
+const turnstileToken = import.meta.env.VITE_TURNSTILE_KEY;
+const turnstileRef = ref('');
+const turnstile = useTemplateRef('turnstile');
+
+const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
+    userStore
+        .login(values.email, values.password, turnstileRef.value)
+        .then(() => {
+            router.back();
+        })
+};
+</script>
