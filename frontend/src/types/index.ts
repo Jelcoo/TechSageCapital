@@ -1,3 +1,3 @@
-export * from './User';
-export * from './Transaction';
-export * from './BankAccount';
+export * from './user';
+export * from './transaction';
+export * from './bankAccount';
