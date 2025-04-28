@@ -2,9 +2,11 @@ package com.techsage.banking.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.techsage.banking.models.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class User {
     private String passwordSalt;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole userRole;
 
     private Double dailyLimit;
     private Double transferLimit;
@@ -39,23 +41,11 @@ public class User {
     private LocalDateTime refreshTokenCreatedAt;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private UserStatus status;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<BankAccount> bankAccounts;
-
-    public enum Role {
-        CUSTOMER,
-        EMPLOYEE,
-        ADMIN
-    }
-
-    public enum Status {
-        PENDING,
-        ACTIVE,
-        DELETED
-    }
 
     public User() {}
 }

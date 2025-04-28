@@ -2,6 +2,7 @@ package com.techsage.banking.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.models.User;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,14 +26,14 @@ public class UserDto {
     @JsonIgnore
     private String passwordSalt;
 
-    private User.Role role;
+    private UserRole role;
 
     private Double dailyLimit;
     private Double transferLimit;
     private LocalDateTime createdAt;
     private String refreshToken;
     private LocalDateTime refreshTokenCreatedAt;
-    private User.Status status;
+    private UserStatus status;
 
     private List<BankAccountInfo> bankAccounts;
 }

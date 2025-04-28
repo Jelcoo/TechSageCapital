@@ -1,6 +1,7 @@
 package com.techsage.banking.models.dto;
 
 import com.techsage.banking.models.Transaction;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.models.info.UserInfo;
 import lombok.Data;
@@ -17,6 +18,6 @@ public class TransactionDto {
     private UserInfo initiator;
     private Double amount;
     private LocalDateTime createdAt;
-    private Transaction.Type type;
+    private TransactionType type;
     private String description;
 }

@@ -2,6 +2,7 @@ package com.techsage.banking.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.converters.IbanConverter;
+import com.techsage.banking.models.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,18 +28,13 @@ public class BankAccount {
     private int absoluteMinimumBalance;
 
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private BankAccountType type;
 
     @OneToMany(mappedBy = "fromAccount")
     private List<Transaction> outgoingTransactions;
 
     @OneToMany(mappedBy = "toAccount")
     private List<Transaction> incomingTransactions;
-
-    public enum Type {
-        SAVINGS,
-        CHECKING
-    }
 
     public BankAccount() {}
 }

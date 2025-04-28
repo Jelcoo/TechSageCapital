@@ -1,6 +1,7 @@
 package com.techsage.banking.models.dto;
 
 import com.techsage.banking.models.BankAccount;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.UserInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,5 @@ public class BankAccountDto {
     private Iban iban;
     private Double balance;
     private int absoluteMinimumBalance;
-    private BankAccount.Type type;
+    private BankAccountType type;
 }
