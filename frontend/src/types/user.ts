@@ -41,13 +41,13 @@ export interface UpdateUser {
 }
 
 export enum Role {
-    ADMIN = 'admin',
-    EMPLOYEE = 'employee',
-    CUSTOMER = 'customer',
+    ADMIN = 'ADMIN',
+    EMPLOYEE = 'EMPLOYEE',
+    CUSTOMER = 'CUSTOMER',
 }
 
 export enum AccountStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    SUSPENDED = 'suspended',
+    ACTIVE = 'ACTIVE',
+    PENDING = 'PENDING',
+    DELETED = 'DELETED',
 }
