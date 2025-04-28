@@ -45,4 +45,10 @@ public class UserServiceJpa implements UserService {
     public void delete(int id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public List<UserDto> findAllAccountsByStatus(User.Status status) {
+        List<User> users = (List<User>)userRepository.findAllAccountsByStatus(status);
+        return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+    }
 }

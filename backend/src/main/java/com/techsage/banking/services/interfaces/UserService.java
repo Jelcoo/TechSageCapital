@@ -11,4 +11,5 @@ public interface UserService {
     User create(User user);
     User update(User user);
     void delete(int id);
+    List<UserDto> findAllAccountsByStatus(User.Status status);
 }
