@@ -36,7 +36,8 @@ onMounted(() => {
 
             <div v-if="!loading && !errorMessage">
                 <div class="mb-3">
-                    <select class="form-select" v-model="searchQuery" @change="fetchCustomers">
+                    <label for="status" class="form-label">Account Status:</label>
+                    <select class="form-select" id="status" v-model="searchQuery" @change="fetchCustomers">
                         <option value="ACTIVE" selected>Active</option>
                         <option value="PENDING">Pending</option>
                         <option value="DELETED">Deleted</option>
