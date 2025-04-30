@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/user';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -27,8 +28,53 @@ const router = createRouter({
             path: '/administrationDashboard',
             name: 'administrationDashboard',
             component: () => import('@/views/employee/dashboard/AdminDashboard.vue'),
-        }
+        },
+        {
+            path: '/auth',
+            name: 'auth',
+            meta: { isGuest: true },
+            children: [
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: () => import('@/views/auth/LoginView.vue'),
+                },
+                {
+                    path: 'register',
+                    name: 'register',
+                    component: () => import('@/views/auth/RegisterView.vue'),
+                },
+            ],
+        },
+        {
+            path: '/employee',
+            name: 'about',
+            meta: { requiresAuth: true },
+            children: [
+                {
+                    path: '',
+                    name: 'employee-dashboard',
+                    component: () => import('@/views/employee/EmployeeDashboard.vue'),
+                },
+                {
+                    path: 'customers-overview',
+                    name: 'customers-overview',
+                    component: () => import('@/views/employee/CustomerOverview.vue'),
+                },
+            ],
+        },
     ],
+});
+
+router.beforeEach((to, from, next) => {
+    const store = useUserStore();
+    if (to.meta.requiresAuth && !store.isAuthenticated) {
+        next({ name: 'auth.login', replace: true });
+    } else if (store.isAuthenticated && to.meta.isGuest) {
+        next({ name: 'home', replace: true });
+    } else {
+        next();
+    }
 });
 
 export default router;

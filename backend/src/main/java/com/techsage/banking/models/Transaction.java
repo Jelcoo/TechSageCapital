@@ -1,5 +1,6 @@
 package com.techsage.banking.models;
 
+import com.techsage.banking.models.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,15 +31,9 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private TransactionType type;
 
     private String description;
 
-    public enum Type {
-        DEPOSIT,
-        WITHDRAWAL,
-        ATM_DEPOSIT,
-        ATM_WITHDRAWAL
-    }
     public Transaction() {}
 }

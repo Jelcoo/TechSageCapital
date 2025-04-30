@@ -1,0 +1,827 @@
+openapi: "3.0.3"
+info:
+  title: TechSage Capital API
+  version: "1.0"
+
+servers:
+  - url: https://api.techsagecapital.com
+    description: Production server
+
+tags:
+  - name: auth
+    description: Authentication endpoints
+  - name: users
+    description: User management endpoints
+  - name: accounts
+    description: Account management endpoints
+  - name: atm
+    description: ATM management endpoints
+  - name: transactions
+    description: Transaction management endpoints
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                password:
+                  type: string
+                  description: User's password
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthDto"
+        "401":
+          description: Invalid credentials supplied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: User registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreatePost"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthDto"
+        "409":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get current user
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+    put:
+      tags:
+        - users
+      summary: Update current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdatePut"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /users/me/password:
+    put:
+      tags:
+        - users
+      summary: Update current user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPasswordUpdate"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+  /users:
+    get:
+      tags:
+        - users
+      summary: Get all users
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filter users by status
+          schema:
+            type: string
+            enum: [PENDING, ACTIVE, DELETED]
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to fetch
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /users/{userId}/approve:
+    post:
+      tags:
+        - users
+      summary: Approve user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to approve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /users/{userId}/transactions:
+    get:
+      tags:
+        - users
+      summary: Get transactions for a user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to fetch transactions for
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionDto"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+  /accounts:
+    get:
+      tags:
+        - accounts
+      summary: Get all accounts if employee, else only own account
+      parameters:
+        - name: iban
+          in: query
+          required: false
+          description: Filter accounts by IBAN
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BankAccountDto"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /accounts/search:
+    get:
+      tags:
+        - accounts
+      summary: Search for accounts by name
+      parameters:
+        - name: firstName
+          in: query
+          required: true
+          description: First name to search for
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          required: true
+          description: Last name to search for
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BankAccountDto"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /accounts/{accountId}:
+    get:
+      tags:
+        - accounts
+      summary: Get account by ID
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: ID of the account to fetch
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankAccountDto"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /accounts/{accountId}/transfer:
+    post:
+      tags:
+        - accounts
+      summary: Transfer money between accounts
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: ID of the account to transfer from
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountTransferPost"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /accounts/{accountId}/close:
+    post:
+      tags:
+        - accounts
+      summary: Close account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: ID of the account to close
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /accounts/{accountId}/reopen:
+    post:
+      tags:
+        - accounts
+      summary: Reopen account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: ID of the account to reopen
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+  /atm/deposit:
+    post:
+      tags:
+        - atm
+      summary: Deposit money into the ATM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtmDepositPost"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /atm/withdraw:
+    post:
+      tags:
+        - atm
+      summary: Withdraw money from the ATM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtmWithdrawPost"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: Get all transactions
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionDto"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+
+components:
+  schemas:
+    AuthDto:
+      properties:
+        jwt:
+          type: string
+          description: a JSON web token (JWT) required to login.
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User unique identifier
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        email:
+          type: string
+          format: email
+          description: User's email address
+        phoneNumber:
+          type: string
+          description: User's phone number
+        bsn:
+          type: string
+          description: Dutch social security number (BSN)
+          example: "000000000"
+        role:
+          type: string
+          enum: [CUSTOMER, EMPLOYEE, ADMIN]
+          description: User role in the system
+        dailyLimit:
+          type: number
+          format: double
+          description: Maximum amount transferable per day
+        transferLimit:
+          type: number
+          format: double
+          description: Maximum amount per single transfer
+        createdAt:
+          type: string
+          format: date-time
+          description: User account creation timestamp
+        refreshToken:
+          type: string
+          description: Token used for authentication refresh
+        refreshTokenCreatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when refresh token was created
+        status:
+          type: string
+          enum: [PENDING, ACTIVE, DELETED]
+          description: Current status of the user account
+    UserCreatePost:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        email:
+          type: string
+          format: email
+          description: User's email address
+        phoneNumber:
+          type: string
+          description: User's phone number
+        bsn:
+          type: string
+          description: Dutch social security number (BSN)
+          example: "000000000"
+        password:
+          type: string
+          description: User's password
+    UserUpdatePut:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        phoneNumber:
+          type: string
+          description: User's phone number
+    UserPasswordUpdate:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          description: User's old password
+        newPassword:
+          type: string
+          description: User's new password
+    TransactionDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Transaction unique identifier
+        fromAccount:
+          $ref: "#/components/schemas/SimpleBankAccount"
+          description: Account from which the transaction is made
+        toAccount:
+          $ref: "#/components/schemas/SimpleBankAccount"
+          description: Account to which the transaction is made
+        initiator:
+          $ref: "#/components/schemas/SimpleUser"
+          description: User who initiated the transaction
+        amount:
+          type: number
+          format: double
+          description: Amount of money transferred
+        createdAt:
+          type: string
+          format: date-time
+          description: Transaction creation timestamp
+        type:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL, ATM_DEPOSIT, ATM_WITHDRAWAL]
+          description: Type of transaction
+        description:
+          type: string
+          description: Description of the transaction
+    AccountTransferPost:
+      type: object
+      properties:
+        toAccount:
+          type: integer
+          format: int64
+          description: ID of the account to which money is transferred
+        amount:
+          type: number
+          format: double
+          description: Amount of money to be transferred
+        description:
+          type: string
+          description: Description of the transaction
+        toName:
+          type: string
+          description: Name of the account holder to which money is transferred
+    BankAccountDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Account unique identifier
+        user:
+          $ref: "#/components/schemas/SimpleUser"
+          description: User who owns the account
+        iban:
+          type: string
+          description: International Bank Account Number (IBAN)
+        balance:
+          type: number
+          format: double
+          description: Current balance of the account
+        absoluteMinimumBalance:
+          type: number
+          format: double
+          description: Minimum balance required in the account
+        type:
+          type: string
+          enum: [SAVINGS, CHECKING]
+          description: Type of bank account
+    AtmDepositPost:
+      type: object
+      properties:
+        depositTo:
+          type: integer
+          format: int64
+          description: ID of the account to which money is deposited
+        amount:
+          type: number
+          format: double
+          description: Amount of money to deposit into the ATM
+    AtmWithdrawPost:
+      type: object
+      properties:
+        withdrawFrom:
+          type: integer
+          format: int64
+          description: ID of the account from which money is withdrawn
+        amount:
+          type: number
+          format: double
+          description: Amount of money to withdraw from the ATM
+    SimpleBankAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Account unique identifier
+        iban:
+          type: string
+          description: International Bank Account Number (IBAN)
+        firstName:
+          type: string
+          description: Account holder's first name
+        lastName:
+          type: string
+          description: Account holder's last name
+    SimpleUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User unique identifier
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        dailyLimit:
+          type: number
+          format: double
+          description: Maximum amount transferable per day
+        transferLimit:
+          type: number
+          format: double
+          description: Maximum amount per single transfer
+    GenericMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
