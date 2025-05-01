@@ -43,9 +43,9 @@ public class UserController {
         return userService.getAll();
     }
 
-   @PatchMapping("/delete/{accountId}")
+   @PatchMapping("/softDelete/{accountId}")
    @PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
-   public void deleteUser(@PathVariable long accountId) {
+   public void softDeleteUser(@PathVariable long accountId) {
        User user = userService.getById(accountId);
        user.setStatus(UserStatus.DELETED);
        userService.update(user);

@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { User } from "../../../types/User";
+import { ref } from "vue";
+import { useUserStore } from "@/stores/user";
 
-const customer = ref<User[]>([]);  //make this a stored customer object
+const customer = useUserStore();
 const errorMessage = ref("");
 const loading = ref(false);
 
 
 
-function editCustomer(customerId: number) {
-    // Logic to edit customer
-    console.log("Edit customer with ID:", customerId);
+function editAccount() {   //idk if this is necessary. Should a customer be able to edit their own account or can it only be done by an admin / employee?
+    // Logic to edit customer    
+    console.log("Edit customer with ID:", customer.id);
 }
 
-function deleteCustomer(customerId: number) {
-    // Logic to delete customer
-    console.log("Delete customer with ID:", customerId);
-}
+//instead of a stored user, should we get an updated customer from the database incase an employee has edited something?
 </script>
 
 <template>
@@ -48,22 +45,22 @@ function deleteCustomer(customerId: number) {
                     </tr>
                 </thead>
                 <tbody>
-                    <td>{{ customer.Firstname }}</td>
-                    <td>{{ customer.Lastname }}</td>
-                    <td>{{ customer.Email }}</td>
-                    <td>{{ customer.PhoneNumber }}</td>
-                    <td>{{ customer.BSN }}</td>
-                    <td>{{ customer.DailyLimit }}</td>
-                    <td>{{ customer.TransferLimit }}</td>
-                    <td>{{ customer.Status }}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm me-2" @click="editCustomer(customers.ID)">
+                    <td>{{ customer.firstName }}</td>
+                    <td>{{ customer.lastName }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td>{{ customer.phoneNumber }}</td>
+                    <td>{{ customer.bsn }}</td>
+                    <td>{{ customer.dailyLimit }}</td>
+                    <td>{{ customer.transferLimit }}</td>
+                    <td>{{ customer.status }}</td>
+                    <!-- <td>
+                         <button class="btn btn-primary btn-sm me-2" @click="editAccount()">
                             Edit
                         </button>
-                        <button class="btn btn-danger btn-sm" @click="deleteCustomer(customers.ID)">
+                        <button class="btn btn-danger btn-sm" @click="deleteAccount()">
                             Delete
                         </button>
-                    </td>
+                    </td> --> <!-- uncomment if customer can change their account -->
                 </tbody>
             </table>
         </div>

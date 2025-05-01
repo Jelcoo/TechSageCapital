@@ -34,7 +34,7 @@ function editCustomer(customerId: number) {
 async function softDeleteCustomer(customerId: number) {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
-            await axios.patch(`http://localhost/users/delete/${customerId}`); //patch because soft delete
+            await axios.patch(`http://localhost/users/softDelete/${customerId}`); //patch because soft delete
             fetchCustomers();
         } catch (error) {
             const err = error as AxiosError;
