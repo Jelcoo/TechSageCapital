@@ -42,4 +42,12 @@ public class UserController {
     public List<UserDto> getAllUsers(){
         return userService.getAll();
     }
+
+   @PatchMapping("/delete/{accountId}")
+   @PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
+   public void deleteUser(@PathVariable long accountId) {
+       User user = userService.getById(accountId);
+       user.setStatus(UserStatus.DELETED);
+       userService.update(user);
+   }
 }

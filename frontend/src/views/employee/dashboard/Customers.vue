@@ -13,7 +13,7 @@ async function fetchCustomers() {
     errorMessage.value = "";
 
     try {
-        const response = await axios.get("http://localhost/users");
+        const response = await axios.get("http://localhost/users/getAll");
         customers.value = response.data;
     } catch (error) {
         const err = error as AxiosError;
@@ -31,9 +31,19 @@ function editCustomer(customerId: number) {
     console.log("Edit customer with ID:", customerId);
 }
 
-function deleteCustomer(customerId: number) {
-    // Logic to delete customer
-    console.log("Delete customer with ID:", customerId);
+async function softDeleteCustomer(customerId: number) {
+    if (confirm("Are you sure you want to delete this customer?")) {
+        try {
+            await axios.patch(`http://localhost/users/delete/${customerId}`); //patch because soft delete
+            fetchCustomers();
+        } catch (error) {
+            const err = error as AxiosError;
+            errorMessage.value = err.response
+                ? (err.response.data as { message: string }).message
+                : "An error occurred while deleting the customer. " + err.message; //again debugging line (see line 22)
+        }
+    }
+
 }
 
 onMounted(() => {
@@ -76,20 +86,20 @@ onMounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(customers, index) in customers" :key="customers.ID">
-                                <td>{{ customers.Firstname }}</td>
-                                <td>{{ customers.Lastname }}</td>
-                                <td>{{ customers.Email }}</td>
+                            <tr v-for="(customers, index) in customers" :key="customers.id">
+                                <td>{{ customers.FirstName }}</td>
+                                <td>{{ customers.LastName }}</td>
+                                <td>{{ customers.email }}</td>
                                 <td>{{ customers.PhoneNumber }}</td>
                                 <td>{{ customers.BSN }}</td>
                                 <td>{{ customers.DailyLimit }}</td>
                                 <td>{{ customers.TransferLimit }}</td>
                                 <td>{{ customers.Status }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm me-2" @click="editCustomer(customers.ID)">
+                                    <button class="btn btn-primary btn-sm me-2" @click="editCustomer(customers.id)">
                                         Edit
                                     </button>
-                                    <button class="btn btn-danger btn-sm" @click="deleteCustomer(customers.ID)">
+                                    <button class="btn btn-danger btn-sm" @click="softDeleteCustomer(customers.id)">
                                         Delete
                                     </button>
                                 </td>

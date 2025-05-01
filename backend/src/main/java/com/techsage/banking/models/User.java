@@ -6,6 +6,7 @@ import com.techsage.banking.models.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,12 +38,14 @@ public class User {
     private String refreshToken;
     private LocalDateTime refreshTokenCreatedAt;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<BankAccount> bankAccounts;
+
 
     public User() {}
 }

@@ -49,5 +49,5 @@ export enum Role {
 export enum Status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
-    SUSPENDED = 'suspended',
+    SUSPENDED = 'suspended', //different from deleted in back-end
 }
