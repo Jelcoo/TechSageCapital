@@ -1,14 +1,28 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import type { User } from "../../../../types/User";
+import axios, { AxiosError } from "axios";
 
 const customers = ref<User[]>([]);
 const errorMessage = ref("");
 const loading = ref(false);
 
 
-function fetchCustomers() {
+async function fetchCustomers() {
+    loading.value = true;
+    errorMessage.value = "";
 
+    try {
+        const response = await axios.get("http://localhost/users");
+        customers.value = response.data;
+    } catch (error) {
+        const err = error as AxiosError;
+        errorMessage.value = err.response
+            ? (err.response.data as { message: string }).message
+            : "An error occurred while fetching customers. " + err.message; //remove err.message later (is just for debugging :))
+    } finally {
+        loading.value = false;
+    }
 }
 
 
@@ -21,6 +35,10 @@ function deleteCustomer(customerId: number) {
     // Logic to delete customer
     console.log("Delete customer with ID:", customerId);
 }
+
+onMounted(() => {
+    fetchCustomers();
+});
 </script>
 
 <template>

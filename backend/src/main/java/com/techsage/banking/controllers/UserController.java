@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
+import com.techsage.banking.models.User;
 
 import java.util.List;
 
@@ -26,8 +27,19 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('EMPLOYEE')")  // maybe add || hasRole('ADMIN') as well.
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findByStatus(status);
+    }
+
+    @GetMapping("/accountdetails/{accountId}")
+    public User get(@PathVariable long accountId) {
+        return userService.getById(accountId);
+    }
+
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
+    public List<UserDto> getAllUsers(){
+        return userService.getAll();
     }
 }

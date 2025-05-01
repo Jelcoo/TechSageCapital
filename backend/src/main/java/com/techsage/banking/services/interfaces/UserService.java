@@ -14,7 +14,7 @@ public interface UserService {
     User getById(long id);
     User create(User user);
     User update(User user);
-    void delete(int id);
+    void delete(long id);
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);
     List<UserDto> findByStatus(UserStatus status);

@@ -2,6 +2,7 @@ package com.techsage.banking.services.interfaces;
 
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.dto.TransactionDto;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
