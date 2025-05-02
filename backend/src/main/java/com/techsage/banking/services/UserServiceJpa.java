@@ -63,14 +63,14 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
-        User user = userRepository.getByEmail(loginRequest.getEmail()).orElseThrow(() -> new AuthenticationException("User not found"));
+        Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
 
-        if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             throw new AuthenticationException("Invalid username/password");
         }
 
         LoginResponseDto response = new LoginResponseDto();
-        response.setToken(jwtProvider.createToken(user.getEmail(), user.getRoles()));
+        response.setToken(jwtProvider.createToken(user.get().getEmail(), user.get().getRoles()));
 
         return response;
     }
