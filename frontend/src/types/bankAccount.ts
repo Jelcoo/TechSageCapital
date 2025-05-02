@@ -5,6 +5,7 @@ export interface BankAccount {
     balance: number;
     absoluteMinimum: number; // Minimum balance required in the account
     type: BankAccountType; // 'savings' | 'checking' | optional ATM
+    bankAccounts: BankAccount[];
 }
 
 export enum BankAccountType {

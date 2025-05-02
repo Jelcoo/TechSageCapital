@@ -1,5 +1,6 @@
 package com.techsage.banking.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.converters.IbanConverter;
 import com.techsage.banking.models.enums.*;
@@ -19,6 +20,7 @@ public class BankAccount {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     private User user;
 
     @Convert(converter = IbanConverter.class)

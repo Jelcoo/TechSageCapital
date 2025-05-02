@@ -81,10 +81,14 @@ onMounted(() => {
                 <div class="mb-3">
                     <strong>Status:</strong> {{ customer.status }}
                 </div>
-                <!-- <div class="mb-3">
-                    <strong>Bank Account:</strong> {{ customer.bankAccount.accountNumber }}
-                </div> -->
-                <!-- Uncomment if actions are needed -->
+                <div class="mb-3">
+                    <strong>Total Balance:</strong> €{{customer.bankAccounts.reduce((acc, account) => acc +
+                        account.balance, 0)}}
+                </div>
+                <div class="mb-3" v-for="account in customer.bankAccounts" :key="account.id">
+                    <strong>Account:</strong> {{ account.type }}
+                    <strong>Account Balance:</strong> €{{ account.balance }}
+                </div>
                 <!--
                 <div class="mt-4">
                     <button class="btn btn-primary me-2" @click="editAccount()">
