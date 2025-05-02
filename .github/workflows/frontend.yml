@@ -45,14 +45,14 @@ jobs:
       - name: Build Frontend Docker Image (NGINX)
         run: |
           cd frontend
-          docker build -t vue-app .
+          docker build \
+            --build-arg VITE_APP_URL=${{ secrets.VITE_APP_URL }} \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_TURNSTILE_KEY=${{ secrets.VITE_TURNSTILE_KEY }} \
+            -t vue-app .
 
       - name: Run Frontend Container
         run: |
           docker stop vue-app || true
           docker rm vue-app || true
-          docker run -d \
-            -e VITE_APP_URL=${{ secrets.VITE_APP_URL }} \
-            -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -e VITE_TURNSTILE_KEY=${{ secrets.VITE_TURNSTILE_KEY }} \
-            --name vue-app -p 80:80 vue-app
+          docker run -d --name vue-app -p 80:80 vue-app
