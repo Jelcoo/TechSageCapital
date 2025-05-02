@@ -3,9 +3,11 @@ import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import type { User } from "../../../types/User";
+import type { BankAccount } from "../../../types/BankAccount";
 
 //const customer = useUserStore();
 const customer = ref<User | null>(null);
+const BankAccount = ref<BankAccount | null>(null);
 const errorMessage = ref("");
 const loading = ref(false);
 
@@ -79,6 +81,9 @@ onMounted(() => {
                 <div class="mb-3">
                     <strong>Status:</strong> {{ customer.status }}
                 </div>
+                <!-- <div class="mb-3">
+                    <strong>Bank Account:</strong> {{ customer.bankAccount.accountNumber }}
+                </div> -->
                 <!-- Uncomment if actions are needed -->
                 <!--
                 <div class="mt-4">
