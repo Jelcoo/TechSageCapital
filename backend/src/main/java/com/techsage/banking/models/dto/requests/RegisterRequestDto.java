@@ -25,7 +25,7 @@ public class RegisterRequestDto extends BaseDto {
     private String phoneNumber;
 
     @NotBlank(message = "BSN is required")
-    @Pattern(regexp = "^[0-9]{9}$", message = "BSN must be 9 digits")
+    @BSN
     private String bsn;
 
     @NotBlank(message = "Password is required")
