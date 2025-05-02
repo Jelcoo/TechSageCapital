@@ -1,10 +1,10 @@
-name: ESLint
+name: Frontend Deployment
 
 on:
   push:
 
 jobs:
-  lint:
+  eslint:
     name: Run ESLint
     runs-on: self-hosted
 
