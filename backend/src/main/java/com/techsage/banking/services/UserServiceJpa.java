@@ -64,7 +64,6 @@ public class UserServiceJpa implements UserService {
         userRepository.save(user);
     }
 
-
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
         User user = userRepository.getByEmail(loginRequest.getEmail()).orElseThrow(() -> new AuthenticationException("User not found"));

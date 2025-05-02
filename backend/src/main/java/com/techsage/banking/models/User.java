@@ -46,6 +46,5 @@ public class User {
     @JsonManagedReference
     private List<BankAccount> bankAccounts;
 
-
     public User() {}
 }

@@ -90,7 +90,8 @@ onMounted(() => {
                                 <td>
                                     <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
                                         <button class="btn btn-primary">Edit</button>
-                                        <button class="btn btn-danger" @click="softDeleteCustomer(customer.id)">Delete</button>
+                                        <button class="btn btn-danger"
+                                            @click="softDeleteCustomer(customer.id)">Delete</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
                                         <button class="btn btn-primary">Approve</button>

@@ -8,7 +8,6 @@ import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 
 @RestController
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('EMPLOYEE')")  // maybe add || hasRole('ADMIN') as well.
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findByStatus(status);
     }

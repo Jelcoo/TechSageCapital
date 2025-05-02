@@ -28,7 +28,9 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount getById(long id) {return bankAccountRepository.findById(id).get();}
+    public BankAccount getById(long id) {
+        return bankAccountRepository.findById(id).get();
+    }
 
     @Override
     public BankAccount create(BankAccount bankAccount) {
