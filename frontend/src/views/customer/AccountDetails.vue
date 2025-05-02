@@ -24,7 +24,9 @@ async function fetchUser() {
             errorMessage.value = "User not found.";
         }
     } catch (error) {
-        errorMessage.value = "An error occurred while fetching user details.";
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while fetching user details. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
     } finally {
         loading.value = false;
     }
