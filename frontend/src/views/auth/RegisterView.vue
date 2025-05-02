@@ -3,50 +3,78 @@
         <div class="row justify-content-center">
             <div class="col col-md-6 col-lg-4 col-xl-3 py-4">
                 <main class="form-signin w-100 m-auto">
-                    <form>
-                        <h1 class="h3 fw-normal">Register account</h1>
-                        <p class="text-body-secondary">Please fill in all details below.</p>
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="first_name" placeholder="First name">
-                            <label for="first_name">First name</label>
-                        </div>
+                    <h1 class="h3 fw-normal">Register account</h1>
+                    <p class="text-body-secondary">Please fill in all details below.</p>
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="last_name" placeholder="Last name">
-                            <label for="last_name">Last name</label>
-                        </div>
+                    <VeeForm v-slot="{ handleSubmit }" as="div">
+                        <form @submit="handleSubmit($event, onSubmit)">
+                            <FormInput name="firstName" label="First name" type="text" placeholder="First name" />
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="email" placeholder="Email address">
-                            <label for="email">Email</label>
-                        </div>
+                            <FormInput name="lastName" label="Last name" type="text" placeholder="Last name" />
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="phone" placeholder="Phone number">
-                            <label for="phone">Phone number</label>
-                        </div>
+                            <FormInput name="email" label="Email" type="text" placeholder="Email address" />
 
-                        <div class="form-floating my-1">
-                            <input type="text" class="form-control" name="bsn" placeholder="BSN">
-                            <label for="bsn">BSN</label>
-                        </div>
+                            <FormInput name="phoneNumber" label="Phone number" type="text" placeholder="Phone number" />
 
-                        <div class="form-floating my-1">
-                            <input type="password" class="form-control" name="password" placeholder="Password">
-                            <label for="password">Password</label>
-                        </div>
+                            <FormInput name="bsn" label="BSN" type="text" placeholder="BSN" />
 
-                        <div class="form-floating my-1">
-                            <input type="password" class="form-control" name="password_confirmation"
-                                placeholder="Password confirmation">
-                            <label for="password_confirmation">Password confirmation</label>
-                        </div>
+                            <FormInput name="password" label="Password" type="password" placeholder="Password" />
 
-                        <button class="btn btn-primary w-100 py-2 my-3" type="submit">Confirm registration</button>
-                    </form>
+                            <FormInput name="passwordConfirmation" label="Password confirmation" type="password"
+                                placeholder="Password confirmation" />
+
+                            <VueTurnstile ref="turnstile" :site-key="turnstileToken" v-model="turnstileRef" />
+
+                            <button class="btn btn-primary w-100 py-2 my-3" type="submit">Confirm registration</button>
+                        </form>
+                    </VeeForm>
                 </main>
             </div>
         </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+import FormInput from '@/components/forms/FormInput.vue';
+import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
+import { ref, useTemplateRef } from 'vue';
+import VueTurnstile from 'vue-turnstile';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const router = useRouter();
+
+const turnstileToken = import.meta.env.VITE_TURNSTILE_KEY;
+const turnstileRef = ref('');
+const turnstile = useTemplateRef('turnstile');
+
+const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
+    userStore
+        .register(
+            values.firstName,
+            values.lastName,
+            values.email,
+            values.phoneNumber,
+            values.bsn,
+            values.password,
+            values.passwordConfirmation,
+            turnstileRef.value
+        )
+        .then(() => {
+            router.push({ name: 'home' });
+        })
+        .catch((error) => {
+            if (error.response.status === 400) {
+                actions.setErrors(error.response.data);
+            } else {
+                console.error(error);
+                actions.setErrors({
+                    passwordConfirmation: 'An error occurred. Please try again later.',
+                });
+            }
+            turnstile.value?.reset();
+        });
+};
+</script>

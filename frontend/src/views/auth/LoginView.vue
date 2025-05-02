@@ -51,5 +51,16 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
         .then(() => {
             router.push({ name: 'home' });
         })
+        .catch((error) => {
+            if (error.response.status === 400) {
+                actions.setErrors(error.response.data);
+            } else {
+                console.error(error);
+                actions.setErrors({
+                    password: 'An error occurred. Please try again later.',
+                });
+            }
+            turnstile.value?.reset();
+        });
 };
 </script>

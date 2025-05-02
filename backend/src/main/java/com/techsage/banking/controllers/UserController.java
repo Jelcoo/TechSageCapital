@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController extends BaseController {
     private final UserService userService;
 
     public UserController(UserService userService) {
