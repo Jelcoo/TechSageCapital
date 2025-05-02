@@ -13,13 +13,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build JAR
-        run: mvn clean package -DskipTests
+        run: |
+          cd backend
+          mvn clean package -DskipTests
 
       - name: Build Docker image
-        run: docker build -t springboot-app .
+        run: |
+          cd backend
+          docker build -t springboot-app .
 
       - name: Run Docker container
         run: |
+          cd backend
           docker stop springboot-app || true
           docker rm springboot-app || true
           docker run -d --name springboot-app -p 8080:8080 springboot-app
