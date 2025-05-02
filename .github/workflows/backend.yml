@@ -2,11 +2,11 @@ name: Backend Deployment
 
 on:
   push:
-    branches: [main]
 
 jobs:
   deploy:
     runs-on: self-hosted
+    if: github.ref == 'refs/heads/main
 
     steps:
       - name: Checkout code
