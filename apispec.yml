@@ -70,8 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthDto"
-        "409":
-          description: User already exists
+        "400":
+          description: Registration failed (e.g., duplicate email)
           content:
             application/json:
               schema:
