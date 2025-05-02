@@ -37,8 +37,9 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public User getById(int id) {
-        return userRepository.findById(id).get();
+    public UserDto getById(long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
@@ -57,8 +58,10 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public void delete(int id) {
-        userRepository.deleteById(id);
+    public void softDelete(long id) {
+        User user = userRepository.findById(id).get();
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
     }
 
     @Override

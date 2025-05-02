@@ -30,4 +30,26 @@ public class UserController extends BaseController {
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findByStatus(status);
     }
+
+    @GetMapping("/accountdetails/{accountId}")
+    public UserDto get(@PathVariable long accountId) {
+        return userService.getById(accountId);
+    }
+
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<UserDto> getAllUsers() {
+        return userService.getAll();
+    }
+
+    @PutMapping("/softDelete/{accountId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public void softDeleteUser(@PathVariable long accountId) {
+        userService.softDelete(accountId);
+    }
+
+    @GetMapping("/getById/{ID}")
+    public UserDto getById(@PathVariable long ID) {
+        return userService.getById(ID);
+    }
 }

@@ -10,6 +10,21 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue'),
         },
         {
+            path: '/employees',
+            name: 'employees',
+            component: () => import('@/views/admin/EmployeesView.vue'),
+        },
+        {
+            path: '/accountdetails',
+            name: 'accountdetails',
+            component: () => import('@/views/customer/AccountDetails.vue'),
+        },
+        {
+            path: '/administrationDashboard',
+            name: 'administrationDashboard',
+            component: () => import('@/views/employee/dashboard/AdminDashboard.vue'),
+        },
+        {
             path: '/auth',
             name: 'auth',
             meta: { isGuest: true },

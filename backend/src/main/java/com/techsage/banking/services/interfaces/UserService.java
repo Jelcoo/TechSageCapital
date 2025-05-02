@@ -11,10 +11,10 @@ import java.util.*;
 
 public interface UserService {
     List<UserDto> getAll();
-    User getById(int id);
+    UserDto getById(long id);
     User create(User user);
     User update(User user);
-    void delete(int id);
+    void softDelete(long id);
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;
     RegisterResponseDto register(RegisterRequestDto registerRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);

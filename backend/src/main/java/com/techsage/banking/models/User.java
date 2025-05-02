@@ -42,6 +42,7 @@ public class User {
     private String refreshToken;
     private LocalDateTime refreshTokenCreatedAt;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.PENDING;
 

@@ -28,7 +28,7 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount getById(int id) {
+    public BankAccount getById(long id) {
         return bankAccountRepository.findById(id).get();
     }
 
@@ -43,7 +43,7 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         bankAccountRepository.deleteById(id);
     }
 }
