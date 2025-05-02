@@ -93,8 +93,8 @@ onMounted(() => {
                                 <td>{{ customers.email }}</td>
                                 <td>{{ customers.phoneNumber }}</td>
                                 <td>{{ customers.bsn }}</td>
-                                <td>{{ customers.dailyLimit }}</td>
-                                <td>{{ customers.transferLimit }}</td>
+                                <td>€{{ customers.dailyLimit }}</td>
+                                <td>€{{ customers.transferLimit }}</td>
                                 <td>{{ customers.status }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm me-2" @click="editCustomer(customers.id)">

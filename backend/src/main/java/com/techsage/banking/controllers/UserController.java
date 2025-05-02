@@ -50,4 +50,9 @@ public class UserController {
        user.setStatus(UserStatus.DELETED);
        userService.update(user);
    }
+
+   @GetMapping("/getById/{ID}")
+    public User getById(@PathVariable long ID) {
+        return userService.getById(ID);
+    }
 }
