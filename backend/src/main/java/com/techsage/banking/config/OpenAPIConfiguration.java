@@ -1,7 +1,8 @@
 package com.techsage.banking.config;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.*;
+import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.security.*;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +14,36 @@ public class OpenAPIConfiguration {
 
     @Bean
     public OpenAPI defineOpenApi() {
-        Server server = new Server();
-        server.setUrl("http://localhost:8080");
-        server.setDescription("Development");
+        // Server environments
+        Server devServer = new Server()
+                .url("http://localhost:8080")
+                .description("Development server");
 
+        Server prodServer = new Server()
+                .url("https://api.techsagecapital.nl")
+                .description("Production server");
+
+        // API info
         Info information = new Info()
                 .title("TechSage Capital API")
                 .version("1.0")
                 .description("This API exposes endpoints to manage the Capital banking app™");
 
-        return new OpenAPI().info(information).servers(List.of(server));
+        // Security scheme for JWT Bearer token
+        SecurityScheme bearerAuth = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER)
+                .name("Authorization");
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList("bearerAuth");
+
+        return new OpenAPI()
+                .info(information)
+                .servers(List.of(devServer, prodServer))
+                .components(new Components().addSecuritySchemes("bearerAuth", bearerAuth))
+                .addSecurityItem(securityRequirement);
     }
 }

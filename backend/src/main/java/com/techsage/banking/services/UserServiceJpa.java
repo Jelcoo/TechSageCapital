@@ -66,14 +66,31 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
-        User user = userRepository.getByEmail(loginRequest.getEmail()).orElseThrow(() -> new AuthenticationException("User not found"));
+        Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
 
-        if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             throw new AuthenticationException("Invalid username/password");
         }
 
         LoginResponseDto response = new LoginResponseDto();
-        response.setToken(jwtProvider.createToken(user.getEmail(), user.getRoles()));
+        response.setToken(jwtProvider.createToken(user.get().getEmail(), user.get().getRoles()));
+
+        return response;
+    }
+
+    @Override
+    public RegisterResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
+        User user = new User();
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
+        user.setBsn(registerRequest.getBsn());
+        user.setPassword(registerRequest.getPassword());
+
+        User createdUser = this.create(user);
+        RegisterResponseDto response = new RegisterResponseDto();
+        response.setToken(jwtProvider.createToken(createdUser.getEmail(), createdUser.getRoles()));
 
         return response;
     }
