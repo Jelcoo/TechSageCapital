@@ -1,3 +1,4 @@
+import type { BankAccount } from './bankAccount';
 export interface User {
     id: number;
     firstName: string;
@@ -10,6 +11,7 @@ export interface User {
     transferLimit: number;
     createdAt: Date;
     status: AccountStatus;
+    bankAccounts: BankAccount[];
 }
 
 export interface Login {

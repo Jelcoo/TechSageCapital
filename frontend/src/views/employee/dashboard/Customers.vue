@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import type { User } from "../../../../types/User";
 import axios, { AxiosError } from "axios";
-
+//delete this because already made
 const customers = ref<User[]>([]);
 const errorMessage = ref("");
 const loading = ref(false);
@@ -44,7 +44,6 @@ async function softDeleteCustomer(customerId: number) {
                 : "An error occurred while deleting the customer. " + err.message; //again debugging line (see line 22)
         }
     }
-
 }
 
 onMounted(() => {

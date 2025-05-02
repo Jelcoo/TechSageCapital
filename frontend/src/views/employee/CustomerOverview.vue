@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { AccountStatus, type User } from '@/types';
 import axiosClient from '@/axios';
+import type { AxiosError } from 'axios';
 
 const customers = ref<User[]>([]);
 const errorMessage = ref('');
@@ -12,6 +13,21 @@ function fetchCustomers() {
     axiosClient.get(`/users?status=${searchQuery.value}`).then(({ data }) => {
         customers.value = data;
     });
+}
+
+async function softDeleteCustomer(customerId: number) {
+    if (confirm("Are you sure you want to delete this customer?")) {
+        try {
+            await axiosClient.put(`/users/softDelete/${customerId}`); //patch because soft delete
+
+            fetchCustomers();
+        } catch (error) {
+            const err = error as AxiosError;
+            errorMessage.value = err.response
+                ? (err.response.data as { message: string }).message
+                : "An error occurred while deleting the customer. " + err.message; // remove err.message later is a debugging line
+        }
+    }
 }
 
 onMounted(() => {
@@ -74,7 +90,7 @@ onMounted(() => {
                                 <td>
                                     <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
                                         <button class="btn btn-primary">Edit</button>
-                                        <button class="btn btn-danger">Delete</button>
+                                        <button class="btn btn-danger" @click="softDeleteCustomer(customer.id)">Delete</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
                                         <button class="btn btn-primary">Approve</button>

@@ -33,26 +33,27 @@ public class UserController {
     }
 
     @GetMapping("/accountdetails/{accountId}")
-    public User get(@PathVariable long accountId) {
+    public UserDto get(@PathVariable long accountId) {
         return userService.getById(accountId);
     }
 
     @GetMapping("/getAll")
-    //@PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
-    public List<UserDto> getAllUsers(){
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<UserDto> getAllUsers() {
         return userService.getAll();
     }
 
-   @PutMapping("/softDelete/{accountId}")
-   //@PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
-   public void softDeleteUser(@PathVariable long accountId) {
-       User user = userService.getById(accountId);
-       user.setStatus(UserStatus.DELETED);
-       userService.update(user);
-   }
+    @PutMapping("/softDelete/{accountId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public void softDeleteUser(@PathVariable long accountId) {
+        userService.softDelete(accountId);
+        UserDto user = userService.getById(accountId);
+        user.setStatus(UserStatus.DELETED);
+        //userService.update(user);
+    }
 
-   @GetMapping("/getById/{ID}")
-    public User getById(@PathVariable long ID) {
+    @GetMapping("/getById/{ID}")
+    public UserDto getById(@PathVariable long ID) {
         return userService.getById(ID);
     }
 }
