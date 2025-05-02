@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import type { User } from "../../../types/User";
+import type { User } from "@/types";
 
 const employees = ref<User[]>([]);
 const errorMessage = ref("");
@@ -22,6 +22,10 @@ function deleteEmployee(employeeId: number) {
     // Add logic to delete an employee
     console.log("Delete employee with ID:", employeeId);
 }
+
+onMounted(() => {
+    fetchEmployees();
+});
 </script>
 
 <template>
@@ -40,7 +44,7 @@ function deleteEmployee(employeeId: number) {
             </div>
 
             <div v-if="!loading && !errorMessage">
-                <div v-if="customers.length === 0" class="text-center">
+                <div v-if="employees.length === 0" class="text-center">
                     <p class="lead">No Employees found.</p>
                 </div>
                 <div v-else>
@@ -59,20 +63,20 @@ function deleteEmployee(employeeId: number) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(employees, index) in employees" :key="employees.ID">
-                                <td>{{ employees.Firstname }}</td>
-                                <td>{{ employees.Lastname }}</td>
-                                <td>{{ employees.Email }}</td>
-                                <td>{{ employees.PhoneNumber }}</td>
-                                <td>{{ employees.BSN }}</td>
-                                <td>{{ employees.DailyLimit }}</td>
-                                <td>{{ employees.TransferLimit }}</td>
-                                <td>{{ employees.Status }}</td>
+                            <tr v-for="(employees, index) in employees" :key="employees.id">
+                                <td>{{ employees.firstName }}</td>
+                                <td>{{ employees.lastName }}</td>
+                                <td>{{ employees.email }}</td>
+                                <td>{{ employees.phoneNumber }}</td>
+                                <td>{{ employees.bsn }}</td>
+                                <td>{{ employees.dailyLimit }}</td>
+                                <td>{{ employees.transferLimit }}</td>
+                                <td>{{ employees.status }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm me-2" @click="editEmployee(employees.ID)">
+                                    <button class="btn btn-primary btn-sm me-2" @click="editEmployee(employees.id)">
                                         Edit
                                     </button>
-                                    <button class="btn btn-danger btn-sm" @click="deleteEmployee(employees.ID)">
+                                    <button class="btn btn-danger btn-sm" @click="deleteEmployee(employees.id)">
                                         Delete
                                     </button>
                                 </td>

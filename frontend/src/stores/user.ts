@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', {
         transferLimit: 0,
         createdAt: new Date(),
         status: AccountStatus.ACTIVE,
+        bankAccounts: [],
         token: localStorage.getItem('token') || null,
     }),
     getters: {
