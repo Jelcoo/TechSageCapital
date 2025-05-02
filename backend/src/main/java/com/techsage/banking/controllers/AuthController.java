@@ -4,6 +4,7 @@ import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.services.interfaces.*;
+import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<BaseDto> login(@RequestBody LoginRequestDto loginRequest) {
+    public ResponseEntity<BaseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
         try {
             return ResponseEntity.ok().body(userService.login(loginRequest));
         } catch (Exception e) {
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<BaseDto> register(@RequestBody RegisterRequestDto registerRequest) {
+    public ResponseEntity<BaseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
         try {
             return ResponseEntity.ok().body(userService.register(registerRequest));
         } catch (Exception e) {
