@@ -63,7 +63,7 @@ onMounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(employees, index) in employees" :key="employees.id">
+                            <tr v-for="employees in employees" :key="employees.id">
                                 <td>{{ employees.firstName }}</td>
                                 <td>{{ employees.lastName }}</td>
                                 <td>{{ employees.email }}</td>

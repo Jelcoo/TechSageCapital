@@ -41,10 +41,9 @@ async function softDeleteAccount() {
             const Id = Store.id;
             await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
         } catch (error) {
-            const err = error as AxiosError;
-            errorMessage.value = err.response
-                ? (err.response.data as { message: string }).message
-                : "An error occurred while deleting the customer. " + err.message; // remove err.message later is a debugging line
+            errorMessage.value = (error as AxiosError).response
+                ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+                : "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
         }
     }
 }
@@ -118,7 +117,8 @@ onMounted(() => {
                     <button class="btn btn-primary me-2" @click="editAccount()">
                         Edit
                     </button>
-                    <button class="btn btn-danger" v-if="Store.roles.includes(Role.EMPLOYEE || Role.ADMIN)"
+                    <button class="btn btn-danger"
+                        v-if="Store.roles.includes(Role.EMPLOYEE) || Store.roles.includes(Role.ADMIN)"
                         @click="softDeleteAccount()">
                         Delete
                     </button>
