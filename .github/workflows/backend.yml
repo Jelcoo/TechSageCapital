@@ -12,6 +12,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Generate JWT keystore
+        run: |
+          cd backend/src/main/resources
+          keytool -genkeypair \
+            -keyalg RSA \
+            -validity 365 \
+            -alias inholland \
+            -keystore inholland.p12 \
+            -storetype PKCS12 \
+            -storepass yourpassword \
+            -keypass yourpassword \
+            -dname "CN=inholland, OU=TechSage, O=Inholland, L=City, S=State, C=NL"
+
       - name: Build JAR
         run: |
           cd backend
