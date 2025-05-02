@@ -31,3 +31,48 @@ jobs:
         run: |
           cd frontend
           pnpm run lint:check
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    needs:
+      - eslint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          pnpm run build
+
+      - name: Build Frontend Docker Image (NGINX)
+        run: |
+          cd frontend
+          docker build -t vue-app .
+
+      - name: Run Frontend Container
+        run: |
+          docker stop vue-app || true
+          docker rm vue-app || true
+          docker run -d \
+            -e VITE_APP_URL=${{ secrets.VITE_APP_URL }} \
+            -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            -e VITE_TURNSTILE_KEY=${{ secrets.VITE_TURNSTILE_KEY }} \
+            --name vue-app -p 80:80 vue-app
