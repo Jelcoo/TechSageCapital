@@ -62,6 +62,7 @@ export const useUserStore = defineStore('user', {
             phoneNumber: string,
             bsn: string,
             password: string,
+            passwordConfirmation: string,
             turnstileToken: string,
         ) {
             return new Promise((resolve, reject) => {
@@ -73,6 +74,7 @@ export const useUserStore = defineStore('user', {
                         phoneNumber,
                         bsn,
                         password,
+                        passwordConfirmation,
                         'cf-turnstile-response': turnstileToken,
                     })
                     .then((res) => {

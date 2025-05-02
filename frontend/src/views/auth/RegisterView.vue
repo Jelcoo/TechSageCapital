@@ -7,22 +7,21 @@
                     <h1 class="h3 fw-normal">Register account</h1>
                     <p class="text-body-secondary">Please fill in all details below.</p>
 
-                    <VeeForm v-slot="{ handleSubmit }" :validation-schema="validationSchema" as="div">
+                    <VeeForm v-slot="{ handleSubmit }" as="div">
                         <form @submit="handleSubmit($event, onSubmit)">
-                            <FormInput name="first_name" label="First name" type="text" placeholder="First name" />
+                            <FormInput name="firstName" label="First name" type="text" placeholder="First name" />
 
-                            <FormInput name="last_name" label="Last name" type="text" placeholder="Last name" />
+                            <FormInput name="lastName" label="Last name" type="text" placeholder="Last name" />
 
                             <FormInput name="email" label="Email" type="text" placeholder="Email address" />
 
-                            <FormInput name="phone_number" label="Phone number" type="text"
-                                placeholder="Phone number" />
+                            <FormInput name="phoneNumber" label="Phone number" type="text" placeholder="Phone number" />
 
                             <FormInput name="bsn" label="BSN" type="text" placeholder="BSN" />
 
                             <FormInput name="password" label="Password" type="password" placeholder="Password" />
 
-                            <FormInput name="password_confirmation" label="Password confirmation" type="password"
+                            <FormInput name="passwordConfirmation" label="Password confirmation" type="password"
                                 placeholder="Password confirmation" />
 
                             <VueTurnstile ref="turnstile" :site-key="turnstileToken" v-model="turnstileRef" />
@@ -40,20 +39,9 @@
 import FormInput from '@/components/forms/FormInput.vue';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { ref, useTemplateRef } from 'vue';
-import * as yup from 'yup';
 import VueTurnstile from 'vue-turnstile';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
-
-const validationSchema = yup.object({
-    first_name: yup.string().required(),
-    last_name: yup.string().required(),
-    email: yup.string().required().email(),
-    phone_number: yup.string().required(),
-    bsn: yup.string().required(),
-    password: yup.string().required(),
-    password_confirmation: yup.string().oneOf([yup.ref('password'), undefined], 'Passwords must match'),
-});
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -65,12 +53,13 @@ const turnstile = useTemplateRef('turnstile');
 const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
     userStore
         .register(
-            values.first_name,
-            values.last_name,
+            values.firstName,
+            values.lastName,
             values.email,
-            values.phone_number,
+            values.phoneNumber,
             values.bsn,
             values.password,
+            values.passwordConfirmation,
             turnstileRef.value
         )
         .then(() => {
