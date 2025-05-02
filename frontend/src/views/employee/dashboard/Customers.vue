@@ -13,7 +13,7 @@ async function fetchCustomers() {
     errorMessage.value = "";
 
     try {
-        const response = await axios.get("http://localhost:8080/users/getAll");
+        const response = await axios.get<User[]>("http://localhost:8080/users/getAll");
         customers.value = response.data;
     } catch (error) {
         const err = error as AxiosError;
@@ -34,7 +34,8 @@ function editCustomer(customerId: number) {
 async function softDeleteCustomer(customerId: number) {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
-            await axios.patch(`http://localhost:8080/users/softDelete/${customerId}`); //patch because soft delete
+            await axios.put(`http://localhost:8080/users/softDelete/${customerId}`); //patch because soft delete
+
             fetchCustomers();
         } catch (error) {
             const err = error as AxiosError;
@@ -87,14 +88,14 @@ onMounted(() => {
                         </thead>
                         <tbody>
                             <tr v-for="(customers, index) in customers" :key="customers.id">
-                                <td>{{ customers.FirstName }}</td>
-                                <td>{{ customers.LastName }}</td>
+                                <td>{{ customers.firstName }}</td>
+                                <td>{{ customers.lastName }}</td>
                                 <td>{{ customers.email }}</td>
-                                <td>{{ customers.PhoneNumber }}</td>
-                                <td>{{ customers.BSN }}</td>
-                                <td>{{ customers.DailyLimit }}</td>
-                                <td>{{ customers.TransferLimit }}</td>
-                                <td>{{ customers.Status }}</td>
+                                <td>{{ customers.phoneNumber }}</td>
+                                <td>{{ customers.bsn }}</td>
+                                <td>{{ customers.dailyLimit }}</td>
+                                <td>{{ customers.transferLimit }}</td>
+                                <td>{{ customers.status }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm me-2" @click="editCustomer(customers.id)">
                                         Edit

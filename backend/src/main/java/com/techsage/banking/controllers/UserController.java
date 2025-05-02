@@ -38,13 +38,13 @@ public class UserController {
     }
 
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
     public List<UserDto> getAllUsers(){
         return userService.getAll();
     }
 
-   @PatchMapping("/softDelete/{accountId}")
-   @PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
+   @PutMapping("/softDelete/{accountId}")
+   //@PreAuthorize("hasRole('EMPLOYEE')|| hasRole('ADMIN')")
    public void softDeleteUser(@PathVariable long accountId) {
        User user = userService.getById(accountId);
        user.setStatus(UserStatus.DELETED);
