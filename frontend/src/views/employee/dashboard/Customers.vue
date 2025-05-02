@@ -13,7 +13,7 @@ async function fetchCustomers() {
     errorMessage.value = "";
 
     try {
-        const response = await axios.get("http://localhost/users/getAll");
+        const response = await axios.get("http://localhost:8080/users/getAll");
         customers.value = response.data;
     } catch (error) {
         const err = error as AxiosError;
@@ -34,7 +34,7 @@ function editCustomer(customerId: number) {
 async function softDeleteCustomer(customerId: number) {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
-            await axios.patch(`http://localhost/users/softDelete/${customerId}`); //patch because soft delete
+            await axios.patch(`http://localhost:8080/users/softDelete/${customerId}`); //patch because soft delete
             fetchCustomers();
         } catch (error) {
             const err = error as AxiosError;
