@@ -76,6 +76,23 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
+    public RegisterResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
+        User user = new User();
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
+        user.setBsn(registerRequest.getBsn());
+        user.setPassword(registerRequest.getPassword());
+
+        User createdUser = this.create(user);
+        RegisterResponseDto response = new RegisterResponseDto();
+        response.setToken(jwtProvider.createToken(createdUser.getEmail(), createdUser.getRoles()));
+
+        return response;
+    }
+
+    @Override
     public UserDto getByEmail(String email) {
         return userRepository.getByEmail(email).map(user -> modelMapper.map(user, UserDto.class)).orElse(null);
     }

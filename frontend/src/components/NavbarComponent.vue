@@ -15,6 +15,11 @@
                         <RouterLink to="/auth/register" class="nav-link" active-class="active">Register</RouterLink>
                     </li>
                 </ul>
+                <ul class="navbar-nav ms-auto" v-else>
+                    <li class="nav-item">
+                        <button class="nav-link" @click="logout">Logout</button>
+                    </li>
+                </ul>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -26,8 +31,14 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { computed } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 
+const router = useRouter();
 const userStore = useUserStore();
 const isAuthenticated = computed(() => userStore.isAuthenticated);
+
+const logout = () => {
+    userStore.logout();
+    router.push('/');
+};
 </script>

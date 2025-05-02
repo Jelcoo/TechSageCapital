@@ -24,4 +24,13 @@ public class AuthController {
             return ResponseEntity.status(403).body(new MessageDto(403, e.getMessage()));
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<BaseDto> register(@RequestBody RegisterRequestDto registerRequest) {
+        try {
+            return ResponseEntity.ok().body(userService.register(registerRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body(new MessageDto(403, e.getMessage()));
+        }
+    }
 }

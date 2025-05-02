@@ -16,6 +16,7 @@ public interface UserService {
     User update(User user);
     void delete(int id);
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;
+    RegisterResponseDto register(RegisterRequestDto registerRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);
     List<UserDto> findByStatus(UserStatus status);
 }

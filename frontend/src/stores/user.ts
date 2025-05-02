@@ -55,6 +55,36 @@ export const useUserStore = defineStore('user', {
                     .catch((error) => reject(error));
             });
         },
+        register(
+            firstName: string,
+            lastName: string,
+            email: string,
+            phoneNumber: string,
+            bsn: string,
+            password: string,
+            turnstileToken: string,
+        ) {
+            return new Promise((resolve, reject) => {
+                axiosClient
+                    .post('/auth/register', {
+                        firstName,
+                        lastName,
+                        email,
+                        phoneNumber,
+                        bsn,
+                        password,
+                        'cf-turnstile-response': turnstileToken,
+                    })
+                    .then((res) => {
+                        this.resetStores();
+                        this.token = res.data.token;
+                        localStorage.setItem('token', res.data.token);
+                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                        resolve(res);
+                    })
+                    .catch((error) => reject(error));
+            });
+        },
         autoLogin() {
             if (!this.token) {
                 return;
