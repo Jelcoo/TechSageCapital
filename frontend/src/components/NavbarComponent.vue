@@ -7,6 +7,14 @@
                         <RouterLink to="/" class="nav-link" active-class="active">Home</RouterLink>
                     </li>
                 </ul>
+                <ul class="navbar-nav ms-auto" v-if="!isAuthenticated">
+                    <li class="nav-item">
+                        <RouterLink to="/auth/login" class="nav-link" active-class="active">Login</RouterLink>
+                    </li>
+                    <li class="nav-item">
+                        <RouterLink to="/auth/register" class="nav-link" active-class="active">Register</RouterLink>
+                    </li>
+                </ul>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -16,5 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+import { computed } from "vue";
 import { RouterLink } from "vue-router";
+
+const userStore = useUserStore();
+const isAuthenticated = computed(() => userStore.isAuthenticated);
 </script>

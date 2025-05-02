@@ -24,7 +24,7 @@ export const useUserStore = defineStore('user', {
     }),
     getters: {
         fullName: (state) => `${state.firstName} ${state.lastName}`,
-        isAuthenticated: (state) => !!state.token,
+        isAuthenticated: (state) => state.token !== null,
     },
     actions: {
         me(): Promise<AxiosResponse<{ user: User }>> {
