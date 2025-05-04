@@ -1,7 +1,6 @@
 package com.techsage.banking.services;
 
 import com.techsage.banking.jwt.*;
-import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
@@ -120,6 +119,14 @@ public class UserServiceJpa implements UserService {
         user.setDailyLimit(approvalRequestDto.getDailyTransferLimit());
         bankAccountService.create(user, BankAccountType.CHECKING, approvalRequestDto.getAbsoluteMinimumBalance(), 0.0);
         bankAccountService.create(user, BankAccountType.SAVINGS, 0, 0.0);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Override
+    public UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        user.setTransferLimit(userLimitsRequestDto.getTransferLimit());
+        user.setDailyLimit(userLimitsRequestDto.getDailyTransferLimit());
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 }

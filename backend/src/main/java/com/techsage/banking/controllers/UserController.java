@@ -1,15 +1,13 @@
 package com.techsage.banking.controllers;
 
-import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
+import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
 import com.techsage.banking.models.enums.*;
-import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.UserService;
 import jakarta.validation.Valid;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.*;
@@ -71,6 +69,19 @@ public class UserController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
+    @PutMapping("{id}/limits")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<BaseDto> updateLimits(@PathVariable long id, @Valid @RequestBody UserLimitsRequestDto userLimitsRequestDto) {
+        try {
+            return ResponseEntity.ok().body(userService.updateLimits(id, userLimitsRequestDto));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }
         catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
