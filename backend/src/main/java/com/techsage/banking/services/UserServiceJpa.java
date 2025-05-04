@@ -117,7 +117,7 @@ public class UserServiceJpa implements UserService {
         user.setStatus(UserStatus.ACTIVE);
         user.setTransferLimit(approvalRequestDto.getTransferLimit());
         user.setDailyLimit(approvalRequestDto.getDailyTransferLimit());
-        bankAccountService.create(user, BankAccountType.CHECKING, approvalRequestDto.getAbsoluteMinimumBalance(), 0.0);
+        bankAccountService.create(user, BankAccountType.CHECKING, 0, 0.0);
         bankAccountService.create(user, BankAccountType.SAVINGS, 0, 0.0);
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }

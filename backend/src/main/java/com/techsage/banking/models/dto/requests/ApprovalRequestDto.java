@@ -6,5 +6,4 @@ import lombok.Data;
 public class ApprovalRequestDto {
     private Double transferLimit;
     private Double dailyTransferLimit;
-    private Integer absoluteMinimumBalance;
 }
