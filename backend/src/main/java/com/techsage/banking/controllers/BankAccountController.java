@@ -3,7 +3,6 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.dto.BankAccountDto;
 import com.techsage.banking.services.interfaces.BankAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,11 +21,6 @@ public class BankAccountController {
     @GetMapping("/getAll")
     public List<BankAccountDto> getBankAccounts() {
         return bankAccountService.getAll();
-    }
-
-    @PostMapping("/create")
-    public void createBankAccount(@RequestBody BankAccount bankAccount) {
-        bankAccountService.create(bankAccount);
     }
 
     @PutMapping("/update")
