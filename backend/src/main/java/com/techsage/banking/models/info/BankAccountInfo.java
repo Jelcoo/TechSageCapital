@@ -16,4 +16,7 @@ public class BankAccountInfo {
     private Double balance;
     private int absoluteMinimumBalance;
     private BankAccountType type;
+    public String getIban() {
+        return iban != null ? iban.toFormattedString() : null;
+    }
 }
