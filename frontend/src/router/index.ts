@@ -17,7 +17,19 @@ const router = createRouter({
         {
             path: '/accountdetails',
             name: 'accountdetails',
-            component: () => import('@/views/customer/AccountDetails.vue'),
+            meta: { requiresAuth: true },
+            children: [
+                {
+                    path: '',
+                    name: 'accountdetails-default',
+                    component: () => import('@/views/customer/AccountDetails.vue'),
+                },
+                {
+                    path: ':id',
+                    name: 'accountdetails-user',
+                    component: () => import('@/views/customer/AccountDetails.vue'),
+                },
+            ],
         },
         {
             path: '/administrationDashboard',
@@ -43,7 +55,7 @@ const router = createRouter({
         },
         {
             path: '/employee',
-            name: 'about',
+            name: 'employee',
             meta: { requiresAuth: true },
             children: [
                 {
@@ -55,6 +67,16 @@ const router = createRouter({
                     path: 'customers-overview',
                     name: 'customers-overview',
                     component: () => import('@/views/employee/CustomerOverview.vue'),
+                },
+                {
+                    path: 'customer/:id/approve',
+                    name: 'customer-details',
+                    component: () => import('@/views/employee/ApproveCustomer.vue'),
+                },
+                {
+                    path: 'customer/:id/limits',
+                    name: 'customer-limits',
+                    component: () => import('@/views/employee/LimitsCustomer.vue'),
                 },
             ],
         },

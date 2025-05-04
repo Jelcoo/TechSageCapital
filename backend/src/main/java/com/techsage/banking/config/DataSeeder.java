@@ -41,20 +41,10 @@ public class DataSeeder implements ApplicationRunner {
         User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.ROLE_CUSTOMER), 100.0,100.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
         userService.create(customer3User);
 
-        Iban customer1CheckingIban = IbanHelper.generateIban();
-        Iban customer1SavingsIban = IbanHelper.generateIban();
-        Iban customer2CheckingIban = IbanHelper.generateIban();
-        Iban customer2SavingsIban = IbanHelper.generateIban();
-
-        BankAccount customer1BankAccount = new BankAccount(null, customer1User, customer1CheckingIban, 100.0, 100, BankAccountType.CHECKING, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(customer1BankAccount);
-        BankAccount customer1SavingsAccount = new BankAccount(null, customer1User, customer1SavingsIban, 3500.0, 100, BankAccountType.SAVINGS, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(customer1SavingsAccount);
-
-        BankAccount customer2BankAccount = new BankAccount(null, customer2User, customer2CheckingIban, 100.0, 100, BankAccountType.CHECKING, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(customer2BankAccount);
-        BankAccount customer2SavingsAccount = new BankAccount(null, customer2User, customer2SavingsIban, 15000.0, 100, BankAccountType.SAVINGS, new ArrayList<>(), new ArrayList<>());
-        bankAccountService.create(customer2SavingsAccount);
+        BankAccount customer1BankAccount = bankAccountService.create(customer1User, BankAccountType.CHECKING, 100, 100.0);
+        BankAccount customer1SavingsAccount = bankAccountService.create(customer1User, BankAccountType.SAVINGS, 0, 3500.0);
+        BankAccount customer2BankAccount = bankAccountService.create(customer2User, BankAccountType.CHECKING, 100, 100.0);
+        BankAccount customer2SavingsAccount = bankAccountService.create(customer2User, BankAccountType.SAVINGS, 0, 15000.0);
 
         createTestTransactions(customer1User, customer1BankAccount, customer2BankAccount, 50.0);
         createTestTransactions(customer1User, customer1SavingsAccount, customer1BankAccount, 500.0);

@@ -222,6 +222,56 @@ paths:
           schema:
             type: integer
             format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLimitsUpdate"
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericMessage"
+  /users/{userId}/limits:
+    put:
+      tags:
+        - users
+      summary: Edit user transaction limits
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to approve
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLimitsUpdate"
       responses:
         default:
           description: successful operation
@@ -683,6 +733,17 @@ components:
         newPassword:
           type: string
           description: User's new password
+    UserLimitsUpdate:
+      type: object
+      properties:
+        transferLimit:
+          type: number
+          format: double
+          description: Maximum amount per single transfer
+        dailyLimit:
+          type: number
+          format: double
+          description: Maximum amount transferable per day
     TransactionDto:
       type: object
       properties:

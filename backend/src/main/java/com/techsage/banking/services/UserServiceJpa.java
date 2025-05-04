@@ -7,6 +7,7 @@ import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.UserRepository;
+import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.*;
@@ -21,13 +22,15 @@ public class UserServiceJpa implements UserService {
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtProvider;
+    private final BankAccountService bankAccountService;
 
 
-    public UserServiceJpa(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtTokenProvider jwtProvider) {
+    public UserServiceJpa(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtTokenProvider jwtProvider, BankAccountService bankAccountService) {
         this.userRepository = userRepository;
         this.modelMapper = new ModelMapper();
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtProvider = jwtProvider;
+        this.bankAccountService = bankAccountService;
     }
 
     @Override
@@ -103,5 +106,27 @@ public class UserServiceJpa implements UserService {
     public List<UserDto> findByStatus(UserStatus status) {
         List<User> users = userRepository.findByStatus(status);
         return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+    }
+
+    @Override
+    public UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        if (user.getStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("User is already approved");
+        }
+        user.setStatus(UserStatus.ACTIVE);
+        user.setTransferLimit(approvalRequestDto.getTransferLimit());
+        user.setDailyLimit(approvalRequestDto.getDailyTransferLimit());
+        bankAccountService.create(user, BankAccountType.CHECKING, 0, 0.0);
+        bankAccountService.create(user, BankAccountType.SAVINGS, 0, 0.0);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Override
+    public UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        user.setTransferLimit(userLimitsRequestDto.getTransferLimit());
+        user.setDailyLimit(userLimitsRequestDto.getDailyTransferLimit());
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 }

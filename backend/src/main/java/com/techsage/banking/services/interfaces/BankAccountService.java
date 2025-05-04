@@ -1,14 +1,18 @@
 package com.techsage.banking.services.interfaces;
 
 import com.techsage.banking.models.BankAccount;
+import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.BankAccountDto;
+import com.techsage.banking.models.enums.BankAccountType;
+import org.iban4j.Iban;
 
 import java.util.List;
 
 public interface BankAccountService {
     List<BankAccountDto> getAll();
     BankAccount getById(long id);
-    BankAccount create(BankAccount bankAccount);
+    BankAccount getByIban(Iban iban);
+    BankAccount create(User user, BankAccountType bankAccountType, int absoluteMinimumBalance, Double balance);
     BankAccount update(BankAccount bankAccount);
     void delete(long id);
 }

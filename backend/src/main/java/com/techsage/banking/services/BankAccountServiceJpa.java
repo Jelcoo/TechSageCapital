@@ -1,11 +1,13 @@
 package com.techsage.banking.services;
 
+import com.techsage.banking.helpers.IbanHelper;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.BankAccountDto;
-import com.techsage.banking.models.dto.UserDto;
+import com.techsage.banking.models.enums.BankAccountType;
 import com.techsage.banking.repositories.BankAccountRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
+import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,25 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount create(BankAccount bankAccount) {
+    public BankAccount getByIban(Iban iban) {
+        return bankAccountRepository.findByIban(iban);
+    }
+
+    @Override
+    public BankAccount create(User user, BankAccountType bankAccountType, int absoluteMinimumBalance, Double balance) {
+        BankAccount bankAccount = new BankAccount();
+        boolean exists = false;
+        do {
+            Iban iban = IbanHelper.generateIban();
+            if (this.getByIban(iban) == null) {
+                bankAccount.setIban(iban);
+                exists = true;
+            }
+        } while (!exists);
+        bankAccount.setUser(user);
+        bankAccount.setType(bankAccountType);
+        bankAccount.setAbsoluteMinimumBalance(absoluteMinimumBalance);
+        bankAccount.setBalance(balance);
         return bankAccountRepository.save(bankAccount);
     }
 

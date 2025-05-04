@@ -5,7 +5,7 @@
                 <Field :name :type="type ?? 'text'" class="form-control" :class="{
                     disabled: disabled,
                     'opacity-50': disabled,
-                }" :placeholder="placeholder ?? label.toLowerCase()" :disabled="disabled" />
+                }" :placeholder="placeholder ?? label.toLowerCase()" :modelValue="value" :disabled="disabled" />
                 <label :for="name">{{ label }}</label>
             </div>
         </div>
@@ -21,6 +21,7 @@ defineProps<{
     label: string;
     type?: string;
     placeholder?: string;
+    value?: number;
     disabled?: boolean;
 }>();
 </script>

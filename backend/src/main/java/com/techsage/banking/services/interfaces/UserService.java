@@ -19,4 +19,6 @@ public interface UserService {
     RegisterResponseDto register(RegisterRequestDto registerRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);
     List<UserDto> findByStatus(UserStatus status);
+    UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) throws IllegalArgumentException;
+    UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException;
 }
