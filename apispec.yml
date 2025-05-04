@@ -222,13 +222,19 @@ paths:
           schema:
             type: integer
             format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLimitsUpdate"
       responses:
         default:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GenericMessage"
+                $ref: "#/components/schemas/UserDto"
         "404":
           description: User not found
           content:
