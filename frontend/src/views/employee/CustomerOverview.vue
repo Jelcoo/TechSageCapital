@@ -89,13 +89,20 @@ onMounted(() => {
                                 <td>{{ customer.status }}</td>
                                 <td>
                                     <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
-                                        <button class="btn btn-primary">Edit</button>
+                                        <button class="btn btn-primary">
+                                            <RouterLink :to="`/accountdetails/${customer.id}`"
+                                                class="text-white text-decoration-none">Details</RouterLink>
+                                        </button>
                                         <button class="btn btn-danger"
                                             @click="softDeleteCustomer(customer.id)">Delete</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
-                                        <button class="btn btn-primary">Approve</button>
-                                        <button class="btn btn-danger">Reject</button>
+                                        <button class="btn btn-primary">
+                                            <RouterLink :to="`/employee/customer/${customer.id}/approve`"
+                                                class="text-white text-decoration-none">Approve</RouterLink>
+                                        </button>
+                                        <button class="btn btn-danger"
+                                            @click="softDeleteCustomer(customer.id)">Reject</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
                                         <button class="btn btn-primary">Reinstate</button>

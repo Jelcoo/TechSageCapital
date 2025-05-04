@@ -19,8 +19,8 @@ async function fetchUser() {
     errorMessage.value = "";
     try {
         let userId = Store.id;
-        if (useRoute().query.id) {
-            userId = Number(useRoute().query.id);
+        if (useRoute().params.id) {
+            userId = Number(useRoute().params.id);
         }
         const response = await axiosClient.get<User>(`/users/getById/${userId}`);
         user.value = response.data;
@@ -117,11 +117,17 @@ onMounted(() => {
                         <button class="btn btn-primary me-2" @click="editAccount()">
                             Edit
                         </button>
+                        <button class="btn btn-primary me-2"
+                            v-if="Store.roles.includes(Role.EMPLOYEE) || Store.roles.includes(Role.ADMIN)">
+                            <RouterLink :to="`/employee/customer/${user.id}/limits`"
+                                class="text-white text-decoration-none">Edit user limits</RouterLink>
+                        </button>
                         <button class="btn btn-danger"
                             v-if="Store.roles.includes(Role.EMPLOYEE) || Store.roles.includes(Role.ADMIN)"
                             @click="softDeleteAccount()">
                             Delete
                         </button>
+
                     </div>
 
                     <h2>Bank Account Details</h2>
