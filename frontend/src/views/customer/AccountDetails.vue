@@ -37,25 +37,25 @@ async function fetchUser() {
 }
 
 function editAccount() {
-    console.log("Edit customer with ID:", Store.id); //debug line
-    //go to edit page
+	console.log("Edit customer with ID:", Store.id); //debug line
+	//go to edit page
 }
 
 async function softDeleteAccount() {
-    if (confirm("Are you sure you want to delete this customer?")) {
-        try {
-            const Id = Store.id;
-            await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
-        } catch (error) {
-            errorMessage.value = (error as AxiosError).response
-                ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-                : "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
-        }
-    }
+	if (confirm("Are you sure you want to delete this customer?")) {
+		try {
+			const Id = Store.id;
+			await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
+		} catch (error) {
+			errorMessage.value = (error as AxiosError).response
+				? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+				: "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
+		}
+	}
 }
 
 onMounted(() => {
-    fetchUser();
+	fetchUser();
 });
 </script>
 
@@ -64,16 +64,15 @@ onMounted(() => {
         <div class="container py-5">
             <h1 class="display-4 fw-bold text-left mb-5">Account details</h1>
 
-            <div v-if="loading" class="text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
+			<div v-if="loading" class="text-center">
+				<div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
 
-            <div v-if="errorMessage" class="alert alert-danger text-center">
-                {{ errorMessage }}
-            </div>
-
+			<div v-if="errorMessage" class="alert alert-danger text-center">
+				{{ errorMessage }}
+			</div>
             <h2>User Details</h2>
             <div class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
