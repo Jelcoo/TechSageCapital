@@ -6,6 +6,27 @@
                     <li class="nav-item">
                         <RouterLink to="/" class="nav-link" active-class="active">Home</RouterLink>
                     </li>
+                    <li class="nav-item dropdown" v-if="isAuthenticated">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Employee
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <RouterLink to="/employee" class="dropdown-item" exact-active-class="active">Home
+                                </RouterLink>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <RouterLink to="/employee/customers-overview" class="dropdown-item"
+                                    active-class="active">
+                                    Customer Overview</RouterLink>
+                            </li>
+                        </ul>
+                    </li>
+
                 </ul>
                 <ul class="navbar-nav ms-auto" v-if="!isAuthenticated">
                     <li class="nav-item">

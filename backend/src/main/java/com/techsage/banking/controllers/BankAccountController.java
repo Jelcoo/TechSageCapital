@@ -3,11 +3,13 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.dto.BankAccountDto;
 import com.techsage.banking.services.interfaces.BankAccountService;
+import io.swagger.v3.oas.annotations.tags.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/bankAccounts")
+@Tag(name = "Bank Accounts", description = "Endpoints for bank account management")
 public class BankAccountController {
     private final BankAccountService bankAccountService;
 
