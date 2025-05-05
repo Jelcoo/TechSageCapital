@@ -42,8 +42,7 @@ function editAccount() {
 async function softDeleteAccount() {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
-            const Id = userStore.id;
-            await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
+            await axiosClient.delete(`/users/${userStore.id}/softDelete`);
         } catch (error) {
             errorMessage.value = (error as AxiosError).response
                 ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."

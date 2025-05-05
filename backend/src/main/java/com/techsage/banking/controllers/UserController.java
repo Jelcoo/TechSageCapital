@@ -8,8 +8,7 @@ import com.techsage.banking.models.dto.responses.MessageDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.validation.Valid;
@@ -32,38 +31,127 @@ public class UserController extends BaseController {
         this.userService = userService;
     }
 
+    @Operation(
+            summary = "Current user",
+            description = "Retrieves the current authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @GetMapping("/me")
     public UserDto me() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getByEmail(authentication.getName());
     }
 
-    @GetMapping
+    @Operation(
+            summary = "Get all users",
+            description = "Retrieves all users with a specific status.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @GetMapping("/")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findByStatus(status);
     }
 
-    @GetMapping("/accountdetails/{accountId}")
-    public UserDto get(@PathVariable long accountId) {
-        return userService.getById(accountId);
-    }
-
-    @GetMapping("/getAll")
+    @Operation(
+            summary = "Soft delete user",
+            description = "Soft deletes a user by their ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful deletion",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @DeleteMapping("/{id}/softDelete")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<UserDto> getAllUsers() {
-        return userService.getAll();
+    public void softDeleteUser(@PathVariable long id) {
+        userService.softDelete(id);
     }
 
-    @PutMapping("/softDelete/{accountId}")
+    @Operation(
+            summary = "Get user by ID",
+            description = "Retrieves a user by their ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public void softDeleteUser(@PathVariable long accountId) {
-        userService.softDelete(accountId);
-    }
-
-    @GetMapping("/getById/{ID}")
-    public UserDto getById(@PathVariable long ID) {
-        return userService.getById(ID);
+    public UserDto getById(@PathVariable long id) {
+        return userService.getById(id);
     }
 
     @Operation(
@@ -92,7 +180,7 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PostMapping("{id}/approve")
+    @PostMapping("/{id}/approve")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> approveUser(@PathVariable long id, @Valid @RequestBody ApprovalRequestDto approvalRequestDto) {
         try {
@@ -133,7 +221,7 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("{id}/limits")
+    @PutMapping("/{id}/limits")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> updateLimits(@PathVariable long id, @Valid @RequestBody UserLimitsRequestDto userLimitsRequestDto) {
         try {
