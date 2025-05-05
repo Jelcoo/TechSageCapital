@@ -6,7 +6,7 @@
                     <li class="nav-item">
                         <RouterLink to="/" class="nav-link" active-class="active">Home</RouterLink>
                     </li>
-                    <li class="nav-item dropdown" v-if="isAuthenticated">
+                    <li class="nav-item dropdown" v-if="isAuthenticated && userStore.roles.includes(Role.EMPLOYEE)">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Employee
@@ -53,6 +53,7 @@
 import { useUserStore } from "@/stores/user";
 import { computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
+import { Role, type User } from '@/types';
 
 const router = useRouter();
 const userStore = useUserStore();
