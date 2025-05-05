@@ -91,6 +91,7 @@ export const useUserStore = defineStore('user', {
         autoLogin() {
             return new Promise((resolve, reject) => {
                 if (!this.token) {
+                    resolve(null);
                     return;
                 }
 
