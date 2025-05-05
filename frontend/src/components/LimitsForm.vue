@@ -54,7 +54,7 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        const response = await axiosClient.get<User>(`/users/getById/${props.id}`);
+        const response = await axiosClient.get<User>(`/users/${props.id}`);
         user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";

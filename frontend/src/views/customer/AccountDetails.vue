@@ -20,7 +20,7 @@ async function fetchUser() {
         if (useRoute().params.id) {
             userId.value = Number(useRoute().params.id);
         }
-        const response = await axiosClient.get<User>(`/users/getById/${userId.value}`);
+        const response = await axiosClient.get<User>(`/users/${userId.value}`);
         user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
