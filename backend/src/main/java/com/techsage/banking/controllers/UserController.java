@@ -4,7 +4,6 @@ import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
-import com.techsage.banking.models.dto.responses.LoginResponseDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Users", description = "Endpoints for user management")
 public class UserController extends BaseController {
     private final UserService userService;
 
