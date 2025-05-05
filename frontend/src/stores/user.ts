@@ -89,22 +89,26 @@ export const useUserStore = defineStore('user', {
             });
         },
         autoLogin() {
-            if (!this.token) {
-                return;
-            }
+            return new Promise((resolve, reject) => {
+                if (!this.token) {
+                    return;
+                }
 
-            axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
 
-            this.me()
-                .then((res) => {
-                    this.resetStores();
-                    this.setUserResponse(res);
-                })
-                .catch((error) => {
-                    if (error.response.status === 401) {
-                        this.logout();
-                    }
-                });
+                this.me()
+                    .then((res) => {
+                        this.resetStores();
+                        this.setUserResponse(res);
+                        resolve(res);
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 401) {
+                            this.logout();
+                        }
+                        reject(error);
+                    });
+            });
         },
         setUserResponse(res: AxiosResponse) {
             this.id = res.data.id;

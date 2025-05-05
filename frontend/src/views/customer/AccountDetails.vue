@@ -3,14 +3,13 @@ import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient from "@/axios";
 import type { User } from "../../../src/types/user";
-import type { BankAccount } from "../../../src/types/bankAccount";
 import { Role } from "../../../src/types/user";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 
-const Store = useUserStore();
+const userStore = useUserStore();
 const user = ref<User | null>(null);
-const BankAccount = ref<BankAccount | null>(null);
+const userId = ref(userStore.id);
 const errorMessage = ref("");
 const loading = ref(false);
 
@@ -18,11 +17,10 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        let userId = Store.id;
         if (useRoute().params.id) {
-            userId = Number(useRoute().params.id);
+            userId.value = Number(useRoute().params.id);
         }
-        const response = await axiosClient.get<User>(`/users/getById/${userId}`);
+        const response = await axiosClient.get<User>(`/users/getById/${userId.value}`);
         user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
@@ -37,25 +35,25 @@ async function fetchUser() {
 }
 
 function editAccount() {
-	console.log("Edit customer with ID:", Store.id); //debug line
-	//go to edit page
+    console.log("Edit customer with ID:", userStore.id); //debug line
+    //go to edit page
 }
 
 async function softDeleteAccount() {
-	if (confirm("Are you sure you want to delete this customer?")) {
-		try {
-			const Id = Store.id;
-			await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
-		} catch (error) {
-			errorMessage.value = (error as AxiosError).response
-				? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-				: "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
-		}
-	}
+    if (confirm("Are you sure you want to delete this customer?")) {
+        try {
+            const Id = userStore.id;
+            await axiosClient.put(`/users/softDelete/${Id}`); //patch because soft delete
+        } catch (error) {
+            errorMessage.value = (error as AxiosError).response
+                ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+                : "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
+        }
+    }
 }
 
 onMounted(() => {
-	fetchUser();
+    fetchUser();
 });
 </script>
 
@@ -64,15 +62,15 @@ onMounted(() => {
         <div class="container py-5">
             <h1 class="display-4 fw-bold text-left mb-5">Account details</h1>
 
-			<div v-if="loading" class="text-center">
-				<div class="spinner-border text-primary" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			</div>
+            <div v-if="loading" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
 
-			<div v-if="errorMessage" class="alert alert-danger text-center">
-				{{ errorMessage }}
-			</div>
+            <div v-if="errorMessage" class="alert alert-danger text-center">
+                {{ errorMessage }}
+            </div>
             <h2>User Details</h2>
             <div class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
@@ -117,12 +115,12 @@ onMounted(() => {
                             Edit
                         </button>
                         <button class="btn btn-primary me-2"
-                            v-if="Store.roles.includes(Role.EMPLOYEE) || Store.roles.includes(Role.ADMIN)">
+                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
                             <RouterLink :to="`/employee/customer/${user.id}/limits`"
                                 class="text-white text-decoration-none">Edit user limits</RouterLink>
                         </button>
                         <button class="btn btn-danger"
-                            v-if="Store.roles.includes(Role.EMPLOYEE) || Store.roles.includes(Role.ADMIN)"
+                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                             @click="softDeleteAccount()">
                             Delete
                         </button>
