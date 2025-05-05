@@ -53,7 +53,7 @@
 import { useUserStore } from "@/stores/user";
 import { computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import { Role, type User } from '@/types';
+import { Role } from '@/types';
 
 const router = useRouter();
 const userStore = useUserStore();
