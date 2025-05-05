@@ -84,7 +84,7 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
         return userService.findByStatus(status);
