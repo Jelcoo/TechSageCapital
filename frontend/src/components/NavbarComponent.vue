@@ -2,6 +2,10 @@
     <nav class="navbar navbar-expand-lg shadow-sm p-3">
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarNav">
+                <RouterLink to="/" class="nav-link" active-class="active">
+                    <img class="nav-logo" alt="TechSage Capital logo"
+                        src="/images/TechSageCapital-Logo-Transparent-cropped.png" />
+                </RouterLink>
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <RouterLink to="/" class="nav-link" active-class="active">Home</RouterLink>

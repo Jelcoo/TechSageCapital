@@ -15,27 +15,37 @@ const userStore = useUserStore();
                     v-if="userStore.token == null">Sign-up
                 </RouterLink>
             </div>
-            <div class="product-device box-shadow d-none d-md-block"></div>
-            <div class="product-device product-device-2 box-shadow d-none d-md-block"></div>
         </div>
-        <div class="d-md-flex flex-md-equal w-100 my-md-3 m-md-3 pl-md-3">
-            <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+        <div class="d-md-flex flex-md-equal w-100 my-md-3 m-md-3 pl-md-3 gap-3 row">
+            <div class="bg-dark pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden col">
                 <div class="my-3 py-3">
                     <h2 class="display-5">Innovation you can rely on</h2>
                     <p class="lead">We combine the latest in fintech with a commitment to long-term relationships, so
                         you get a banking experience that’s fast, intuitive, and built on trust.</p>
                 </div>
-                <div class="bg-light box-shadow mx-auto"
-                    style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
             </div>
-            <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden text-dark">
+            <div class="bg-light pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden text-dark col">
                 <div class="my-3 p-3">
                     <h2 class="display-5">Tech-Powered. Human-Centered.</h2>
                     <p class="lead">Our intuitive technology is designed to serve you—with guidance from real financial
                         experts when you need it.</p>
                 </div>
-                <div class="bg-dark box-shadow mx-auto"
-                    style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
+            </div>
+        </div>
+        <div class="d-md-flex flex-md-equal w-100 my-md-3 m-md-3 pl-md-3 gap-3 row">
+            <div class="bg-light pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden text-dark col">
+                <div class="my-3 p-3">
+                    <h2 class="display-5">Always On. Always Secure.</h2>
+                    <p class="lead">Access your finances anytime, anywhere—with enterprise-grade security protecting
+                        every move.</p>
+                </div>
+            </div>
+            <div class="bg-dark pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden col">
+                <div class="my-3 py-3">
+                    <h2 class="display-5">Clarity in Every Click</h2>
+                    <p class="lead">Say goodbye to hidden fees and confusing interfaces. Say hello to clear, honest
+                        banking.</p>
+                </div>
             </div>
         </div>
     </main>
