@@ -149,7 +149,7 @@ public class UserController extends BaseController {
             }
     )
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('EMPLOYEE')" + " or hasRole('CUSTOMER')")
     public UserDto getById(@PathVariable long id) {
         return userService.getById(id);
     }
