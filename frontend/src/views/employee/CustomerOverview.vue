@@ -29,11 +29,11 @@ async function softDeleteCustomer(customerId: number) {
     }
 }
 
-async function reinstate(customerId: number, currentStatus: AccountStatus) {
+async function reinstate(customerId: number, dailyLimit: number, transferLimit: number) {
     if (confirm("Are you sure you want to reinstate this customer?")) {
         try {
             var status = AccountStatus.ACTIVE;
-            if (currentStatus === AccountStatus.PENDING) {
+            if (dailyLimit === 0 || transferLimit === 0) {
                 status = AccountStatus.PENDING;
             }
             await axiosClient.put(`/users/${customerId}/updateStatus/${status}`);
@@ -123,7 +123,7 @@ onMounted(() => {
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
                                         <button class="btn btn-primary"
-                                            @click="reinstate(customer.id, customer.status)">Reinstate</button>
+                                            @click="reinstate(customer.id, customer.dailyLimit, customer.transferLimit)">Reinstate</button>
                                     </div>
                                 </td>
                             </tr>
