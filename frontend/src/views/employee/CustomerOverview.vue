@@ -19,7 +19,6 @@ async function softDeleteCustomer(customerId: number) {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
             await axiosClient.delete(`/users/${customerId}/softDelete`);
-
             fetchCustomers();
         } catch (error) {
             const err = error as AxiosError;
