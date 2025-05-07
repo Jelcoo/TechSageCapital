@@ -233,4 +233,43 @@ public class UserController extends BaseController {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
+
+    @Operation(
+            summary = "Edit user status",
+            description = "Approves a user and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}/updateStatus/{status}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<BaseDto> updateStatus(@PathVariable long id, @PathVariable UserStatus status) {
+        try{
+            return ResponseEntity.ok().body(userService.updateStatus(id, status));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
 }

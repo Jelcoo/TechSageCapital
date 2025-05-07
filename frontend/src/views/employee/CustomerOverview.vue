@@ -33,12 +33,16 @@ async function softDeleteCustomer(customerId: number) {
 async function reinstate(customerId: number, dailyLimit: number, transferLimit: number) {
     if (confirm("Are you sure you want to reinstate this customer?")) {
         try {
+            var status = AccountStatus.ACTIVE;
             if (dailyLimit <= 0 || transferLimit <= 0) {
-                await axiosClient.post(`/users/${customerId}/pending`);
+                status = AccountStatus.PENDING;
             }
-            else {
-                await axiosClient.post(`/users/${customerId}/reinstate`);
-            }
+            await axiosClient.put(`/users/${customerId}/updateStatus/${status}`, {
+                dailyLimit: dailyLimit,
+                transferLimit: transferLimit,
+            });
+
+
             fetchCustomers();
         } catch (error) {
             const err = error as AxiosError;

@@ -68,6 +68,15 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
+    public UserDto updateStatus(long id, UserStatus status){
+        User user = userRepository.findById(id).get();
+        user.setStatus(status);
+        userRepository.save(user);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+
+    @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
         Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
 
