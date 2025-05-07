@@ -43,3 +43,19 @@ body{
     margin: 0 10px;
     background-color: white;
 }
+
+.head-bg{
+    background-color: #1a2637;
+}
+
+.bright-bg{
+    background-color: #e1eaf1;
+}
+
+.dark-bg{
+    background-color: #1a2637;
+}
+
+.sign-up-btn{
+    color:white;
+}
