@@ -30,6 +30,25 @@ async function softDeleteCustomer(customerId: number) {
     }
 }
 
+async function reinstate(customerId: number, dailyLimit: number, transferLimit: number) {
+    if (confirm("Are you sure you want to reinstate this customer?")) {
+        try {
+            if (dailyLimit <= 0 || transferLimit <= 0) {
+                await axiosClient.post(`/users/${customerId}/pending`);
+            }
+            else {
+                await axiosClient.post(`/users/${customerId}/reinstate`);
+            }
+            fetchCustomers();
+        } catch (error) {
+            const err = error as AxiosError;
+            errorMessage.value = err.response
+                ? (err.response.data as { message: string }).message
+                : "An error occurred while reinstating the customer. " + err.message; // remove err.message later is a debugging line
+        }
+    }
+}
+
 onMounted(() => {
     fetchCustomers();
 });
@@ -105,7 +124,8 @@ onMounted(() => {
                                             @click="softDeleteCustomer(customer.id)">Reject</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
-                                        <button class="btn btn-primary">Reinstate</button>
+                                        <button class="btn btn-primary"
+                                            @click="reinstate(customer.id, customer.dailyLimit, customer.transferLimit)">Reinstate</button>
                                     </div>
                                 </td>
                             </tr>
