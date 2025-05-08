@@ -68,9 +68,12 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public UserDto updateStatus(long id, UserStatus status){
+    public UserDto reinstateUser(long id){
         User user = userRepository.findById(id).get();
-        user.setStatus(status);
+        user.setStatus(UserStatus.ACTIVE);
+        if (user.getDailyLimit()<= 0 || user.getTransferLimit() <= 0) {
+            user.setStatus(UserStatus.PENDING);
+        }
         userRepository.save(user);
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }

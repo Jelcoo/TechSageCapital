@@ -15,7 +15,7 @@ public interface UserService {
     User create(User user);
     User update(User user);
     void softDelete(long id);
-    UserDto updateStatus(long id, UserStatus status);
+    UserDto reinstateUser(long id);
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;
     RegisterResponseDto register(RegisterRequestDto registerRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);

@@ -260,11 +260,11 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("/{id}/updateStatus/{status}")
+    @PutMapping("/{id}/reinstate")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> updateStatus(@PathVariable long id, @PathVariable UserStatus status) {
+    public ResponseEntity<BaseDto> reinstateUser(@PathVariable long id) {
         try{
-            return ResponseEntity.ok().body(userService.updateStatus(id, status));
+            return ResponseEntity.ok().body(userService.reinstateUser(id));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }
