@@ -7,7 +7,7 @@
                     <h1 class="h3 fw-normal">Sign in</h1>
                     <p class="text-body-secondary">Please sign in with your credentials.</p>
 
-                    <VeeForm v-slot="{ handleSubmit }" :validation-schema="validationSchema" as="div">
+                    <VeeForm v-slot="{ handleSubmit }" as="div">
                         <form @submit="handleSubmit($event, onSubmit)">
                             <FormInput name="email" label="Email" type="text" placeholder="Email address" />
 
@@ -28,15 +28,9 @@
 import FormInput from '@/components/forms/FormInput.vue';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { ref, useTemplateRef } from 'vue';
-import * as yup from 'yup';
 import VueTurnstile from 'vue-turnstile';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
-
-const validationSchema = yup.object({
-    email: yup.string().required().email(),
-    password: yup.string().required(),
-});
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -53,7 +47,9 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
         })
         .catch((error) => {
             if (error.response.data.message) {
-                actions.setErrors({ password: error.response.data.message });
+                const fieldNames = Object.keys(values);
+                const lastField = fieldNames[fieldNames.length - 1];
+                actions.setErrors({ [lastField]: error.response.data.message });
             } else {
                 actions.setErrors(error.response.data);
             }

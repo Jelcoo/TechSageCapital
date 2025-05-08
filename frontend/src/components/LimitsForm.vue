@@ -7,7 +7,7 @@
                     <h1 class="h3 fw-normal">{{ props.header }}</h1>
                     <p class="text-body-secondary">Please set the limits of this customer</p>
 
-                    <VeeForm v-slot="{ handleSubmit }" :validation-schema="validationSchema" as="div">
+                    <VeeForm v-slot="{ handleSubmit }" as="div">
                         <form @submit="handleSubmit($event, onSubmit)">
                             <FormInput name="transferLimit" label="transfer limit" type="number" placeholder="100.00"
                                 :value="user?.bankAccounts ? user.transferLimit : 0" />
@@ -28,8 +28,7 @@ import type { User } from '@/types';
 import type { AxiosError } from 'axios';
 import { onMounted, ref } from 'vue';
 import FormInput from '@/components/forms/FormInput.vue';
-import { Form as VeeForm, type GenericObject } from 'vee-validate';
-import * as yup from 'yup';
+import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 
 const errorMessage = ref("");
 const loading = ref(false);
@@ -68,13 +67,8 @@ async function fetchUser() {
     }
 }
 
-const validationSchema = yup.object({
-    transferLimit: yup.number().required().min(0).max(1000000),
-    dailyTransferLimit: yup.number().required().min(0).max(1000000),
-});
-
-const onSubmit = (values: GenericObject) => {
-    emits('submit', values);
+const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
+    emits('submit', values, actions);
 };
 
 onMounted(() => {

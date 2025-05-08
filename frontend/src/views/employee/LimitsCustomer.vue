@@ -1,8 +1,5 @@
 <template>
     <main>
-        <div v-if="errorMessage" class="alert alert-danger text-center">
-            {{ errorMessage }}
-        </div>
         <LimitsForm :id header="Set Customer Limits" button="Update Limits" @submit="updateLimits" />
     </main>
 </template>
@@ -10,29 +7,25 @@
 <script setup lang="ts">
 import axiosClient from '@/axios';
 import LimitsForm from '@/components/LimitsForm.vue';
-import type { AxiosError } from 'axios';
-import type { GenericObject } from 'vee-validate';
-import { ref } from 'vue';
+import type { GenericObject, SubmissionContext } from 'vee-validate';
 import { useRoute, useRouter } from 'vue-router';
 
 const id = Number(useRoute().params.id);
-const errorMessage = ref('');
 const router = useRouter();
 
-
-function updateLimits(values: GenericObject) {
-    try {
-        axiosClient.put(`/users/${id}/limits`, values).then(({ status }) => {
-            if (status === 200) {
-                router.back();
-            }
+function updateLimits(values: GenericObject, actions: SubmissionContext) {
+    axiosClient.put(`/users/${id}/limits`, values)
+        .then(() => {
+            router.back();
         })
-    } catch (error) {
-        errorMessage.value = (error as AxiosError).response
-            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while approving the customer. " + (error as AxiosError).message;
-    }
+        .catch((error) => {
+            if (error.response.data.message) {
+                const fieldNames = Object.keys(values);
+                const lastField = fieldNames[fieldNames.length - 1];
+                actions.setErrors({ [lastField]: error.response.data.message });
+            } else {
+                actions.setErrors(error.response.data);
+            }
+        });
 }
 </script>
-
-<style lang="scss" scoped></style>

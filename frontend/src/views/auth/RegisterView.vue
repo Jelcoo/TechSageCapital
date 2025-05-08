@@ -67,7 +67,9 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
         })
         .catch((error) => {
             if (error.response.data.message) {
-                actions.setErrors({ password: error.response.data.message });
+                const fieldNames = Object.keys(values);
+                const lastField = fieldNames[fieldNames.length - 1];
+                actions.setErrors({ [lastField]: error.response.data.message });
             } else {
                 actions.setErrors(error.response.data);
             }
