@@ -86,17 +86,7 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        AuthResponseDto response = new AuthResponseDto();
-        response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
-        response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
-
-        // Store refresh token in user entity
-        User userEntity = user.get();
-        userEntity.setRefreshToken(response.getRefreshToken());
-        userEntity.setRefreshTokenCreatedAt(LocalDateTime.now());
-        userRepository.save(userEntity);
-
-        return response;
+        return this.setUserJwt(user.get());
     }
 
     @Override
@@ -113,17 +103,7 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid refresh token");
         }
 
-        AuthResponseDto response = new AuthResponseDto();
-        response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
-        response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
-
-        // Update refresh token in user entity
-        User userEntity = user.get();
-        userEntity.setRefreshToken(response.getRefreshToken());
-        userEntity.setRefreshTokenCreatedAt(LocalDateTime.now());
-        userRepository.save(userEntity);
-
-        return response;
+        return this.setUserJwt(user.get());
     }
 
     @Override
@@ -137,14 +117,19 @@ public class UserServiceJpa implements UserService {
         user.setPassword(registerRequest.getPassword());
 
         User createdUser = this.create(user);
+
+        return this.setUserJwt(createdUser);
+    }
+
+    private AuthResponseDto setUserJwt(User user) {
         AuthResponseDto response = new AuthResponseDto();
-        response.setAccessToken(jwtProvider.createAccessToken(createdUser.getEmail(), createdUser.getRoles()));
-        response.setRefreshToken(jwtProvider.createRefreshToken(createdUser.getEmail()));
+        response.setAccessToken(jwtProvider.createAccessToken(user.getEmail(), user.getRoles()));
+        response.setRefreshToken(jwtProvider.createRefreshToken(user.getEmail()));
 
         // Store refresh token in user entity
-        createdUser.setRefreshToken(response.getRefreshToken());
-        createdUser.setRefreshTokenCreatedAt(LocalDateTime.now());
-        userRepository.save(createdUser);
+        user.setRefreshToken(response.getRefreshToken());
+        user.setRefreshTokenCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
         return response;
     }
