@@ -15,8 +15,8 @@ import java.util.*;
 public class JwtTokenProvider {
     private final JwtKeyProvider keyProvider;
     private final UserDetailsServiceJpa userDetailsService;
-    private static final long ACCESS_TOKEN_VALIDITY = 3600 * 1000; // 1 hour
-    private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 3600 * 1000; // 30 days
+    private static final long ACCESS_TOKEN_VALIDITY = 3600 * 1000L; // 1 hour
+    private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 3600 * 1000L; // 30 days
 
     public JwtTokenProvider(JwtKeyProvider keyProvider, UserDetailsServiceJpa userDetailsService) {
         this.keyProvider = keyProvider;
