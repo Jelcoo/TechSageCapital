@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import axiosClient from '@/axios';
 import LimitsForm from '@/components/LimitsForm.vue';
+import { processFormError } from '@/utils';
 import type { GenericObject, SubmissionContext } from 'vee-validate';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -18,14 +19,6 @@ function approveCustomer(values: GenericObject, actions: SubmissionContext) {
         .then(() => {
             router.push({ path: '/employee/customers-overview' });
         })
-        .catch((error) => {
-            if (error.response.data.message) {
-                const fieldNames = Object.keys(values);
-                const lastField = fieldNames[fieldNames.length - 1];
-                actions.setErrors({ [lastField]: error.response.data.message });
-            } else {
-                actions.setErrors(error.response.data);
-            }
-        });
+        .catch((error) => processFormError(error, values, actions));
 }
 </script>

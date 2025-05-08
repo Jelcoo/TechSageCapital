@@ -12,7 +12,7 @@ const userStore = useUserStore();
                 <h1 class="display-4 font-weight-normal">TechSage Capital</h1>
                 <p class="lead font-weight-normal">Modern Banking. Timeless Trust.</p>
                 <RouterLink to="/auth/register" class="btn btn-info text-white sign-up-btn" active-class="active"
-                    v-if="userStore.token == null">Sign-up
+                    v-if="userStore.accessToken == null">Sign-up
                 </RouterLink>
             </div>
         </div>
