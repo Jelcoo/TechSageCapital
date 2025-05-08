@@ -1,5 +1,6 @@
 package com.techsage.banking.services;
 
+import com.techsage.banking.exceptions.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -16,7 +17,7 @@ public class TurnstileService {
 
     private static final String VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
-    public boolean verifyToken(String token) {
+    public void verifyToken(String token) throws TurnstileFailedException {
         RestTemplate restTemplate = new RestTemplate();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("secret", secretKey);
@@ -28,7 +29,9 @@ public class TurnstileService {
         ResponseEntity<TurnstileResponse> response = restTemplate.postForEntity(
                 VERIFY_URL, request, TurnstileResponse.class);
 
-        return response.getBody() != null && response.getBody().isSuccess();
+        if (response.getBody() == null || !response.getBody().isSuccess()) {
+            throw new TurnstileFailedException();
+        }
     }
 
     @Data
