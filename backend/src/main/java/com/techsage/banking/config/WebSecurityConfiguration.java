@@ -1,6 +1,5 @@
 package com.techsage.banking.config;
 
-import com.techsage.banking.filter.TurnstileFilter;
 import com.techsage.banking.jwt.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.method.configuration.*;
@@ -19,11 +18,9 @@ import java.util.*;
 @EnableMethodSecurity
 public class WebSecurityConfiguration {
     private final JwtFilter jwtFilter;
-    private final TurnstileFilter turnstileFilter;
 
-    public WebSecurityConfiguration(JwtFilter jwtFilter, TurnstileFilter turnstileFilter) {
+    public WebSecurityConfiguration(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-        this.turnstileFilter = turnstileFilter;
     }
 
     @Bean
@@ -31,7 +28,6 @@ public class WebSecurityConfiguration {
         httpSecurity.csrf(csrf -> csrf.disable());
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.addFilterBefore(turnstileFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 

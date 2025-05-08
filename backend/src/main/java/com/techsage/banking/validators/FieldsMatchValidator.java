@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.lang.reflect.Field;
+import java.util.*;
 
 public class FieldsMatchValidator implements ConstraintValidator<FieldsMatch, Object> {
 
@@ -29,7 +30,7 @@ public class FieldsMatchValidator implements ConstraintValidator<FieldsMatch, Ob
             Object firstValue = firstField.get(value);
             Object secondValue = secondField.get(value);
 
-            boolean valid = firstValue == null ? secondValue == null : firstValue.equals(secondValue);
+            boolean valid = Objects.equals(firstValue, secondValue);
             if (!valid) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(message)

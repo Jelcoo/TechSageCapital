@@ -8,4 +8,5 @@ jwt.key-store=inholland.p12
 jwt.key-store-password=
 jwt.key-alias=inholland
 
-turnstile.secret-key=1x0000000000000000000000000000000AA
+ds.cf.turnstile.sitekey=1x00000000000000000000AA
+ds.cf.turnstile.secret=1x0000000000000000000000000000000AA
