@@ -1,7 +1,7 @@
 package com.techsage.banking.config;
 
 import com.techsage.banking.filter.TurnstileFilter;
-import com.techsage.banking.jwt.*;
+import com.techsage.banking.filter.jwt.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.method.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
