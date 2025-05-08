@@ -32,7 +32,7 @@ async function softDeleteCustomer(customerId: number) {
 async function reinstate(customerId: number, dailyLimit: number, transferLimit: number) {
     if (confirm("Are you sure you want to reinstate this customer?")) {
         try {
-            var status = AccountStatus.ACTIVE;
+            let status = AccountStatus.ACTIVE;
             if (dailyLimit === 0 || transferLimit === 0) {
                 status = AccountStatus.PENDING;
             }
