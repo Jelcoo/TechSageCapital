@@ -79,14 +79,14 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
+    public AuthResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
         Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
 
         if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        LoginResponseDto response = new LoginResponseDto();
+        AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
         response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
 
@@ -100,7 +100,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public LoginResponseDto refreshToken(RefreshRequestDto refreshRequest) throws AuthenticationException {
+    public AuthResponseDto refreshToken(RefreshRequestDto refreshRequest) throws AuthenticationException {
         String refreshToken = refreshRequest.getRefreshToken();
         if (!jwtProvider.validateToken(refreshToken)) {
             throw new AuthenticationException("Invalid refresh token");
@@ -113,7 +113,7 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid refresh token");
         }
 
-        LoginResponseDto response = new LoginResponseDto();
+        AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
         response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
 
@@ -127,7 +127,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public RegisterResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
+    public AuthResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
         User user = new User();
         user.setFirstName(registerRequest.getFirstName());
         user.setLastName(registerRequest.getLastName());
@@ -137,7 +137,7 @@ public class UserServiceJpa implements UserService {
         user.setPassword(registerRequest.getPassword());
 
         User createdUser = this.create(user);
-        RegisterResponseDto response = new RegisterResponseDto();
+        AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAccessToken(createdUser.getEmail(), createdUser.getRoles()));
         response.setRefreshToken(jwtProvider.createRefreshToken(createdUser.getEmail()));
 

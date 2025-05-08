@@ -4,7 +4,7 @@ import com.techsage.banking.models.dto.*;
 import lombok.*;
 
 @Data
-public class LoginResponseDto extends BaseDto {
+public class AuthResponseDto extends BaseDto {
     private String accessToken;
     private String refreshToken;
 }

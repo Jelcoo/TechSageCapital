@@ -12,8 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
@@ -31,7 +29,7 @@ public class AuthController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful login",
-                            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))
+                            content = @Content(schema = @Schema(implementation = AuthResponseDto.class))
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -56,7 +54,7 @@ public class AuthController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "User registered successfully",
-                            content = @Content(schema = @Schema(implementation = RegisterResponseDto.class))
+                            content = @Content(schema = @Schema(implementation = AuthResponseDto.class))
                     ),
                     @ApiResponse(
                             responseCode = "400",
@@ -81,7 +79,7 @@ public class AuthController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Token refreshed successfully",
-                            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))
+                            content = @Content(schema = @Schema(implementation = AuthResponseDto.class))
                     ),
                     @ApiResponse(
                             responseCode = "401",
