@@ -19,11 +19,13 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <NavbarComponent />
+    <div class="page">
+        <NavbarComponent />
 
-    <div class="container" v-if="ready">
-        <RouterView />
+        <div class="container mainbody" v-if="ready">
+            <RouterView />
+        </div>
+
+        <FooterComponent />
     </div>
-
-    <FooterComponent />
 </template>

@@ -2,8 +2,8 @@
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient from "@/axios";
-import type { User } from "../../../src/types/user";
-import { Role } from "../../../src/types/user";
+import type { User } from "@/types";
+import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 
