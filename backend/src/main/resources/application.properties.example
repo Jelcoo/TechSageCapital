@@ -1,0 +1,11 @@
+spring.application.name=banking
+spring.datasource.url=jdbc:h2:mem:capitaldb
+
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.operations-sorter=method
+
+jwt.key-store=inholland.p12
+jwt.key-store-password=
+jwt.key-alias=inholland
+
+turnstile.secret-key=
