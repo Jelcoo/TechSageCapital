@@ -62,19 +62,20 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public void softDelete(long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.DELETED);
         userRepository.save(user);
     }
 
     @Override
     public UserDto reinstateUser(long id){
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.ACTIVE);
         if (user.getDailyLimit()<= 0 || user.getTransferLimit() <= 0) {
             user.setStatus(UserStatus.PENDING);
         }
-        userRepository.save(user);
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
