@@ -30,7 +30,7 @@ public class AuthController extends BaseController {
 
     @Operation(
             summary = "Login a user",
-            description = "Authenticates a user and returns a token or user info if successful.",
+            description = "Authenticates a user and returns a token if successful.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

@@ -15,8 +15,9 @@ import java.util.*;
 public class JwtTokenProvider {
     private final JwtKeyProvider keyProvider;
     private final UserDetailsServiceJpa userDetailsService;
-    private static final long ACCESS_TOKEN_VALIDITY = 3600 * 1000L; // 1 hour
-    private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 3600 * 1000L; // 30 days
+    private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1 hour
+    private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 60 * 60 * 1000L; // 30 days
+    private static final long ATM_TOKEN_VALIDITY = 10 * 60 * 1000L; // 10 minutes
 
     public JwtTokenProvider(JwtKeyProvider keyProvider, UserDetailsServiceJpa userDetailsService) {
         this.keyProvider = keyProvider;
@@ -46,6 +47,20 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(username)
                 .claim("type", "refresh")
+                .issuedAt(now)
+                .expiration(expiration)
+                .signWith(privateKey)
+                .compact();
+    }
+
+    public String createAtmToken(String username) throws JwtException {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + ATM_TOKEN_VALIDITY);
+        Key privateKey = keyProvider.getPrivateKey();
+
+        return Jwts.builder()
+                .subject(username)
+                .claim("type", "atm")
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(privateKey)

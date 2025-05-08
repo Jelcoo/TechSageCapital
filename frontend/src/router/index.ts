@@ -70,6 +70,24 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path: '/atm',
+            name: 'atm',
+            children: [
+                {
+                    path: '',
+                    name: 'atm-home',
+                    component: () => import('@/views/atm/HomeView.vue'),
+                    meta: { requiresAtmAuth: true },
+                },
+                {
+                    path: 'login',
+                    name: 'atm-login',
+                    component: () => import('@/views/atm/LoginView.vue'),
+                    meta: { isAtmGuest: true },
+                },
+            ],
+        },
     ],
 });
 
@@ -79,6 +97,10 @@ router.beforeEach((to, from, next) => {
         next({ name: 'auth.login', replace: true });
     } else if (store.isAuthenticated && to.meta.isGuest) {
         next({ name: 'home', replace: true });
+    } else if (to.meta.requiresAtmAuth && !store.isAtmAuthenticated) {
+        next({ name: 'atm.atm-login', replace: true });
+    } else if (store.isAtmAuthenticated && to.meta.isAtmGuest) {
+        next({ name: 'atm.atm-home', replace: true });
     } else {
         next();
     }

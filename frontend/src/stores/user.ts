@@ -6,6 +6,7 @@ import { AccountStatus, Role, type User } from '@/types';
 interface StoreUser extends User {
     accessToken: string | null;
     refreshToken: string | null;
+    atmToken: string | null;
 }
 
 export const useUserStore = defineStore('user', {
@@ -24,11 +25,13 @@ export const useUserStore = defineStore('user', {
         bankAccounts: [],
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
+        atmToken: localStorage.getItem('refreshToken') || null,
     }),
 
     getters: {
         fullName: (state) => `${state.firstName} ${state.lastName}`,
         isAuthenticated: (state) => state.accessToken !== null,
+        isAtmAuthenticated: (state) => state.atmToken !== null,
     },
 
     actions: {
@@ -46,6 +49,21 @@ export const useUserStore = defineStore('user', {
 
                 await this.handleAuthSuccess(response.data);
                 await this.autoLogin();
+                return response;
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        },
+
+        async atmLogin(email: string, password: string, turnstileToken: string) {
+            try {
+                const response = await axiosClient.post('/atm/login', {
+                    email,
+                    password,
+                    'cf-turnstile-response': turnstileToken,
+                });
+
+                await this.handleAuthSuccess(response.data.atmToken);
                 return response;
             } catch (error) {
                 return Promise.reject(error);
@@ -139,6 +157,12 @@ export const useUserStore = defineStore('user', {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             axiosClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        },
+
+        setAtmToken(atmToken: string) {
+            this.atmToken = atmToken;
+            localStorage.setItem('atmToken', atmToken);
+            axiosClient.defaults.headers.common['ATM-Authorization'] = `Bearer ${atmToken}`;
         },
 
         setUserResponse(user: User) {
