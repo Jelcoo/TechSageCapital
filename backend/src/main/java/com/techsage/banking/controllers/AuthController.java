@@ -3,6 +3,7 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
+import com.techsage.banking.services.*;
 import com.techsage.banking.services.interfaces.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 public class AuthController extends BaseController {
     private final UserService userService;
+    private final TurnstileService turnstileService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, TurnstileService turnstileService) {
         this.userService = userService;
+        this.turnstileService = turnstileService;
     }
 
     @Operation(
@@ -40,10 +43,14 @@ public class AuthController extends BaseController {
     )
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BaseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
+        if (!turnstileService.verifyToken(loginRequest.getCfTurnstileResponse())) {
+            return ResponseEntity.status(400).body(new MessageDto(400, "Turnstile verification failed"));
+        }
+
         try {
             return ResponseEntity.ok().body(userService.login(loginRequest));
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
+            return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
         }
     }
 

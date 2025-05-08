@@ -53,7 +53,11 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
         })
         .catch((error) => {
             if (error.response.status === 400) {
-                actions.setErrors(error.response.data);
+                if (error.response.data.message) {
+                    actions.setErrors({ password: error.response.data.message });
+                } else {
+                    actions.setErrors(error.response.data);
+                }
             } else {
                 console.error(error);
                 actions.setErrors({

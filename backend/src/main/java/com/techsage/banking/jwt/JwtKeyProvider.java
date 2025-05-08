@@ -1,4 +1,4 @@
-package com.techsage.banking.filter.jwt;
+package com.techsage.banking.jwt;
 
 import jakarta.annotation.*;
 import lombok.*;
