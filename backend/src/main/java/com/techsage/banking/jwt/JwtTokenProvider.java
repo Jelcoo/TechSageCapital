@@ -59,7 +59,7 @@ public class JwtTokenProvider {
             String username = claims.getSubject();
             String tokenType = claims.get("type", String.class);
 
-            if (!"access".equals(tokenType)) {
+            if (!tokenType.equals("access")) {
                 throw new JwtException("Invalid token type");
             }
 
