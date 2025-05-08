@@ -44,7 +44,8 @@ export const useUserStore = defineStore('user', {
                     'cf-turnstile-response': turnstileToken,
                 });
 
-                this.handleAuthSuccess(response.data);
+                await this.handleAuthSuccess(response.data);
+                await this.autoLogin();
                 return response;
             } catch (error) {
                 return Promise.reject(error);
@@ -102,8 +103,8 @@ export const useUserStore = defineStore('user', {
 
             try {
                 const res = await this.me();
-                this.resetStores();
-                this.setUserResponse(res.data);
+                await this.resetStores();
+                await this.setUserResponse(res.data);
                 return res;
             } catch (error: unknown) {
                 const err = error as AxiosError;
@@ -113,7 +114,7 @@ export const useUserStore = defineStore('user', {
                     if (refreshed) {
                         try {
                             const res = await this.me();
-                            this.setUserResponse(res.data);
+                            await this.setUserResponse(res.data);
                             return res;
                         } catch (innerErr) {
                             this.logout();
