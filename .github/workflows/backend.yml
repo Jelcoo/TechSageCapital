@@ -15,6 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Copy application.properties
+        run: |
+          cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
+
       - name: Generate JWT keystore
         run: |
           cd backend/src/main/resources

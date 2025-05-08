@@ -66,13 +66,10 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
             router.push({ name: 'home' });
         })
         .catch((error) => {
-            if (error.response.status === 400) {
-                actions.setErrors(error.response.data);
+            if (error.response.data.message) {
+                actions.setErrors({ password: error.response.data.message });
             } else {
-                console.error(error);
-                actions.setErrors({
-                    passwordConfirmation: 'An error occurred. Please try again later.',
-                });
+                actions.setErrors(error.response.data);
             }
             turnstile.value?.reset();
         });

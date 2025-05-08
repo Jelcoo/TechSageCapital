@@ -1,5 +1,7 @@
 package com.techsage.banking.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.techsage.banking.models.dto.responses.MessageDto;
 import io.jsonwebtoken.*;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -13,9 +15,11 @@ import java.io.*;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtProvider;
+    private final ObjectMapper objectMapper;
 
     public JwtFilter(JwtTokenProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -31,15 +35,15 @@ public class JwtFilter extends OncePerRequestFilter {
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException e) {
-            // JwtException = something is wrong with the JWT (usually means it's invalid)
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid JWT token");
+            response.setContentType("application/json");
+            response.getWriter().write(objectMapper.writeValueAsString(new MessageDto(401, "Invalid JWT token")));
             response.getWriter().flush();
             return;
         } catch (Exception e) {
-            // Writing the exception message is probably a bad idea. We should log it instead.
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(e.getMessage());
+            response.setContentType("application/json");
+            response.getWriter().write(objectMapper.writeValueAsString(new MessageDto(500, "Internal server error")));
             response.getWriter().flush();
             return;
         }
