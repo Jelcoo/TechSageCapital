@@ -1,6 +1,5 @@
 package com.techsage.banking.models.dto.requests;
 
-import com.fasterxml.jackson.annotation.*;
 import com.techsage.banking.models.dto.*;
 import com.techsage.banking.validators.*;
 import jakarta.validation.constraints.*;
@@ -37,9 +36,4 @@ public class RegisterRequestDto extends BaseDto {
 
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
-
-    @NotBlank(message = "Please finish the Turnstile challenge")
-    @JsonProperty("cf-turnstile-response")
-    @Turnstile
-    private String cfTurnstileResponse;
 }
