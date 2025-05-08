@@ -5,5 +5,6 @@ import lombok.*;
 
 @Data
 public class RegisterResponseDto extends BaseDto {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 }

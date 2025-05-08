@@ -39,6 +39,7 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(length = 1000)
     private String refreshToken;
     private LocalDateTime refreshTokenCreatedAt;
 

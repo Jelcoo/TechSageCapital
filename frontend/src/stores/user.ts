@@ -4,7 +4,8 @@ import type { AxiosResponse } from 'axios';
 import { AccountStatus, Role, type User } from '@/types';
 
 interface StoreUser extends User {
-    token: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
 }
 
 export const useUserStore = defineStore('user', {
@@ -21,11 +22,12 @@ export const useUserStore = defineStore('user', {
         createdAt: new Date(),
         status: AccountStatus.ACTIVE,
         bankAccounts: [],
-        token: localStorage.getItem('token') || null,
+        accessToken: localStorage.getItem('accessToken') || null,
+        refreshToken: localStorage.getItem('refreshToken') || null,
     }),
     getters: {
         fullName: (state) => `${state.firstName} ${state.lastName}`,
-        isAuthenticated: (state) => state.token !== null,
+        isAuthenticated: (state) => state.accessToken !== null,
     },
     actions: {
         me(): Promise<AxiosResponse<{ user: User }>> {
@@ -48,13 +50,32 @@ export const useUserStore = defineStore('user', {
                     })
                     .then((res) => {
                         this.resetStores();
-                        this.token = res.data.token;
-                        localStorage.setItem('token', res.data.token);
-                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                        this.accessToken = res.data.accessToken;
+                        this.refreshToken = res.data.refreshToken;
+                        localStorage.setItem('accessToken', res.data.accessToken);
+                        localStorage.setItem('refreshToken', res.data.refreshToken);
+                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.accessToken;
                         resolve(res);
                     })
                     .catch((error) => reject(error));
             });
+        },
+        async refreshTokens() {
+            try {
+                const response = await axiosClient.post('/auth/refresh', {
+                    refreshToken: this.refreshToken,
+                });
+                this.accessToken = response.data.accessToken;
+                this.refreshToken = response.data.refreshToken;
+                localStorage.setItem('accessToken', response.data.accessToken);
+                localStorage.setItem('refreshToken', response.data.refreshToken);
+                axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.accessToken;
+                return true;
+            } catch (e) {
+                console.error('Error refreshing tokens:', e);
+                this.logout();
+                return false;
+            }
         },
         register(
             firstName: string,
@@ -80,9 +101,11 @@ export const useUserStore = defineStore('user', {
                     })
                     .then((res) => {
                         this.resetStores();
-                        this.token = res.data.token;
-                        localStorage.setItem('token', res.data.token);
-                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                        this.accessToken = res.data.accessToken;
+                        this.refreshToken = res.data.refreshToken;
+                        localStorage.setItem('accessToken', res.data.accessToken);
+                        localStorage.setItem('refreshToken', res.data.refreshToken);
+                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.accessToken;
                         resolve(res);
                     })
                     .catch((error) => reject(error));
@@ -90,12 +113,12 @@ export const useUserStore = defineStore('user', {
         },
         autoLogin() {
             return new Promise((resolve, reject) => {
-                if (!this.token) {
+                if (!this.accessToken) {
                     resolve(null);
                     return;
                 }
 
-                axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.accessToken;
 
                 this.me()
                     .then((res) => {
@@ -103,11 +126,27 @@ export const useUserStore = defineStore('user', {
                         this.setUserResponse(res);
                         resolve(res);
                     })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
+                    .catch(async (error) => {
+                        if (error.response?.status === 401) {
+                            const refreshed = await this.refreshTokens();
+                            if (refreshed) {
+                                this.me()
+                                    .then((res) => {
+                                        this.setUserResponse(res);
+                                        resolve(res);
+                                    })
+                                    .catch((error) => {
+                                        this.logout();
+                                        reject(error);
+                                    });
+                            } else {
+                                this.logout();
+                                reject(error);
+                            }
+                        } else {
                             this.logout();
+                            reject(error);
                         }
-                        reject(error);
                     });
             });
         },
@@ -125,7 +164,8 @@ export const useUserStore = defineStore('user', {
             this.status = res.data.status;
         },
         logout() {
-            localStorage.removeItem('token');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             axiosClient.defaults.headers.common['Authorization'] = '';
             this.resetStores();
         },

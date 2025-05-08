@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
 import javax.naming.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -23,7 +24,6 @@ public class UserServiceJpa implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtProvider;
     private final BankAccountService bankAccountService;
-
 
     public UserServiceJpa(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtTokenProvider jwtProvider, BankAccountService bankAccountService) {
         this.userRepository = userRepository;
@@ -78,7 +78,6 @@ public class UserServiceJpa implements UserService {
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
-
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
         Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
@@ -88,7 +87,41 @@ public class UserServiceJpa implements UserService {
         }
 
         LoginResponseDto response = new LoginResponseDto();
-        response.setToken(jwtProvider.createToken(user.get().getEmail(), user.get().getRoles()));
+        response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
+        response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
+
+        // Store refresh token in user entity
+        User userEntity = user.get();
+        userEntity.setRefreshToken(response.getRefreshToken());
+        userEntity.setRefreshTokenCreatedAt(LocalDateTime.now());
+        userRepository.save(userEntity);
+
+        return response;
+    }
+
+    @Override
+    public LoginResponseDto refreshToken(RefreshRequestDto refreshRequest) throws AuthenticationException {
+        String refreshToken = refreshRequest.getRefreshToken();
+        if (!jwtProvider.validateToken(refreshToken)) {
+            throw new AuthenticationException("Invalid refresh token");
+        }
+
+        String username = jwtProvider.getUsernameFromToken(refreshToken);
+        Optional<User> user = userRepository.getByEmail(username);
+
+        if (user.isEmpty() || !refreshToken.equals(user.get().getRefreshToken())) {
+            throw new AuthenticationException("Invalid refresh token");
+        }
+
+        LoginResponseDto response = new LoginResponseDto();
+        response.setAccessToken(jwtProvider.createAccessToken(user.get().getEmail(), user.get().getRoles()));
+        response.setRefreshToken(jwtProvider.createRefreshToken(user.get().getEmail()));
+
+        // Update refresh token in user entity
+        User userEntity = user.get();
+        userEntity.setRefreshToken(response.getRefreshToken());
+        userEntity.setRefreshTokenCreatedAt(LocalDateTime.now());
+        userRepository.save(userEntity);
 
         return response;
     }
@@ -105,7 +138,13 @@ public class UserServiceJpa implements UserService {
 
         User createdUser = this.create(user);
         RegisterResponseDto response = new RegisterResponseDto();
-        response.setToken(jwtProvider.createToken(createdUser.getEmail(), createdUser.getRoles()));
+        response.setAccessToken(jwtProvider.createAccessToken(createdUser.getEmail(), createdUser.getRoles()));
+        response.setRefreshToken(jwtProvider.createRefreshToken(createdUser.getEmail()));
+
+        // Store refresh token in user entity
+        createdUser.setRefreshToken(response.getRefreshToken());
+        createdUser.setRefreshTokenCreatedAt(LocalDateTime.now());
+        userRepository.save(createdUser);
 
         return response;
     }

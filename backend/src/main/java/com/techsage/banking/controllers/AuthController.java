@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
@@ -69,6 +71,31 @@ public class AuthController extends BaseController {
             return ResponseEntity.ok().body(userService.register(registerRequest));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
+        }
+    }
+
+    @Operation(
+            summary = "Refresh token",
+            description = "Refreshes the access token using a refresh token.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Token refreshed successfully",
+                            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Invalid refresh token",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BaseDto> refreshToken(@RequestBody RefreshRequestDto refreshRequest) {
+        try {
+            return ResponseEntity.ok().body(userService.refreshToken(refreshRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
         }
     }
 }
