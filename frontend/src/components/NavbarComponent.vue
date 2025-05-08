@@ -41,8 +41,24 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" v-else>
-                    <li class="nav-item">
-                        <button class="nav-link" @click="logout">Logout</button>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Account
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <RouterLink to="/accountdetails" class="dropdown-item p-2" exact-active-class="active">
+                                    Account details
+                                </RouterLink>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <button class="nav-link p2" @click="logout">Logout</button>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
