@@ -26,8 +26,7 @@ public class TurnstileService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<TurnstileResponse> response = restTemplate.postForEntity(
-                VERIFY_URL, request, TurnstileResponse.class);
+        ResponseEntity<TurnstileResponse> response = restTemplate.postForEntity(VERIFY_URL, request, TurnstileResponse.class);
 
         if (response.getBody() == null || !response.getBody().isSuccess()) {
             throw new TurnstileFailedException();
