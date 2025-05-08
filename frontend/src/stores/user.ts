@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
-import type { AxiosResponse } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 import { AccountStatus, Role, type User } from '@/types';
 
 interface StoreUser extends User {
-    token: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
 }
 
 export const useUserStore = defineStore('user', {
@@ -21,42 +22,36 @@ export const useUserStore = defineStore('user', {
         createdAt: new Date(),
         status: AccountStatus.ACTIVE,
         bankAccounts: [],
-        token: localStorage.getItem('token') || null,
+        accessToken: localStorage.getItem('accessToken') || null,
+        refreshToken: localStorage.getItem('refreshToken') || null,
     }),
+
     getters: {
         fullName: (state) => `${state.firstName} ${state.lastName}`,
-        isAuthenticated: (state) => state.token !== null,
+        isAuthenticated: (state) => state.accessToken !== null,
     },
+
     actions: {
-        me(): Promise<AxiosResponse<{ user: User }>> {
-            return new Promise((resolve, reject) => {
-                axiosClient
-                    .get('/users/me')
-                    .then((res) => {
-                        resolve(res);
-                    })
-                    .catch((error) => reject(error));
-            });
+        async me(): Promise<AxiosResponse<User>> {
+            return axiosClient.get('/users/me');
         },
-        login(email: string, password: string, turnstileToken: string) {
-            return new Promise((resolve, reject) => {
-                axiosClient
-                    .post('/auth/login', {
-                        email,
-                        password,
-                        'cf-turnstile-response': turnstileToken,
-                    })
-                    .then((res) => {
-                        this.resetStores();
-                        this.token = res.data.token;
-                        localStorage.setItem('token', res.data.token);
-                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
-                        resolve(res);
-                    })
-                    .catch((error) => reject(error));
-            });
+
+        async login(email: string, password: string, turnstileToken: string) {
+            try {
+                const response = await axiosClient.post('/auth/login', {
+                    email,
+                    password,
+                    'cf-turnstile-response': turnstileToken,
+                });
+
+                this.handleAuthSuccess(response.data);
+                return response;
+            } catch (error) {
+                return Promise.reject(error);
+            }
         },
-        register(
+
+        async register(
             firstName: string,
             lastName: string,
             email: string,
@@ -66,69 +61,96 @@ export const useUserStore = defineStore('user', {
             passwordConfirmation: string,
             turnstileToken: string,
         ) {
-            return new Promise((resolve, reject) => {
-                axiosClient
-                    .post('/auth/register', {
-                        firstName,
-                        lastName,
-                        email,
-                        phoneNumber,
-                        bsn,
-                        password,
-                        passwordConfirmation,
-                        'cf-turnstile-response': turnstileToken,
-                    })
-                    .then((res) => {
-                        this.resetStores();
-                        this.token = res.data.token;
-                        localStorage.setItem('token', res.data.token);
-                        axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
-                        resolve(res);
-                    })
-                    .catch((error) => reject(error));
-            });
+            try {
+                const response = await axiosClient.post('/auth/register', {
+                    firstName,
+                    lastName,
+                    email,
+                    phoneNumber,
+                    bsn,
+                    password,
+                    passwordConfirmation,
+                    'cf-turnstile-response': turnstileToken,
+                });
+
+                this.handleAuthSuccess(response.data);
+                return response;
+            } catch (error) {
+                return Promise.reject(error);
+            }
         },
-        autoLogin() {
-            return new Promise((resolve, reject) => {
-                if (!this.token) {
-                    resolve(null);
-                    return;
+
+        async refreshTokens(): Promise<boolean> {
+            try {
+                const { data } = await axiosClient.post('/auth/refresh', {
+                    refreshToken: this.refreshToken,
+                });
+
+                this.setTokens(data.accessToken, data.refreshToken);
+                return true;
+            } catch (error) {
+                console.error('Error refreshing tokens:', error);
+                this.logout();
+                return false;
+            }
+        },
+
+        async autoLogin() {
+            if (!this.accessToken) return null;
+
+            axiosClient.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`;
+
+            try {
+                const res = await this.me();
+                this.resetStores();
+                this.setUserResponse(res.data);
+                return res;
+            } catch (error: unknown) {
+                const err = error as AxiosError;
+
+                if (err.response?.status === 401) {
+                    const refreshed = await this.refreshTokens();
+                    if (refreshed) {
+                        try {
+                            const res = await this.me();
+                            this.setUserResponse(res.data);
+                            return res;
+                        } catch (innerErr) {
+                            this.logout();
+                            return Promise.reject(innerErr);
+                        }
+                    }
                 }
 
-                axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + this.token;
+                this.logout();
+                return Promise.reject(err);
+            }
+        },
 
-                this.me()
-                    .then((res) => {
-                        this.resetStores();
-                        this.setUserResponse(res);
-                        resolve(res);
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.logout();
-                        }
-                        reject(error);
-                    });
-            });
+        handleAuthSuccess(data: { accessToken: string; refreshToken: string }) {
+            this.resetStores();
+            this.setTokens(data.accessToken, data.refreshToken);
         },
-        setUserResponse(res: AxiosResponse) {
-            this.id = res.data.id;
-            this.firstName = res.data.firstName;
-            this.lastName = res.data.lastName;
-            this.email = res.data.email;
-            this.phoneNumber = res.data.phoneNumber;
-            this.bsn = res.data.bsn;
-            this.roles = res.data.roles;
-            this.dailyLimit = res.data.dailyLimit;
-            this.transferLimit = res.data.transferLimit;
-            this.createdAt = res.data.createdAt;
-            this.status = res.data.status;
+
+        setTokens(accessToken: string, refreshToken: string) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            axiosClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         },
+
+        setUserResponse(user: User) {
+            Object.assign(this, user);
+        },
+
         logout() {
-            localStorage.removeItem('token');
-            axiosClient.defaults.headers.common['Authorization'] = '';
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            delete axiosClient.defaults.headers.common['Authorization'];
             this.resetStores();
         },
+
         resetStores() {
             this.$reset();
         },

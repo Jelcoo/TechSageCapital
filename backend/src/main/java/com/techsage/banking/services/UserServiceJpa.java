@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
 import javax.naming.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -23,7 +24,6 @@ public class UserServiceJpa implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtProvider;
     private final BankAccountService bankAccountService;
-
 
     public UserServiceJpa(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtTokenProvider jwtProvider, BankAccountService bankAccountService) {
         this.userRepository = userRepository;
@@ -62,39 +62,53 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public void softDelete(long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.DELETED);
         userRepository.save(user);
     }
 
     @Override
     public UserDto reinstateUser(long id){
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.ACTIVE);
         if (user.getDailyLimit()<= 0 || user.getTransferLimit() <= 0) {
             user.setStatus(UserStatus.PENDING);
         }
-        userRepository.save(user);
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
-
     @Override
-    public LoginResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
+    public AuthResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
         Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
 
         if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        LoginResponseDto response = new LoginResponseDto();
-        response.setToken(jwtProvider.createToken(user.get().getEmail(), user.get().getRoles()));
-
-        return response;
+        return this.setUserJwt(user.get());
     }
 
     @Override
-    public RegisterResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
+    public AuthResponseDto refreshToken(RefreshRequestDto refreshRequest) throws AuthenticationException {
+        String refreshToken = refreshRequest.getRefreshToken();
+        if (!jwtProvider.validateToken(refreshToken)) {
+            throw new AuthenticationException("Invalid refresh token");
+        }
+
+        String username = jwtProvider.getUsernameFromToken(refreshToken);
+        Optional<User> user = userRepository.getByEmail(username);
+
+        if (user.isEmpty() || !refreshToken.equals(user.get().getRefreshToken())) {
+            throw new AuthenticationException("Invalid refresh token");
+        }
+
+        return this.setUserJwt(user.get());
+    }
+
+    @Override
+    public AuthResponseDto register(RegisterRequestDto registerRequest) throws AuthenticationException {
         User user = new User();
         user.setFirstName(registerRequest.getFirstName());
         user.setLastName(registerRequest.getLastName());
@@ -104,8 +118,19 @@ public class UserServiceJpa implements UserService {
         user.setPassword(registerRequest.getPassword());
 
         User createdUser = this.create(user);
-        RegisterResponseDto response = new RegisterResponseDto();
-        response.setToken(jwtProvider.createToken(createdUser.getEmail(), createdUser.getRoles()));
+
+        return this.setUserJwt(createdUser);
+    }
+
+    private AuthResponseDto setUserJwt(User user) {
+        AuthResponseDto response = new AuthResponseDto();
+        response.setAccessToken(jwtProvider.createAccessToken(user.getEmail(), user.getRoles()));
+        response.setRefreshToken(jwtProvider.createRefreshToken(user.getEmail()));
+
+        // Store refresh token in user entity
+        user.setRefreshToken(response.getRefreshToken());
+        user.setRefreshTokenCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
         return response;
     }
