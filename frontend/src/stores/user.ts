@@ -32,7 +32,7 @@ export const useUserStore = defineStore('user', {
     },
 
     actions: {
-        async me(): Promise<AxiosResponse<{ user: User }>> {
+        async me(): Promise<AxiosResponse<User>> {
             return axiosClient.get('/users/me');
         },
 
@@ -103,7 +103,7 @@ export const useUserStore = defineStore('user', {
             try {
                 const res = await this.me();
                 this.resetStores();
-                this.setUserResponse(res.data.user);
+                this.setUserResponse(res.data);
                 return res;
             } catch (error: unknown) {
                 const err = error as AxiosError;
@@ -113,7 +113,7 @@ export const useUserStore = defineStore('user', {
                     if (refreshed) {
                         try {
                             const res = await this.me();
-                            this.setUserResponse(res.data.user);
+                            this.setUserResponse(res.data);
                             return res;
                         } catch (innerErr) {
                             this.logout();
