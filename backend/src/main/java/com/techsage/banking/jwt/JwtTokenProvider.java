@@ -64,8 +64,7 @@ public class JwtTokenProvider {
             }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            return new UsernamePasswordAuthenticationToken(userDetails, "",
-                    userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException("Bearer token not valid");
         }
