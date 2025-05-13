@@ -3,8 +3,7 @@
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarNav">
                 <RouterLink to="/" class="nav-link" active-class="active">
-                    <img class="nav-logo" alt="TechSage Capital logo"
-                        src="/images/TechSageCapital-Logo-Transparent-cropped.png" />
+                    <img class="nav-logo" alt="TechSage Capital logo" src="/images/TechSageCapita-Logo.svg" />
                 </RouterLink>
                 <ul class="navbar-nav">
                     <li class="nav-item">
