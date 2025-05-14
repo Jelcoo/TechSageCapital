@@ -16,10 +16,8 @@ import java.time.LocalDateTime;
 @Component
 public class TransactionHelper {
     private final TransactionService transactionService;
-    private final BankAccountService bankAccountService;
 
-    public TransactionHelper(@Lazy TransactionService transactionService, BankAccountService bankAccountService) {
-        this.bankAccountService = bankAccountService;
+    public TransactionHelper(@Lazy TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
@@ -42,8 +40,11 @@ public class TransactionHelper {
         return amount - fromBankAccount.getBalance() <= fromBankAccount.getAbsoluteMinimumBalance();
     }
 
-    public boolean CheckBalance(BankAccount fromBankAccount, Double amount) {
-        // TODO: check if user absolute minimum balance
-        return fromBankAccount.getBalance() >= amount;
+    public boolean CheckOwnSavingsAccount(BankAccount fromBankAccount, BankAccount toBankAccount) {
+        if (fromBankAccount.getType() == BankAccountType.SAVINGS) {
+            return fromBankAccount.getUser().getId().equals(toBankAccount.getUser().getId());
+        } else {
+            return true;
+        }
     }
 }

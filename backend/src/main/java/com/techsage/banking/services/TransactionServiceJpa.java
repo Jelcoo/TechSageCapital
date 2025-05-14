@@ -59,8 +59,8 @@ public class TransactionServiceJpa implements TransactionService {
         if (fromAccount == null || toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        if (!transactionHelper.CheckBalance(fromAccount, amount)) {
-            throw new TransactionException(TransactionException.Reason.CHECK_BALANCE);
+        if (!transactionHelper.CheckOwnSavingsAccount(fromAccount, toAccount)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_OWN_SAVINGS_ACCOUNT);
         }
         if (!transactionHelper.CheckWithdrawalLimit(fromAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);

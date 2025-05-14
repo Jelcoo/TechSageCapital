@@ -3,10 +3,10 @@ package com.techsage.banking.exceptions;
 public class TransactionException extends RuntimeException {
 
     public enum Reason {
-        CHECK_BALANCE("Insufficient balance"),
         CHECK_DAILY_LIMIT("Exceeded daily transaction limit"),
         CHECK_TRANSFER_LIMIT("Exceeded transfer limit"),
-        CHECK_WITHDRAWAL_LIMIT("Exceeded withdrawal limit"),
+        CHECK_WITHDRAWAL_LIMIT("Exceeded withdrawal limit or insufficient balance"),
+        CHECK_OWN_SAVINGS_ACCOUNT("Can only transfer to own checking/savings account"),
         BANK_ACCOUNT_NOT_FOUND("Bank account not found"),
         TRANSACTION_FAILED("Transaction failed");
 
