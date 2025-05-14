@@ -6,12 +6,15 @@ import type { User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
+import { AccountStatus } from "@/types/user";
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
 const userId = ref(userStore.id);
 const errorMessage = ref("");
 const loading = ref(false);
+
+const editUser = ref<User | null>(null);
 
 async function fetchUser() {
     loading.value = true;
@@ -34,9 +37,12 @@ async function fetchUser() {
     }
 }
 
-async function editAccount() {
+const onSubmit = async () => {
     loading.value = true;
     errorMessage.value = "";
+    //write the logic here to update the user
+    //don't forget sanitizing the input
+    //also first make a editUser object and then send it to the backend
 
 }
 
@@ -60,53 +66,83 @@ onMounted(() => {
                 {{ errorMessage }}
             </div>
             <h2>User Details</h2>
-            <div class="container row mb-4">
+            <form class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
-                    <form class="row mb-3">
-                        <div class="col">
-                            <Strong>Firstname:</strong>
-                            <input type="text" class="form-control" v-model="user.firstName" />
-                        </div>
-                        <div class="col">
-                            <strong>Lastname:</strong>
-                            <input type="text" class="form-control" v-model="user.lastName" />
-                        </div>
-                    </form>
-
                     <div class="row mb-3">
                         <div class="col">
-                            <strong>Email:</strong> {{ user.email }}
+                            <strong>Firstname: </strong>
+                            <input type="text"
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.firstName" class="form-control" />
+                            <span v-else>{{ user.firstName }}</span>
                         </div>
                         <div class="col">
-                            <strong>Phone Number:</strong> {{ user.phoneNumber }}
+                            <strong>Lastname: </strong>
+                            <input type="text"
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.lastName" class="form-control" />
+                            <span v-else>{{ user.lastName }}</span>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col">
-                            <strong>BSN:</strong> {{ user.bsn }}
+                            <strong>Email: </strong>
+                            <input type="text" v-model="user.email" class="form-control" />
                         </div>
                         <div class="col">
-                            <strong>Status:</strong> {{ user.status }}
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col">
-                            <strong>Daily Limit:</strong> €{{ user.dailyLimit }}
-                        </div>
-                        <div class="col">
-                            <strong>Transfer Limit:</strong> €{{ user.transferLimit }}
+                            <strong>Phone Number: </strong>
+                            <input type="text" v-model="user.phoneNumber" class="form-control" />
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col">
-                            <button class="btn btn-primary" @click="editAccount">Confirm</button>
+                            <strong>BSN: </strong>
+                            <input type="text"
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.bsn" class="form-control" />
+                            <span v-else>{{ user.bsn }}</span>
+                        </div>
+                        <div class="col">
+                            <strong>Status: </strong>
+                            <select
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.status" class="form-control">
+                                <option v-for="status in Object.values(AccountStatus)" :key="status" :value="status">
+                                    {{ status }}
+                                </option>
+                            </select>
+                            <span v-else>{{ user.status }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <strong>Daily Limit: </strong>
+                            <input type="text"
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.dailyLimit" class="form-control" />
+                            <span v-else>&#8364; {{ user.dailyLimit }}</span>
+
+                        </div>
+                        <div class="col">
+                            <strong>Transfer Limit: </strong>
+                            <input type="text"
+                                v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
+                                v-model="user.transferLimit" class="form-control" />
+                            <span v-else>&#8364; {{ user.transferLimit }}</span>
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary">Confirm</button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </main>
 </template>

@@ -35,25 +35,6 @@ async function fetchUser() {
     }
 }
 
-function editAccount() {
-    loading.value = true;
-    errorMessage.value = "";
-    try {
-        if (userStore.roles.includes(Role.EMPLOYEE)) {
-            router.push(`/accountdetails/edit/${userId.value}`);
-        }
-        else {
-            router.push(`/accountdetails/edit`);
-        }
-    } catch (error) {
-        errorMessage.value = (error as AxiosError).response
-            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while fetching user details. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
-    } finally {
-        loading.value = false;
-    }
-}
-
 async function softDeleteAccount() {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
@@ -117,10 +98,10 @@ onMounted(() => {
 
                     <div class="row mb-3">
                         <div class="col">
-                            <strong>Daily Limit:</strong> €{{ user.dailyLimit }}
+                            <strong>Daily Limit:</strong> &#8364;{{ user.dailyLimit }}
                         </div>
                         <div class="col">
-                            <strong>Transfer Limit:</strong> €{{ user.transferLimit }}
+                            <strong>Transfer Limit:</strong> &#8364;{{ user.transferLimit }}
                         </div>
                     </div>
 
