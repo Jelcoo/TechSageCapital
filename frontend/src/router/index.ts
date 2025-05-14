@@ -91,6 +91,11 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path: '/:catchAll(.*)',
+            name: '404',
+            component: () => import('@/views/status/NotFoundView.vue'),
+        },
     ],
 });
 
