@@ -8,6 +8,7 @@ import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { AccountStatus } from "@/types/user";
 import router from "@/router";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
@@ -65,6 +66,10 @@ onMounted(() => {
 <template>
     <main>
         <div class="container py-5">
+            <button class="btn btn-secondary mb-3" @click="returnToPreviousPage">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+
             <h1 class="display-4 fw-bold text-left mb-5">Edit account details</h1>
 
             <div v-if="loading" class="text-center">
@@ -80,9 +85,6 @@ onMounted(() => {
             <div v-if="successMessage" class="alert alert-success text-center">
                 {{ successMessage }}
             </div>
-
-            <button type="button" class="btn mb-4" @click="returnToPreviousPage"></button>
-
 
             <h2>User Details</h2>
             <form @submit="editUser" class="container row mb-4">
