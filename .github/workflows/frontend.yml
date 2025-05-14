@@ -35,12 +35,41 @@ jobs:
           cd frontend
           pnpm run lint:check
 
+  build:
+    name: Build Frontend
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          pnpm install --frozen-lockfile
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          pnpm run build
+
   deploy:
     name: Deploy
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
     needs:
       - eslint
+      - build
 
     steps:
       - name: Checkout code

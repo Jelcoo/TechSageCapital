@@ -34,7 +34,7 @@ public class TurnstileService {
     }
 
     @Data
-    private static class TurnstileResponse {
+    public static class TurnstileResponse {
         private boolean success;
         private String[] errorCodes;
     }
