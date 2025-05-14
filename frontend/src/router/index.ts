@@ -76,7 +76,6 @@ const router = createRouter({
         {
             path: '/atm',
             name: 'atm',
-            meta: { authorizedRoles: [Role.CUSTOMER] },
             children: [
                 {
                     path: '',

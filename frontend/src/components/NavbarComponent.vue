@@ -30,7 +30,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item" v-if="isAuthenticated && userStore.roles.includes(Role.CUSTOMER)">
+                    <li class="nav-item">
                         <RouterLink to="/atm" class="nav-link" active-class="active">ATM</RouterLink>
                     </li>
                 </ul>
