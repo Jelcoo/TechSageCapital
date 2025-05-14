@@ -11,6 +11,8 @@ import com.techsage.banking.models.dto.responses.MessageDto;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.iban4j.IbanFormatException;
+import org.iban4j.InvalidCheckDigitException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,7 +49,14 @@ public class TransactionController {
         try {
             return ResponseEntity.status(201).body(transactionService.create(transaction, user));
         } catch (TransactionException e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getReason().getMessage()));
+            if (e.getReason() == TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND) {
+                return ResponseEntity.status(404).body(new MessageDto(404, e.getReason().getMessage()));
+            }
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getReason().getMessage()));
+        } catch (InvalidCheckDigitException | IbanFormatException e) {
+            return ResponseEntity.status(400).body(new MessageDto(400, "Invalid IBAN"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, "Internal server error"));
         }
     }
 

@@ -13,6 +13,7 @@ import com.techsage.banking.repositories.TransactionRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
 import jakarta.transaction.Transactional;
+import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +53,8 @@ public class TransactionServiceJpa implements TransactionService {
 
     @Override
     public TransactionDto create(TransactionRequestDto transaction, User user) throws TransactionException {
-        BankAccount fromAccount = bankAccountService.getByIban(transaction.getFromIban());
-        BankAccount toAccount = bankAccountService.getByIban(transaction.getToIban());
+        BankAccount fromAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getFromIban()));
+        BankAccount toAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getToIban()));
         double amount = transaction.getAmount();
         if (fromAccount == null || toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
