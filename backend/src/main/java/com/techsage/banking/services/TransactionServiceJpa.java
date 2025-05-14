@@ -42,7 +42,7 @@ public class TransactionServiceJpa implements TransactionService {
 
     @Override
     public List<TransactionDto> getAll() {
-        List<Transaction> transactions = (List<Transaction>)transactionRepository.findAll();
+        List<Transaction> transactions = (List<Transaction>) transactionRepository.findAll();
         return transactions.stream().map(transaction -> modelMapper.map(transaction, TransactionDto.class)).toList();
     }
 
@@ -52,29 +52,22 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public TransactionDto create(TransactionRequestDto transaction, User user) throws TransactionException {
+    public TransactionDto create(TransactionRequestDto transaction, User initiator) throws TransactionException {
         BankAccount fromAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getFromIban()));
         BankAccount toAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getToIban()));
         double amount = transaction.getAmount();
-        if (fromAccount == null || toAccount == null) {
-            throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
+
+        try {
+            transactionHelper.ValidateTransaction(fromAccount, toAccount, initiator, amount);
+        } catch (TransactionException e) {
+            throw new TransactionException(e.getReason());
         }
-        if (!transactionHelper.CheckOwnSavingsAccount(fromAccount, toAccount)) {
-            throw new TransactionException(TransactionException.Reason.CHECK_OWN_SAVINGS_ACCOUNT);
-        }
-        if (!transactionHelper.CheckWithdrawalLimit(fromAccount, amount)) {
-            throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
-        }
-        if (!transactionHelper.CheckTransferLimit(fromAccount, toAccount, amount)) {
-            throw new TransactionException(TransactionException.Reason.CHECK_TRANSFER_LIMIT);
-        }
-        if (!transactionHelper.CheckDailyLimit(fromAccount, toAccount, amount)) {
-            throw new TransactionException(TransactionException.Reason.CHECK_DAILY_LIMIT);
-        }
-        Transaction fromTransaction = new Transaction(null, fromAccount, toAccount, user, amount, LocalDateTime.now(), TransactionType.WITHDRAWAL, transaction.getDescription());
-        Transaction toTransaction = new Transaction(null, fromAccount, toAccount, user, amount, LocalDateTime.now(), TransactionType.DEPOSIT, transaction.getDescription());
+
+        Transaction fromTransaction = new Transaction(null, fromAccount, toAccount, initiator, amount, LocalDateTime.now(), TransactionType.WITHDRAWAL, transaction.getDescription());
+        Transaction toTransaction = new Transaction(null, fromAccount, toAccount, initiator, amount, LocalDateTime.now(), TransactionType.DEPOSIT, transaction.getDescription());
         fromAccount.setBalance(fromAccount.getBalance() - amount);
         toAccount.setBalance(toAccount.getBalance() + amount);
+
         try {
             bankAccountService.update(fromAccount);
             bankAccountService.update(toAccount);
