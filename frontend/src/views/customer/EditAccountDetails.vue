@@ -64,11 +64,12 @@ onMounted(() => {
                 <div v-if="user" class="col-12 customer-details">
                     <form class="row mb-3">
                         <div class="col">
-                            <label>Firstname: hi</label>
-                            <input type="text" class="form-control" v-model="user.firstName" />{{ user.firstName }}
+                            <Strong>Firstname:</strong>
+                            <input type="text" class="form-control" v-model="user.firstName" />
                         </div>
                         <div class="col">
-                            <strong>Lastname:</strong> {{ user.lastName }}
+                            <strong>Lastname:</strong>
+                            <input type="text" class="form-control" v-model="user.lastName" />
                         </div>
                     </form>
 
@@ -103,32 +104,6 @@ onMounted(() => {
                         <div class="col">
                             <button class="btn btn-primary" @click="editAccount">Confirm</button>
                         </div>
-                    </div>
-
-                    <h2>Bank Account Details</h2>
-                    <div v-if="user.bankAccounts.length > 0" class="bank-accounts">
-                        <div class="row mb-3">
-                            <div class="col">
-                                <strong>Total Balance:</strong> €{{user.bankAccounts.reduce((acc, account) => acc +
-                                    account.balance, 0)}}
-                            </div>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item" v-for="account in user.bankAccounts" :key="account.id">
-                                <div>
-                                    <strong>Account Type:</strong> {{ account.type }}
-                                </div>
-                                <div>
-                                    <strong>IBAN:</strong> {{ account.iban }}
-                                </div>
-                                <div>
-                                    <strong>Account Balance:</strong> €{{ account.balance }}
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-else class="alert alert-info">
-                        No bank accounts found for this user.
                     </div>
                 </div>
             </div>
