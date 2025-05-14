@@ -56,8 +56,8 @@ public class DataSeeder implements ApplicationRunner {
 
     private void createTestTransactions(User initiator, BankAccount fromAccount, BankAccount toAccount, double amount) {
         TransactionRequestDto transaction = new TransactionRequestDto(
-                fromAccount.getIban(),
-                toAccount.getIban(),
+                fromAccount.getIban().toString(),
+                toAccount.getIban().toString(),
                 amount,
                 "Test transaction"
         );
