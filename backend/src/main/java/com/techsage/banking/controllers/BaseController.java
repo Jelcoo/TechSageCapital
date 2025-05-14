@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.security.authorization.*;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.*;
 
 import java.util.*;
 
@@ -20,6 +21,11 @@ public class BaseController {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<BaseDto> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
-        return ResponseEntity.status(403).body(new MessageDto(403, ex.getMessage()));
+        return ResponseEntity.status(401).body(new MessageDto(401, "Unauthorized, please log in"));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<BaseDto> handleNoResourceFoundException(NoResourceFoundException ex) {
+        return ResponseEntity.status(404).body(new MessageDto(404, "Not found"));
     }
 }
