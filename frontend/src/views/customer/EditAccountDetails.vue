@@ -7,14 +7,14 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { AccountStatus } from "@/types/user";
+import router from "@/router";
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
 const userId = ref(userStore.id);
 const errorMessage = ref("");
+const successMessage = ref("");
 const loading = ref(false);
-
-const editUser = ref<User | null>(null);
 
 async function fetchUser() {
     loading.value = true;
@@ -37,13 +37,24 @@ async function fetchUser() {
     }
 }
 
-const onSubmit = async () => {
+const editUser = async (event: Event) => {
+    event.preventDefault();
     loading.value = true;
     errorMessage.value = "";
-    //write the logic here to update the user
-    //don't forget sanitizing the input
-    //also first make a editUser object and then send it to the backend
+    try {
+        await axiosClient.put(`/users/${userId.value}`, user.value);
+        successMessage.value = "User details updated successfully.";
+    } catch (error) {
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while editing user details. " + (error as AxiosError).message;
+    } finally {
+        loading.value = false;
+    }
+};
 
+function returnToPreviousPage() {
+    router.back();
 }
 
 onMounted(() => {
@@ -65,8 +76,16 @@ onMounted(() => {
             <div v-if="errorMessage" class="alert alert-danger text-center">
                 {{ errorMessage }}
             </div>
+
+            <div v-if="successMessage" class="alert alert-success text-center">
+                {{ successMessage }}
+            </div>
+
+            <button type="button" class="btn mb-4" @click="returnToPreviousPage"></button>
+
+
             <h2>User Details</h2>
-            <form class="container row mb-4">
+            <form @submit="editUser" class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
                     <div class="row mb-3">
                         <div class="col">
