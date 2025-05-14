@@ -30,8 +30,13 @@ public class UserDto extends BaseDto {
     private Double dailyLimit;
     private Double transferLimit;
     private LocalDateTime createdAt;
+
+    @JsonIgnore
     private String refreshToken;
+
+    @JsonIgnore
     private LocalDateTime refreshTokenCreatedAt;
+    
     private UserStatus status;
 
     private List<BankAccountInfo> bankAccounts;
