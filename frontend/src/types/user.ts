@@ -1,4 +1,5 @@
 import type { BankAccount } from './bankAccount';
+
 export interface User {
     id: number;
     firstName: string;

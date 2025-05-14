@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/user';
+import { Role } from '@/types';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -18,11 +19,13 @@ const router = createRouter({
                     path: '',
                     name: 'accountdetails-default',
                     component: () => import('@/views/customer/AccountDetails.vue'),
+                    meta: { authorizedRoles: [Role.CUSTOMER] },
                 },
                 {
                     path: ':id',
                     name: 'accountdetails-user',
                     component: () => import('@/views/customer/AccountDetails.vue'),
+                    meta: { authorizedRoles: [Role.EMPLOYEE] },
                 },
             ],
         },
@@ -46,7 +49,7 @@ const router = createRouter({
         {
             path: '/employee',
             name: 'employee',
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, authorizedRoles: [Role.EMPLOYEE] },
             children: [
                 {
                     path: '',
@@ -73,6 +76,7 @@ const router = createRouter({
         {
             path: '/atm',
             name: 'atm',
+            meta: { authorizedRoles: [Role.CUSTOMER] },
             children: [
                 {
                     path: '',
@@ -93,17 +97,40 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const store = useUserStore();
-    if (to.meta.requiresAuth && !store.isAuthenticated) {
-        next({ name: 'auth.login', replace: true });
-    } else if (store.isAuthenticated && to.meta.isGuest) {
-        next({ name: 'home', replace: true });
-    } else if (to.meta.requiresAtmAuth && !store.isAtmAuthenticated) {
-        next({ name: 'atm-login', replace: true });
-    } else if (store.isAtmAuthenticated && to.meta.isAtmGuest) {
-        next({ name: 'atm-home', replace: true });
-    } else {
-        next();
+
+    const requiresAuth = to.meta.requiresAuth;
+    const isGuestOnly = to.meta.isGuest;
+    const requiresAtmAuth = to.meta.requiresAtmAuth;
+    const isAtmGuestOnly = to.meta.isAtmGuest;
+    const authorizedRoles = to.meta.authorizedRoles as Array<Role> | undefined;
+
+    // Handle regular authentication
+    if (requiresAuth && !store.isAuthenticated) {
+        return next({ name: 'auth.login', replace: true });
     }
+
+    if (isGuestOnly && store.isAuthenticated) {
+        return next({ name: 'home', replace: true });
+    }
+
+    // Handle ATM-specific authentication
+    if (requiresAtmAuth && !store.isAtmAuthenticated) {
+        return next({ name: 'atm-login', replace: true });
+    }
+
+    if (isAtmGuestOnly && store.isAtmAuthenticated) {
+        return next({ name: 'atm-home', replace: true });
+    }
+
+    // Role-based access control
+    if (authorizedRoles && authorizedRoles.length > 0) {
+        const hasAccess = authorizedRoles.some((role) => store.roles.includes(role));
+        if (!hasAccess) {
+            return next({ name: 'home', replace: true });
+        }
+    }
+
+    return next();
 });
 
 export default router;

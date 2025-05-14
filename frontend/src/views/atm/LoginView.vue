@@ -40,7 +40,7 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
     userStore
         .atmLogin(values.email, values.password, turnstileRef.value)
         .then(() => {
-            router.push({ name: 'home' });
+            router.push({ name: 'atm-home' });
         })
         .catch((error) => {
             processFormError(error, values, actions);
