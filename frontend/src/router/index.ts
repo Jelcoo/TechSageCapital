@@ -105,7 +105,7 @@ router.beforeEach((to, from, next) => {
 
     // Handle regular authentication
     if (requiresAuth && !store.isAuthenticated) {
-        return next({ name: 'auth.login', replace: true });
+        return next({ name: 'login', replace: true });
     }
 
     if (isGuestOnly && store.isAuthenticated) {
