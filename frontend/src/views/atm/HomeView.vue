@@ -18,26 +18,24 @@
             </div>
             <div v-if="selectedAccount">
                 <p>This account has a balance of: {{ formatMoney(selectedAccount.balance) }}</p>
-                <form>
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount:</label>
-                        <input type="number" class="form-control" id="amount" v-model="mutationAmount"
-                            placeholder="Enter amount" min="0" step="0.01" required />
-                    </div>
-                </form>
-                <div v-if="errorMessage" class="alert alert-danger text-center">
-                    {{ errorMessage }}
-                </div>
-                <div class="mb-3 d-flex justify-content-between">
-                    <button class="btn btn-primary" @click="doWithdraw">
-                        <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" />
-                        Withdraw
-                    </button>
-                    <button class="btn btn-primary" @click="doDeposit">
-                        <FontAwesomeIcon :icon="faMoneyBillTrendUp" class="me-2" />
-                        Deposit
-                    </button>
-                </div>
+                <VeeForm v-slot="{ handleSubmit }" as="div">
+                    <form>
+                        <div class="mb-3">
+                            <FormInput name="amount" label="Amount" type="number" placeholder="Enter amount" :min="0"
+                                :step="0.01" required />
+                        </div>
+                        <div class="mb-3 d-flex justify-content-between">
+                            <button class="btn btn-primary" @click="handleSubmit($event, doWithdraw)">
+                                <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" />
+                                Withdraw
+                            </button>
+                            <button class="btn btn-primary" @click="handleSubmit($event, doDeposit)">
+                                <FontAwesomeIcon :icon="faMoneyBillTrendUp" class="me-2" />
+                                Deposit
+                            </button>
+                        </div>
+                    </form>
+                </VeeForm>
             </div>
         </div>
     </div>
@@ -45,20 +43,19 @@
 
 <script lang="ts" setup>
 import axiosClient from '@/axios';
+import FormInput from '@/components/forms/FormInput.vue';
 import type { BankAccount } from '@/types';
-import { formatMoney } from '@/utils';
+import { formatMoney, processFormError } from '@/utils';
 import { faMoneyBillTransfer, faMoneyBillTrendUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { onBeforeMount, ref } from 'vue';
 
 const bankAccounts = ref<BankAccount[]>([]);
 const selectedAccount = ref<BankAccount | null>(null);
-const mutationAmount = ref<number>(0);
-const errorMessage = ref<string | null>(null);
 
 const setNewAccount = (account: BankAccount) => {
     selectedAccount.value = account;
-    mutationAmount.value = 0;
     bankAccounts.value = bankAccounts.value.map(a => {
         if (a.id === account.id) {
             a = account
@@ -67,29 +64,29 @@ const setNewAccount = (account: BankAccount) => {
     });
 }
 
-const doWithdraw = () => {
+const doWithdraw = (values: GenericObject, actions: SubmissionContext) => {
     axiosClient.post('/atm/withdraw', {
         withdrawFrom: selectedAccount.value?.iban.replace(/\s/g, ''),
-        amount: mutationAmount.value
+        amount: values.amount
     })
         .then(response => {
             setNewAccount(response.data);
         })
         .catch(error => {
-            errorMessage.value = error.response?.data?.message || 'An error occurred';
+            processFormError(error, values, actions);
         });
 }
 
-const doDeposit = () => {
+const doDeposit = (values: GenericObject, actions: SubmissionContext) => {
     axiosClient.post('/atm/deposit', {
         depositTo: selectedAccount.value?.iban.replace(/\s/g, ''),
-        amount: mutationAmount.value
+        amount: values.amount
     })
         .then(response => {
             setNewAccount(response.data);
         })
         .catch(error => {
-            errorMessage.value = error.response?.data?.message || 'An error occurred';
+            processFormError(error, values, actions);
         });
 }
 
