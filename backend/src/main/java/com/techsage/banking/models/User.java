@@ -31,7 +31,7 @@ public class User {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<UserRole> roles = List.of(UserRole.ROLE_CUSTOMER);
+    private List<UserRole> roles = List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER);
 
     private Double dailyLimit = 0.0;
     private Double transferLimit = 0.0;

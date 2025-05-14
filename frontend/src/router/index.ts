@@ -19,7 +19,7 @@ const router = createRouter({
                     path: '',
                     name: 'accountdetails-default',
                     component: () => import('@/views/customer/AccountDetails.vue'),
-                    meta: { authorizedRoles: [Role.CUSTOMER] },
+                    meta: { authorizedRoles: [Role.USER] },
                 },
                 {
                     path: ':id',
@@ -76,18 +76,12 @@ const router = createRouter({
         {
             path: '/atm',
             name: 'atm',
+            meta: { requiresAuth: true, authorizedRoles: [Role.CUSTOMER] },
             children: [
                 {
                     path: '',
                     name: 'atm-home',
                     component: () => import('@/views/atm/HomeView.vue'),
-                    meta: { requiresAtmAuth: true },
-                },
-                {
-                    path: 'login',
-                    name: 'atm-login',
-                    component: () => import('@/views/atm/LoginView.vue'),
-                    meta: { isAtmGuest: true },
                 },
             ],
         },
@@ -104,8 +98,6 @@ router.beforeEach((to, from, next) => {
 
     const requiresAuth = to.meta.requiresAuth;
     const isGuestOnly = to.meta.isGuest;
-    const requiresAtmAuth = to.meta.requiresAtmAuth;
-    const isAtmGuestOnly = to.meta.isAtmGuest;
     const authorizedRoles = to.meta.authorizedRoles as Array<Role> | undefined;
 
     // Handle regular authentication
@@ -115,15 +107,6 @@ router.beforeEach((to, from, next) => {
 
     if (isGuestOnly && store.isAuthenticated) {
         return next({ name: 'home', replace: true });
-    }
-
-    // Handle ATM-specific authentication
-    if (requiresAtmAuth && !store.isAtmAuthenticated) {
-        return next({ name: 'atm-login', replace: true });
-    }
-
-    if (isAtmGuestOnly && store.isAtmAuthenticated) {
-        return next({ name: 'atm-home', replace: true });
     }
 
     // Role-based access control

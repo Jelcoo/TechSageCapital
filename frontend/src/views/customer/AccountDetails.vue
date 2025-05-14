@@ -7,9 +7,11 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 
+const route = useRoute();
 const userStore = useUserStore();
+
+const userIdParam = route.params.id;
 const user = ref<User | null>(null);
-const userId = ref(userStore.id);
 const errorMessage = ref("");
 const loading = ref(false);
 
@@ -17,10 +19,7 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id) {
-            userId.value = Number(useRoute().params.id);
-        }
-        const response = await axiosClient.get<User>(`/users/${userId.value}`);
+        const response = await axiosClient.get<User>(`/users/${userIdParam ?? 'me'}`);
         user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
