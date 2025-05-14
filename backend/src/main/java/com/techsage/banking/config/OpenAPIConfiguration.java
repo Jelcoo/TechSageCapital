@@ -37,27 +37,13 @@ public class OpenAPIConfiguration {
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization");
 
-        // Security scheme for ATM JWT Bearer token
-        SecurityScheme atmBearerAuth = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER)
-                .name("ATM-Authorization");
-
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("bearerAuth");
-
-        SecurityRequirement atmSecurityRequirement = new SecurityRequirement()
-                .addList("atmBearerAuth");
 
         return new OpenAPI()
                 .info(information)
                 .servers(List.of(devServer, prodServer))
-                .components(new Components()
-                        .addSecuritySchemes("bearerAuth", bearerAuth)
-                        .addSecuritySchemes("atmBearerAuth", atmBearerAuth))
-                .addSecurityItem(securityRequirement)
-                .addSecurityItem(atmSecurityRequirement);
+                .components(new Components().addSecuritySchemes("bearerAuth", bearerAuth))
+                .addSecurityItem(securityRequirement);
     }
 }

@@ -20,38 +20,20 @@ import java.util.*;
 public class WebSecurityConfiguration {
 
     private final JwtFilter jwtFilter;
-    private final AtmJwtFilter atmJwtFilter;
 
-    public WebSecurityConfiguration(JwtFilter jwtFilter, AtmJwtFilter atmJwtFilter) {
+    public WebSecurityConfiguration(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-        this.atmJwtFilter = atmJwtFilter;
     }
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain atmSecurityChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/atm/**")
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(atmJwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(csrf -> csrf.disable());
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
-
-        return http.build();
+        return httpSecurity.build();
     }
 
     @Bean
