@@ -2,6 +2,7 @@ package com.techsage.banking.models.dto.requests;
 
 import com.fasterxml.jackson.annotation.*;
 import com.techsage.banking.models.dto.*;
+import com.techsage.banking.validators.*;
 import io.swagger.v3.oas.annotations.media.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -19,6 +20,7 @@ public class AtmDepositDto extends BaseDto {
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
+    @ValidAmount
     private BigDecimal amount;
 
 }

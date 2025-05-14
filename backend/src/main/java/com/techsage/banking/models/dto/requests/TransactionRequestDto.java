@@ -1,7 +1,9 @@
 package com.techsage.banking.models.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.techsage.banking.validators.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,10 @@ public class TransactionRequestDto {
     @com.techsage.banking.validators.Iban
     private String toIban;
 
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
+    @ValidAmount
     private BigDecimal amount;
+
     private String description;
 }
