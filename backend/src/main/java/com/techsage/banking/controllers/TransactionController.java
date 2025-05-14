@@ -45,7 +45,7 @@ public class TransactionController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> CreateTransaction(@RequestBody TransactionRequestDto transaction) {
+    public ResponseEntity<BaseDto> createTransaction(@RequestBody TransactionRequestDto transaction) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
         try {
