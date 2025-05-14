@@ -25,6 +25,9 @@
                             placeholder="Enter amount" min="0" step="0.01" required />
                     </div>
                 </form>
+                <div v-if="errorMessage" class="alert alert-danger text-center">
+                    {{ errorMessage }}
+                </div>
                 <div class="mb-3 d-flex justify-content-between">
                     <button class="btn btn-primary" @click="doWithdraw">
                         <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" />
@@ -51,13 +54,43 @@ import { onBeforeMount, ref } from 'vue';
 const bankAccounts = ref<BankAccount[]>([]);
 const selectedAccount = ref<BankAccount | null>(null);
 const mutationAmount = ref<number>(0);
+const errorMessage = ref<string | null>(null);
+
+const setNewAccount = (account: BankAccount) => {
+    selectedAccount.value = account;
+    mutationAmount.value = 0;
+    bankAccounts.value = bankAccounts.value.map(a => {
+        if (a.id === account.id) {
+            a = account
+        }
+        return a;
+    });
+}
 
 const doWithdraw = () => {
-    console.log('Withdraw', mutationAmount.value);
+    axiosClient.post('/atm/withdraw', {
+        withdrawFrom: selectedAccount.value?.iban.replace(/\s/g, ''),
+        amount: mutationAmount.value
+    })
+        .then(response => {
+            setNewAccount(response.data);
+        })
+        .catch(error => {
+            errorMessage.value = error.response?.data?.message || 'An error occurred';
+        });
 }
 
 const doDeposit = () => {
-    console.log('Deposit', mutationAmount.value);
+    axiosClient.post('/atm/deposit', {
+        depositTo: selectedAccount.value?.iban.replace(/\s/g, ''),
+        amount: mutationAmount.value
+    })
+        .then(response => {
+            setNewAccount(response.data);
+        })
+        .catch(error => {
+            errorMessage.value = error.response?.data?.message || 'An error occurred';
+        });
 }
 
 onBeforeMount(() => {

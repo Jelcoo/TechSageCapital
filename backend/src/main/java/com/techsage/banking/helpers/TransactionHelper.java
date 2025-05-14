@@ -78,4 +78,27 @@ public class TransactionHelper {
         }
         return true;
     }
+
+    public boolean ValidateAtmDeposit(BankAccount toAccount, User initiator) throws TransactionException {
+        if (toAccount == null) {
+            throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
+        }
+        if (!this.CheckOwnership(toAccount, initiator)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
+        }
+        return true;
+    }
+
+    public boolean ValidateAtmWithdrawal(BankAccount fromAccount, User initiator, Double amount) throws TransactionException {
+        if (fromAccount == null) {
+            throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
+        }
+        if (!this.CheckOwnership(fromAccount, initiator)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
+        }
+        if (!this.CheckWithdrawalLimit(fromAccount, amount)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
+        }
+        return true;
+    }
 }
