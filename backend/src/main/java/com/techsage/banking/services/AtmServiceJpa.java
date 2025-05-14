@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.*;
 
 import javax.naming.*;
+import java.math.*;
 import java.time.*;
 import java.util.*;
 
@@ -38,16 +39,16 @@ public class AtmServiceJpa implements AtmService {
     @Override
     public BankAccountDto deposit(AtmDepositDto atmDepositDto, User initiator) throws TransactionException {
         BankAccount toAccount = bankAccountService.getByIban(Iban.valueOf(atmDepositDto.getDepositTo()));
-        double amount = atmDepositDto.getAmount();
+        BigDecimal amount = atmDepositDto.getAmount();
 
         try {
-            transactionHelper.ValidateAtmDeposit(toAccount, initiator);
+            transactionHelper.validateAtmDeposit(toAccount, initiator);
         } catch (TransactionException e) {
             throw new TransactionException(e.getReason());
         }
 
         Transaction transaction = new Transaction(null, null, toAccount, initiator, amount, LocalDateTime.now(), TransactionType.ATM_DEPOSIT, "ATM Deposit");
-        toAccount.setBalance(toAccount.getBalance() + amount);
+        toAccount.setBalance(toAccount.getBalance().add(amount));
 
         try {
             bankAccountService.update(toAccount);
@@ -61,16 +62,16 @@ public class AtmServiceJpa implements AtmService {
     @Override
     public BankAccountDto withdraw(AtmWithdrawDto atmWithdrawDto, User initiator) throws TransactionException {
         BankAccount fromAccount = bankAccountService.getByIban(Iban.valueOf(atmWithdrawDto.getWithdrawFrom()));
-        double amount = atmWithdrawDto.getAmount();
+        BigDecimal amount = atmWithdrawDto.getAmount();
 
         try {
-            transactionHelper.ValidateAtmWithdrawal(fromAccount, initiator, amount);
+            transactionHelper.validateAtmWithdrawal(fromAccount, initiator, amount);
         } catch (TransactionException e) {
             throw new TransactionException(e.getReason());
         }
 
         Transaction transaction = new Transaction(null, fromAccount, null, initiator, amount, LocalDateTime.now(), TransactionType.ATM_WITHDRAWAL, "ATM Withdrawal");
-        fromAccount.setBalance(fromAccount.getBalance() - amount);
+        fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
 
         try {
             bankAccountService.update(fromAccount);

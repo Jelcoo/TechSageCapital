@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
 
+import java.math.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,8 +34,8 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<UserRole> roles = List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER);
 
-    private Double dailyLimit = 0.0;
-    private Double transferLimit = 0.0;
+    private BigDecimal dailyLimit = BigDecimal.valueOf(0.0);
+    private BigDecimal transferLimit = BigDecimal.valueOf(0.0);
 
     @CreationTimestamp
     private LocalDateTime createdAt;

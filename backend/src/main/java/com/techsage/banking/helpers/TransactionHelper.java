@@ -13,6 +13,7 @@ import org.iban4j.Iban;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.math.*;
 import java.time.LocalDateTime;
 
 @Component
@@ -23,26 +24,36 @@ public class TransactionHelper {
         this.transactionService = transactionService;
     }
 
-    private boolean CheckDailyLimit(BankAccount fromBankAccount, BankAccount toBankAccount, Double amount) {
+    private boolean checkDailyLimit(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amount) {
         if (fromBankAccount.getType() == BankAccountType.SAVINGS || toBankAccount.getType() == BankAccountType.SAVINGS) {
             return true;
         }
-        Double sum = transactionService.findSumOfTransactionsByFromAccount(fromBankAccount, LocalDateTime.now().plusHours(24));
-        return sum + amount <= fromBankAccount.getUser().getDailyLimit();
+
+        BigDecimal sum = transactionService.findSumOfTransactionsByFromAccount(fromBankAccount, LocalDateTime.now().plusHours(24));
+
+        BigDecimal total = sum.add(amount);
+        BigDecimal dailyLimit = fromBankAccount.getUser().getDailyLimit();
+
+        return total.compareTo(dailyLimit) <= 0;
     }
 
-    private boolean CheckTransferLimit(BankAccount fromBankAccount, BankAccount toBankAccount, Double amount) {
+    private boolean checkTransferLimit(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amount) {
         if (fromBankAccount.getType() == BankAccountType.SAVINGS || toBankAccount.getType() == BankAccountType.SAVINGS) {
             return true;
         }
-        return amount <= fromBankAccount.getUser().getTransferLimit();
+
+        BigDecimal transferLimit = fromBankAccount.getUser().getTransferLimit();
+        return amount.compareTo(transferLimit) <= 0;
     }
 
-    private boolean CheckWithdrawalLimit(BankAccount fromBankAccount, Double amount) {
-        return amount - fromBankAccount.getBalance() <= fromBankAccount.getAbsoluteMinimumBalance();
-    }
+    private boolean checkWithdrawalLimit(BankAccount fromBankAccount, BigDecimal amount) {
+        BigDecimal balanceAfterWithdrawal = fromBankAccount.getBalance().subtract(amount);
+        BigDecimal absoluteMin = fromBankAccount.getAbsoluteMinimumBalance();
 
-    private boolean CheckOwnSavingsAccount(BankAccount fromBankAccount, BankAccount toBankAccount) {
+        return balanceAfterWithdrawal.compareTo(absoluteMin) >= 0;
+    }
+    
+    private boolean checkOwnSavingsAccount(BankAccount fromBankAccount, BankAccount toBankAccount) {
         if (fromBankAccount.getType() == BankAccountType.SAVINGS) {
             return fromBankAccount.getUser().getId().equals(toBankAccount.getUser().getId());
         } else {
@@ -50,53 +61,53 @@ public class TransactionHelper {
         }
     }
 
-    private boolean CheckOwnership(BankAccount fromBankAccount, User initiator) {
+    private boolean checkOwnership(BankAccount fromBankAccount, User initiator) {
         if (initiator.getRoles().contains(UserRole.ROLE_ADMIN) || initiator.getRoles().contains(UserRole.ROLE_EMPLOYEE)) {
             return true;
         }
         return fromBankAccount.getUser().getId().equals(initiator.getId());
     }
     
-    public boolean ValidateTransaction(BankAccount fromAccount, BankAccount toAccount, User initiator, Double amount) throws TransactionException {
+    public boolean validateTransaction(BankAccount fromAccount, BankAccount toAccount, User initiator, BigDecimal amount) throws TransactionException {
         if (fromAccount == null || toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        if (!this.CheckOwnership(fromAccount, initiator)) {
+        if (!this.checkOwnership(fromAccount, initiator)) {
             throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
         }
-        if (!this.CheckOwnSavingsAccount(fromAccount, toAccount)) {
+        if (!this.checkOwnSavingsAccount(fromAccount, toAccount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_OWN_SAVINGS_ACCOUNT);
         }
-        if (!this.CheckWithdrawalLimit(fromAccount, amount)) {
+        if (!this.checkWithdrawalLimit(fromAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
         }
-        if (!this.CheckTransferLimit(fromAccount, toAccount, amount)) {
+        if (!this.checkTransferLimit(fromAccount, toAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_TRANSFER_LIMIT);
         }
-        if (!this.CheckDailyLimit(fromAccount, toAccount, amount)) {
+        if (!this.checkDailyLimit(fromAccount, toAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_DAILY_LIMIT);
         }
         return true;
     }
 
-    public boolean ValidateAtmDeposit(BankAccount toAccount, User initiator) throws TransactionException {
+    public boolean validateAtmDeposit(BankAccount toAccount, User initiator) throws TransactionException {
         if (toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        if (!this.CheckOwnership(toAccount, initiator)) {
+        if (!this.checkOwnership(toAccount, initiator)) {
             throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
         }
         return true;
     }
 
-    public boolean ValidateAtmWithdrawal(BankAccount fromAccount, User initiator, Double amount) throws TransactionException {
+    public boolean validateAtmWithdrawal(BankAccount fromAccount, User initiator, BigDecimal amount) throws TransactionException {
         if (fromAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        if (!this.CheckOwnership(fromAccount, initiator)) {
+        if (!this.checkOwnership(fromAccount, initiator)) {
             throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
         }
-        if (!this.CheckWithdrawalLimit(fromAccount, amount)) {
+        if (!this.checkWithdrawalLimit(fromAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
         }
         return true;

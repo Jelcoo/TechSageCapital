@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.*;
 import java.time.LocalDateTime;
 
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
     @Query("SELECT coalesce(SUM(t.amount), 0) FROM Transaction t WHERE t.fromAccount = ?1 AND t.createdAt <= ?2 AND t.type = 'WITHDRAWAL'")
-    Double findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
+    BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 }

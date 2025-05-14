@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.iban4j.Iban;
 
+import java.math.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +27,6 @@ public class TransactionRequestDto {
     @com.techsage.banking.validators.Iban
     private String toIban;
 
-    private Double amount;
+    private BigDecimal amount;
     private String description;
 }

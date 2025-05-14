@@ -17,6 +17,7 @@ import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -55,18 +56,18 @@ public class TransactionServiceJpa implements TransactionService {
     public TransactionDto create(TransactionRequestDto transaction, User initiator) throws TransactionException {
         BankAccount fromAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getFromIban()));
         BankAccount toAccount = bankAccountService.getByIban(Iban.valueOf(transaction.getToIban()));
-        double amount = transaction.getAmount();
+        BigDecimal amount = transaction.getAmount();
 
         try {
-            transactionHelper.ValidateTransaction(fromAccount, toAccount, initiator, amount);
+            transactionHelper.validateTransaction(fromAccount, toAccount, initiator, amount);
         } catch (TransactionException e) {
             throw new TransactionException(e.getReason());
         }
 
         Transaction fromTransaction = new Transaction(null, fromAccount, toAccount, initiator, amount, LocalDateTime.now(), TransactionType.WITHDRAWAL, transaction.getDescription());
         Transaction toTransaction = new Transaction(null, fromAccount, toAccount, initiator, amount, LocalDateTime.now(), TransactionType.DEPOSIT, transaction.getDescription());
-        fromAccount.setBalance(fromAccount.getBalance() - amount);
-        toAccount.setBalance(toAccount.getBalance() + amount);
+        fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
+        toAccount.setBalance(toAccount.getBalance().add(amount));
 
         try {
             bankAccountService.update(fromAccount);
@@ -79,7 +80,7 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public Double findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date) {
+    public BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date) {
         return transactionRepository.findSumOfTransactionsByFromAccount(bankAccount, date);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,7 +28,7 @@ public class Transaction {
     @JoinColumn(name = "initiator_id")
     private User initiator; // user id who initiated the transaction
 
-    private Double amount;
+    private BigDecimal amount;
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)

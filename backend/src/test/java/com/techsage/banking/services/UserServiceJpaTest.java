@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.*;
 import org.springframework.security.crypto.bcrypt.*;
 
 import javax.naming.*;
+import java.math.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,8 +49,8 @@ class UserServiceJpaTest {
         sampleUser.setEmail("test@example.com");
         sampleUser.setPassword("raw-pass");
         sampleUser.setStatus(UserStatus.ACTIVE);
-        sampleUser.setDailyLimit(100.0);
-        sampleUser.setTransferLimit(50.0);
+        sampleUser.setDailyLimit(BigDecimal.valueOf(100.0));
+        sampleUser.setTransferLimit(BigDecimal.valueOf(50.0));
     }
 
     @Test
@@ -123,8 +124,8 @@ class UserServiceJpaTest {
     @Test
     void testReinstateUserToActive() {
         sampleUser.setStatus(UserStatus.DELETED);
-        sampleUser.setDailyLimit(10.0);
-        sampleUser.setTransferLimit(5.0);
+        sampleUser.setDailyLimit(BigDecimal.valueOf(10.0));
+        sampleUser.setTransferLimit(BigDecimal.valueOf(5.0));
         when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -233,12 +234,12 @@ class UserServiceJpaTest {
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
         ApprovalRequestDto req = new ApprovalRequestDto();
-        req.setTransferLimit(20.0);
-        req.setDailyTransferLimit(100.0);
+        req.setTransferLimit(BigDecimal.valueOf(20.0));
+        req.setDailyTransferLimit(BigDecimal.valueOf(100.0));
 
         UserDto dto = userService.approveUser(1L, req);
         assertEquals(UserStatus.ACTIVE, sampleUser.getStatus());
-        verify(bankAccountService, times(2)).create(eq(sampleUser), any(), anyInt(), anyDouble());
+        verify(bankAccountService, times(2)).create(eq(sampleUser), any(), BigDecimal.valueOf(anyInt()), BigDecimal.valueOf(anyDouble()));
     }
 
     @Test
@@ -247,8 +248,8 @@ class UserServiceJpaTest {
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
         UserLimitsRequestDto req = new UserLimitsRequestDto();
-        req.setTransferLimit(30.0);
-        req.setDailyTransferLimit(200.0);
+        req.setTransferLimit(BigDecimal.valueOf(30.0));
+        req.setDailyTransferLimit(BigDecimal.valueOf(200.0));
 
         UserDto dto = userService.updateLimits(1L, req);
         assertEquals(30L, sampleUser.getTransferLimit());

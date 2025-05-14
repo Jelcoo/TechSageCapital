@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.math.*;
+
 @Data
 public class AtmWithdrawDto extends BaseDto {
     @Schema(type = "string",
@@ -17,6 +19,6 @@ public class AtmWithdrawDto extends BaseDto {
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
-    private Double amount;
+    private BigDecimal amount;
 
 }

@@ -11,6 +11,7 @@ import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.*;
 import java.util.List;
 
 @Service
@@ -52,7 +53,7 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount create(User user, BankAccountType bankAccountType, int absoluteMinimumBalance, Double balance) {
+    public BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance) {
         BankAccount bankAccount = new BankAccount();
         boolean exists = false;
         do {

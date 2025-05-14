@@ -9,6 +9,7 @@ import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import org.springframework.stereotype.Service;
 
+import java.math.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface TransactionService {
     List<TransactionDto> getAll();
     Transaction getById(long id);
     TransactionDto create(TransactionRequestDto transaction, User user) throws TransactionException;
-    Double findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
+    BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 }

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
 import javax.naming.*;
+import java.math.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -73,9 +74,7 @@ public class UserServiceJpa implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.ACTIVE);
-        if (user.getDailyLimit()<= 0 || user.getTransferLimit() <= 0) {
-            user.setStatus(UserStatus.PENDING);
-        }
+
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
@@ -159,8 +158,8 @@ public class UserServiceJpa implements UserService {
         user.setStatus(UserStatus.ACTIVE);
         user.setTransferLimit(approvalRequestDto.getTransferLimit());
         user.setDailyLimit(approvalRequestDto.getDailyTransferLimit());
-        bankAccountService.create(user, BankAccountType.CHECKING, 0, 0.0);
-        bankAccountService.create(user, BankAccountType.SAVINGS, 0, 0.0);
+        bankAccountService.create(user, BankAccountType.CHECKING, BigDecimal.valueOf(0), BigDecimal.valueOf(0.0));
+        bankAccountService.create(user, BankAccountType.SAVINGS, BigDecimal.valueOf(0), BigDecimal.valueOf(0.0));
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
