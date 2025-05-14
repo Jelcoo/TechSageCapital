@@ -35,6 +35,11 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/auth/**").anonymous()
                         .requestMatchers("/atm/login").anonymous()
                         .requestMatchers("/atm/**").authenticated()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/h2-console/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(atmJwtFilter, UsernamePasswordAuthenticationFilter.class)
