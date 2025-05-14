@@ -30,6 +30,12 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
+    public List<BankAccountDto> findByUserAndType(User user, BankAccountType type) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByUserAndType(user, type);
+        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
+    }
+
+    @Override
     public BankAccount getById(long id) {
         return bankAccountRepository.findById(id).get();
     }
@@ -60,10 +66,5 @@ public class BankAccountServiceJpa implements BankAccountService {
     @Override
     public BankAccount update(BankAccount bankAccount) {
         return bankAccountRepository.save(bankAccount);
-    }
-
-    @Override
-    public void delete(long id) {
-        bankAccountRepository.deleteById(id);
     }
 }
