@@ -1,20 +1,24 @@
 package com.techsage.banking.jwt;
 
-import com.techsage.banking.models.enums.*;
-import com.techsage.banking.services.*;
+import com.techsage.banking.models.enums.UserRole;
+import com.techsage.banking.services.UserDetailsServiceJpa;
 import io.jsonwebtoken.*;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.*;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.stereotype.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-import java.security.*;
-import java.util.*;
+import java.security.Key;
+import java.security.PublicKey;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenProvider {
+
     private final JwtKeyProvider keyProvider;
     private final UserDetailsServiceJpa userDetailsService;
+
     private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1 hour
     private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 60 * 60 * 1000L; // 30 days
     private static final long ATM_TOKEN_VALIDITY = 10 * 60 * 1000L; // 10 minutes
@@ -24,85 +28,67 @@ public class JwtTokenProvider {
         this.userDetailsService = userDetailsService;
     }
 
-    public String createAccessToken(String username, List<UserRole> roles) throws JwtException {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + ACCESS_TOKEN_VALIDITY);
-        Key privateKey = keyProvider.getPrivateKey();
-
-        return Jwts.builder()
-                .subject(username)
-                .claim("auth", roles.stream().map(UserRole::name).toList())
-                .claim("type", "access")
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(privateKey)
-                .compact();
+    public String createAccessToken(String username, List<UserRole> roles) {
+        return createToken(username, "access", ACCESS_TOKEN_VALIDITY, roles);
     }
 
-    public String createRefreshToken(String username) throws JwtException {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + REFRESH_TOKEN_VALIDITY);
-        Key privateKey = keyProvider.getPrivateKey();
-
-        return Jwts.builder()
-                .subject(username)
-                .claim("type", "refresh")
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(privateKey)
-                .compact();
+    public String createRefreshToken(String username) {
+        return createToken(username, "refresh", REFRESH_TOKEN_VALIDITY, null);
     }
 
-    public String createAtmToken(String username) throws JwtException {
+    public String createAtmToken(String username) {
+        return createToken(username, "atm", ATM_TOKEN_VALIDITY, null);
+    }
+
+    private String createToken(String username, String type, long validity, List<UserRole> roles) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + ATM_TOKEN_VALIDITY);
+        Date expiration = new Date(now.getTime() + validity);
         Key privateKey = keyProvider.getPrivateKey();
 
-        return Jwts.builder()
+        JwtBuilder builder = Jwts.builder()
                 .subject(username)
-                .claim("type", "atm")
+                .claim("type", type)
                 .issuedAt(now)
-                .expiration(expiration)
-                .signWith(privateKey)
-                .compact();
+                .expiration(expiration);
+
+        if (roles != null) {
+            builder.claim("auth", roles.stream().map(UserRole::name).toList());
+        }
+
+        return builder.signWith(privateKey).compact();
     }
 
     public Authentication getAuthentication(String token) {
-        PublicKey publicKey = keyProvider.getPublicKey();
-        try {
-            Claims claims = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
-            String username = claims.getSubject();
-            String tokenType = claims.get("type", String.class);
+        Claims claims = getClaimsFromToken(token);
+        String tokenType = claims.get("type", String.class);
 
-            if (!tokenType.equals("access")) {
-                throw new JwtException("Invalid token type");
-            }
-
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            return new UsernamePasswordAuthenticationToken(userDetails, "",
-                    userDetails.getAuthorities());
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Bearer token not valid");
+        if (!"access".equals(tokenType)) {
+            throw new JwtException("Invalid token type");
         }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public String getUsernameFromToken(String token) {
-        PublicKey publicKey = keyProvider.getPublicKey();
-        try {
-            Claims claims = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
-            return claims.getSubject();
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Token not valid");
-        }
+        return getClaimsFromToken(token).getSubject();
     }
 
     public boolean validateToken(String token) {
-        PublicKey publicKey = keyProvider.getPublicKey();
         try {
-            Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token);
+            getClaimsFromToken(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    public Claims getClaimsFromToken(String token) {
+        PublicKey publicKey = keyProvider.getPublicKey();
+        try {
+            return Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("Token not valid", e);
         }
     }
 }

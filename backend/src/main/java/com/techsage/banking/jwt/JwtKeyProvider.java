@@ -1,17 +1,17 @@
 package com.techsage.banking.jwt;
 
-import jakarta.annotation.*;
-import lombok.*;
-import org.springframework.beans.factory.annotation.*;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.*;
-import org.springframework.stereotype.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import java.security.*;
 import java.security.cert.Certificate;
 
 @Component
 public class JwtKeyProvider {
+
     @Value("${jwt.key-store}")
     private String keystore;
 
@@ -30,15 +30,15 @@ public class JwtKeyProvider {
     @PostConstruct
     protected void init() {
         try {
-            ClassPathResource resource = new ClassPathResource(keystore);
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(resource.getInputStream(), password.toCharArray());
+            keyStore.load(new ClassPathResource(keystore).getInputStream(), password.toCharArray());
+
             privateKey = keyStore.getKey(alias, password.toCharArray());
 
             Certificate cert = keyStore.getCertificate(alias);
             publicKey = cert.getPublicKey();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to load keys from keystore", e);
         }
     }
 }

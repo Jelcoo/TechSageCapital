@@ -2,6 +2,7 @@ package com.techsage.banking.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsage.banking.models.dto.responses.MessageDto;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,12 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class AtmJwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtProvider;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtFilter(JwtTokenProvider jwtProvider) {
+    public AtmJwtFilter(JwtTokenProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
     }
 
@@ -34,6 +35,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
+            if (!isValidAtmToken(token)) {
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid ATM token");
+                return;
+            }
+
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException e) {
@@ -48,9 +54,19 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private String getToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader("ATM-Authorization");
         return (bearerToken != null && bearerToken.startsWith("Bearer ")) ?
                 bearerToken.substring(7) : null;
+    }
+
+    private boolean isValidAtmToken(String token) {
+        try {
+            Claims claims = jwtProvider.getClaimsFromToken(token);
+            String tokenType = claims.get("type", String.class);
+            return "atm".equals(tokenType);
+        } catch (JwtException e) {
+            return false;
+        }
     }
 
     private void sendError(HttpServletResponse response, int status, String message) throws IOException {

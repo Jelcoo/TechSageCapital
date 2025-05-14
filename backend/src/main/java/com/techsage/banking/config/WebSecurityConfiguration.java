@@ -18,9 +18,11 @@ import java.util.*;
 @EnableMethodSecurity
 public class WebSecurityConfiguration {
     private final JwtFilter jwtFilter;
+    private final AtmJwtFilter atmJwtFilter;
 
-    public WebSecurityConfiguration(JwtFilter jwtFilter) {
+    public WebSecurityConfiguration(JwtFilter jwtFilter, AtmJwtFilter atmJwtFilter) {
         this.jwtFilter = jwtFilter;
+        this.atmJwtFilter = atmJwtFilter;
     }
 
     @Bean
@@ -28,7 +30,17 @@ public class WebSecurityConfiguration {
         httpSecurity.csrf(csrf -> csrf.disable());
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        // Configure security for ATM endpoints
+        httpSecurity.securityMatcher("/atm/**")
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .addFilterBefore(atmJwtFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        // Configure security for all other endpoints
+        httpSecurity.securityMatcher("/**")
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         return httpSecurity.build();
@@ -40,12 +52,13 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://techsagecapital.nl"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "ATM-Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "ATM-Authorization"));
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
