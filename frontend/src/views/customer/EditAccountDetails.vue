@@ -6,7 +6,6 @@ import type { User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
-import router from "@/router";
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
@@ -18,7 +17,7 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && userStore.roles.includes(Role.EMPLOYEE)) {
+        if (useRoute().params.id) {
             userId.value = Number(useRoute().params.id);
         }
         const response = await axiosClient.get<User>(`/users/${userId.value}`);
@@ -35,35 +34,10 @@ async function fetchUser() {
     }
 }
 
-function editAccount() {
+async function editAccount() {
     loading.value = true;
     errorMessage.value = "";
-    try {
-        if (userStore.roles.includes(Role.EMPLOYEE)) {
-            router.push(`/accountdetails/edit/${userId.value}`);
-        }
-        else {
-            router.push(`/accountdetails/edit`);
-        }
-    } catch (error) {
-        errorMessage.value = (error as AxiosError).response
-            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while fetching user details. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
-    } finally {
-        loading.value = false;
-    }
-}
 
-async function softDeleteAccount() {
-    if (confirm("Are you sure you want to delete this customer?")) {
-        try {
-            await axiosClient.delete(`/users/${userStore.id}/softDelete`);
-        } catch (error) {
-            errorMessage.value = (error as AxiosError).response
-                ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-                : "An error occurred while deleting the customer. " + (error as AxiosError).message; // remove error.message later if it's for debugging
-        }
-    }
 }
 
 onMounted(() => {
@@ -74,7 +48,7 @@ onMounted(() => {
 <template>
     <main>
         <div class="container py-5">
-            <h1 class="display-4 fw-bold text-left mb-5">Account details</h1>
+            <h1 class="display-4 fw-bold text-left mb-5">Edit account details</h1>
 
             <div v-if="loading" class="text-center">
                 <div class="spinner-border text-primary" role="status">
@@ -88,14 +62,15 @@ onMounted(() => {
             <h2>User Details</h2>
             <div class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
-                    <div class="row mb-3">
+                    <form class="row mb-3">
                         <div class="col">
-                            <strong>Firstname:</strong> {{ user.firstName }}
+                            <label>Firstname: hi</label>
+                            <input type="text" class="form-control" v-model="user.firstName" />{{ user.firstName }}
                         </div>
                         <div class="col">
                             <strong>Lastname:</strong> {{ user.lastName }}
                         </div>
-                    </div>
+                    </form>
 
                     <div class="row mb-3">
                         <div class="col">
@@ -124,24 +99,10 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="mb-5">
-                        <button class="btn btn-primary me-2">
-                            <RouterLink class="text-white text-decoration-none" :to="userStore.roles.includes(Role.EMPLOYEE)
-                                ? `/accountdetails/edit/${user.id}`
-                                : `/accountdetails/edit`">Edit
-                            </RouterLink>
-                        </button>
-                        <button class="btn btn-primary me-2"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
-                            <RouterLink :to="`/employee/customer/${user.id}/limits`"
-                                class="text-white text-decoration-none">Edit user limits</RouterLink>
-                        </button>
-                        <button class="btn btn-danger"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
-                            @click="softDeleteAccount()">
-                            Delete
-                        </button>
-
+                    <div class="row mb-3">
+                        <div class="col">
+                            <button class="btn btn-primary" @click="editAccount">Confirm</button>
+                        </div>
                     </div>
 
                     <h2>Bank Account Details</h2>

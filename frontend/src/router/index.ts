@@ -24,6 +24,16 @@ const router = createRouter({
                     name: 'accountdetails-user',
                     component: () => import('@/views/customer/AccountDetails.vue'),
                 },
+                {
+                    path: 'edit',
+                    name: 'accountdetails-edit-self',
+                    component: () => import('@/views/customer/EditAccountDetails.vue'),
+                },
+                {
+                    path: 'edit/:id',
+                    name: 'accountdetails-edit-user',
+                    component: () => import('@/views/customer/EditAccountDetails.vue'),
+                }
             ],
         },
         {
