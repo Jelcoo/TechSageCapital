@@ -33,6 +33,7 @@ public class WebSecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").anonymous()
+                        .requestMatchers("/atm/login").anonymous()
                         .requestMatchers("/atm/**").authenticated()
                         .anyRequest().authenticated()
                 )
