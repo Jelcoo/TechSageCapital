@@ -12,6 +12,7 @@ import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,7 @@ public class TransactionController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> CreateTransaction(@RequestBody TransactionRequestDto transaction) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
