@@ -36,13 +36,13 @@ public class DataSeeder implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         User adminUser = new User(null,"John","Admin", "johnadmin@example.com","+31600000000","429731681","password123", Arrays.asList(UserRole.ROLE_USER, UserRole.ROLE_EMPLOYEE, UserRole.ROLE_ADMIN), BigDecimal.valueOf(100.0), BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(adminUser);
-        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_EMPLOYEE), BigDecimal.valueOf(100.0),BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User employeeUser = new User(null,"John","Employee", "johnemployee@example.com","+31600000000","297552028","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_EMPLOYEE), BigDecimal.valueOf(100.0), BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(employeeUser);
-        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(100.0),BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User customer1User = new User(null,"John","Customer", "johncustomer@example.com","+31600000000","313278994","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(100.0), BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer1User);
-        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(100.0),BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
+        User customer2User = new User(null,"Emma","Customer", "emmacustomer@example.com","+31600000000","092736233","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(100.0), BigDecimal.valueOf(100.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.ACTIVE, new ArrayList<>());
         userService.create(customer2User);
-        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(0.0),BigDecimal.valueOf(0.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
+        User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER), BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0), LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
         userService.create(customer3User);
 
         BankAccount customer1BankAccount = bankAccountService.create(customer1User, BankAccountType.CHECKING, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.0));

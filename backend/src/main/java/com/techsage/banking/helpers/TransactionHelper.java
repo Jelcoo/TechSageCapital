@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.*;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Component
 public class TransactionHelper {
@@ -21,7 +22,7 @@ public class TransactionHelper {
     }
 
     private boolean checkDailyLimit(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amount) {
-        if (fromBankAccount.getType() == BankAccountType.SAVINGS || toBankAccount.getType() == BankAccountType.SAVINGS) {
+        if (fromBankAccount.getType() == BankAccountType.SAVINGS || (toBankAccount != null && toBankAccount.getType() == BankAccountType.SAVINGS)) {
             return true;
         }
 
@@ -34,7 +35,7 @@ public class TransactionHelper {
     }
 
     private boolean checkTransferLimit(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amount) {
-        if (fromBankAccount.getType() == BankAccountType.SAVINGS || toBankAccount.getType() == BankAccountType.SAVINGS) {
+        if (fromBankAccount.getType() == BankAccountType.SAVINGS || (toBankAccount != null && toBankAccount.getType() == BankAccountType.SAVINGS)) {
             return true;
         }
 
@@ -103,6 +104,12 @@ public class TransactionHelper {
         }
         if (!this.checkWithdrawalLimit(fromAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
+        }
+        if (!this.checkTransferLimit(fromAccount, null, amount)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_TRANSFER_LIMIT);
+        }
+        if (!this.checkDailyLimit(fromAccount, null, amount)) {
+            throw new TransactionException(TransactionException.Reason.CHECK_DAILY_LIMIT);
         }
     }
 }
