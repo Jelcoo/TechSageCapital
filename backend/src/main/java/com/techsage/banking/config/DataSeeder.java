@@ -1,9 +1,12 @@
 package com.techsage.banking.config;
 
+import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.helpers.*;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
+import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
@@ -41,9 +44,9 @@ public class DataSeeder implements ApplicationRunner {
         User customer3User = new User(null,"Henk","Customer", "henkcustomer@example.com","+31600000000","642590473","password123", List.of(UserRole.ROLE_CUSTOMER), 0.0,0.0, LocalDateTime.now(),null, LocalDateTime.now(), UserStatus.PENDING, new ArrayList<>());
         userService.create(customer3User);
 
-        BankAccount customer1BankAccount = bankAccountService.create(customer1User, BankAccountType.CHECKING, 100, 100.0);
+        BankAccount customer1BankAccount = bankAccountService.create(customer1User, BankAccountType.CHECKING, 100, 1000.0);
         BankAccount customer1SavingsAccount = bankAccountService.create(customer1User, BankAccountType.SAVINGS, 0, 3500.0);
-        BankAccount customer2BankAccount = bankAccountService.create(customer2User, BankAccountType.CHECKING, 100, 100.0);
+        BankAccount customer2BankAccount = bankAccountService.create(customer2User, BankAccountType.CHECKING, 100, 1000.0);
         BankAccount customer2SavingsAccount = bankAccountService.create(customer2User, BankAccountType.SAVINGS, 0, 15000.0);
 
         createTestTransactions(customer1User, customer1BankAccount, customer2BankAccount, 50.0);
@@ -52,32 +55,16 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private void createTestTransactions(User initiator, BankAccount fromAccount, BankAccount toAccount, double amount) {
-        LocalDateTime now = LocalDateTime.now();
-
-        // Sender transaction - withdrawal
-        Transaction senderTransaction = new Transaction(
-                null,
-                fromAccount,
-                toAccount,
-                initiator,
+        TransactionRequestDto transaction = new TransactionRequestDto(
+                fromAccount.getIban(),
+                toAccount.getIban(),
                 amount,
-                now,
-                TransactionType.WITHDRAWAL,
-                "Transfer to " + toAccount.getIban()
+                "Test transaction"
         );
-        transactionService.create(senderTransaction);
-
-        // Receiver transaction - deposit
-        Transaction receiverTransaction = new Transaction(
-                null,
-                fromAccount,
-                toAccount,
-                initiator,
-                amount,
-                now,
-                TransactionType.DEPOSIT,
-                "Transfer from " + fromAccount.getIban()
-        );
-        transactionService.create(receiverTransaction);
+        try {
+            transactionService.create(transaction, initiator);
+        } catch (TransactionException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

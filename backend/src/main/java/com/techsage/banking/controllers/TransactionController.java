@@ -1,13 +1,20 @@
 package com.techsage.banking.controllers;
 
 
+import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.models.Transaction;
-import com.techsage.banking.services.interfaces.TransactionService;
-import io.swagger.v3.oas.annotations.tags.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import com.techsage.banking.models.User;
+import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.TransactionDto;
-import com.techsage.banking.services.interfaces.*;
+import com.techsage.banking.models.dto.requests.TransactionRequestDto;
+import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.services.interfaces.TransactionService;
+import com.techsage.banking.services.interfaces.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,8 +23,12 @@ import java.util.List;
 @Tag(name = "Transactions", description = "Endpoints for transaction management")
 public class TransactionController {
     private final TransactionService transactionService;
+    private final UserService userService;
 
-    public TransactionController(TransactionService transactionService) {this.transactionService = transactionService;}
+    public TransactionController(TransactionService transactionService, UserService userService) {
+        this.transactionService = transactionService;
+        this.userService = userService;
+    }
 
     @GetMapping("/{id}")
     public Transaction getTransaction(long id) {
@@ -30,15 +41,14 @@ public class TransactionController {
     }
 
     @PostMapping("/create")
-    public void CreateTransaction(Transaction transaction) {
-        transactionService.create(transaction);
+    public ResponseEntity<BaseDto> CreateTransaction(@RequestBody TransactionRequestDto transaction) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getByEmailRaw(authentication.getName());
+        try {
+            return ResponseEntity.status(201).body(transactionService.create(transaction, user));
+        } catch (TransactionException e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getReason().getMessage()));
+        }
     }
-
-    @PutMapping("/update")
-    public void UpdateTransaction(Transaction transaction) {
-        transactionService.update(transaction);
-    }
-
-
 
 }

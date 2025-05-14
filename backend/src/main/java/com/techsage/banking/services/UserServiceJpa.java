@@ -140,6 +140,11 @@ public class UserServiceJpa implements UserService {
         return userRepository.getByEmail(email).map(user -> modelMapper.map(user, UserDto.class)).orElse(null);
     }
 
+    @Override
+    public User getByEmailRaw(String email) {
+        return userRepository.getByEmail(email).orElse(null);
+    }
+
     public List<UserDto> findByStatus(UserStatus status) {
         List<User> users = userRepository.findByStatus(status);
         return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
