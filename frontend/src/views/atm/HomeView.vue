@@ -17,7 +17,24 @@
                 </select>
             </div>
             <div v-if="selectedAccount">
-                {{ selectedAccount }}
+                <p>This account has a balance of: {{ formatMoney(selectedAccount.balance) }}</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount:</label>
+                        <input type="number" class="form-control" id="amount" v-model="mutationAmount"
+                            placeholder="Enter amount" min="0" step="0.01" required />
+                    </div>
+                </form>
+                <div class="mb-3 d-flex justify-content-between">
+                    <button class="btn btn-primary" @click="doWithdraw">
+                        <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" />
+                        Withdraw
+                    </button>
+                    <button class="btn btn-primary" @click="doDeposit">
+                        <FontAwesomeIcon :icon="faMoneyBillTrendUp" class="me-2" />
+                        Deposit
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -26,10 +43,22 @@
 <script lang="ts" setup>
 import axiosClient from '@/axios';
 import type { BankAccount } from '@/types';
+import { formatMoney } from '@/utils';
+import { faMoneyBillTransfer, faMoneyBillTrendUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onBeforeMount, ref } from 'vue';
 
 const bankAccounts = ref<BankAccount[]>([]);
 const selectedAccount = ref<BankAccount | null>(null);
+const mutationAmount = ref<number>(0);
+
+const doWithdraw = () => {
+    console.log('Withdraw', mutationAmount.value);
+}
+
+const doDeposit = () => {
+    console.log('Deposit', mutationAmount.value);
+}
 
 onBeforeMount(() => {
     axiosClient.get('/atm/bankAccounts')
@@ -49,14 +78,5 @@ onBeforeMount(() => {
     padding: 30px;
     border-radius: 15px;
     background-color: #2c2f33;
-}
-
-.btn-atm {
-    background-color: #00cba9;
-    border: none;
-}
-
-.btn-atm:hover {
-    background-color: #00a98c;
 }
 </style>
