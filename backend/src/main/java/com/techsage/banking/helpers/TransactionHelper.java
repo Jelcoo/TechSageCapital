@@ -2,14 +2,10 @@ package com.techsage.banking.helpers;
 
 import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.models.BankAccount;
-import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.enums.BankAccountType;
-import com.techsage.banking.models.enums.TransactionType;
 import com.techsage.banking.models.enums.UserRole;
-import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
-import org.iban4j.Iban;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +64,7 @@ public class TransactionHelper {
         return fromBankAccount.getUser().getId().equals(initiator.getId());
     }
     
-    public boolean validateTransaction(BankAccount fromAccount, BankAccount toAccount, User initiator, BigDecimal amount) throws TransactionException {
+    public void validateTransaction(BankAccount fromAccount, BankAccount toAccount, User initiator, BigDecimal amount) throws TransactionException {
         if (fromAccount == null || toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
@@ -87,20 +83,18 @@ public class TransactionHelper {
         if (!this.checkDailyLimit(fromAccount, toAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_DAILY_LIMIT);
         }
-        return true;
     }
 
-    public boolean validateAtmDeposit(BankAccount toAccount, User initiator) throws TransactionException {
+    public void validateAtmDeposit(BankAccount toAccount, User initiator) throws TransactionException {
         if (toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
         if (!this.checkOwnership(toAccount, initiator)) {
             throw new TransactionException(TransactionException.Reason.CHECK_OWNERSHIP);
         }
-        return true;
     }
 
-    public boolean validateAtmWithdrawal(BankAccount fromAccount, User initiator, BigDecimal amount) throws TransactionException {
+    public void validateAtmWithdrawal(BankAccount fromAccount, User initiator, BigDecimal amount) throws TransactionException {
         if (fromAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
@@ -110,6 +104,5 @@ public class TransactionHelper {
         if (!this.checkWithdrawalLimit(fromAccount, amount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_WITHDRAWAL_LIMIT);
         }
-        return true;
     }
 }
