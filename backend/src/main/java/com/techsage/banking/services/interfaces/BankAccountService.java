@@ -11,7 +11,7 @@ import java.util.List;
 public interface BankAccountService {
     List<BankAccountDto> getAll();
     List<BankAccountDto> findByUserAndType(User user, BankAccountType type);
-    BankAccount getById(long id);
+    List<BankAccountDto> findByType(BankAccountType type);
     BankAccount getByIban(Iban iban);
     BankAccount create(User user, BankAccountType bankAccountType, int absoluteMinimumBalance, Double balance);
     BankAccount update(BankAccount bankAccount);

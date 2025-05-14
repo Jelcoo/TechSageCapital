@@ -27,36 +27,5 @@ import java.util.*;
 @RequestMapping("/atm")
 @Tag(name = "ATM", description = "Endpoints for ATM operations")
 public class AtmController extends BaseController {
-    private final BankAccountService bankAccountService;
-    private final UserService userService;
 
-    public AtmController(BankAccountService bankAccountService, UserService userService) {
-        this.bankAccountService = bankAccountService;
-        this.userService = userService;
-    }
-
-    @Operation(
-            summary = "Bank Accounts",
-            description = "Returns a list of bank accounts for the authenticated user.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successful retrieval of bank accounts",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountDto.class)))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    )
-            }
-    )
-    @GetMapping(value = "/bankAccounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public List<BankAccountDto> bankAccounts() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User me = userService.getByEmailRaw(authentication.getName());
-
-        return bankAccountService.findByUserAndType(me, BankAccountType.CHECKING);
-    }
 }

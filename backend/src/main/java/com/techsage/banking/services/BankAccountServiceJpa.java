@@ -31,13 +31,19 @@ public class BankAccountServiceJpa implements BankAccountService {
 
     @Override
     public List<BankAccountDto> findByUserAndType(User user, BankAccountType type) {
-        List<BankAccount> bankAccounts = bankAccountRepository.findByUserAndType(user, type);
+        List<BankAccount> bankAccounts;
+        if (type == null) {
+            bankAccounts = bankAccountRepository.findByUser(user);
+        } else {
+            bankAccounts = bankAccountRepository.findByUserAndType(user, type);
+        }
         return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
     }
 
     @Override
-    public BankAccount getById(long id) {
-        return bankAccountRepository.findById(id).get();
+    public List<BankAccountDto> findByType(BankAccountType type) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByType(type);
+        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
     }
 
     @Override

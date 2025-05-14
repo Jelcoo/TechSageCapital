@@ -61,7 +61,7 @@ const doDeposit = () => {
 }
 
 onBeforeMount(() => {
-    axiosClient.get('/atm/bankAccounts')
+    axiosClient.get('/bankAccounts?type=CHECKING')
         .then(response => {
             bankAccounts.value = response.data;
         })
