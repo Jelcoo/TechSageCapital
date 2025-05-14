@@ -1,4 +1,5 @@
 <template>
+    <canvas id="confetti"></canvas>
     <div class="container">
         <div class="atm-card text-center">
             <img src="/images/TechSageCapital-Logo-ATM.png" alt="Tech Sage Captial Logo" class="mb-4"
@@ -50,9 +51,19 @@ import { faMoneyBillTransfer, faMoneyBillTrendUp } from '@fortawesome/free-solid
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { onBeforeMount, ref } from 'vue';
+import confetti from 'canvas-confetti';
 
 const bankAccounts = ref<BankAccount[]>([]);
 const selectedAccount = ref<BankAccount | null>(null);
+const confettiCanvas = document.getElementById('status') as HTMLCanvasElement;
+
+const createConfetti = (shape: confetti.Shape) => {
+    const statusConfetti = confetti.create(confettiCanvas, { resize: true });
+    statusConfetti({
+        shapes: [shape],
+        scalar: 10
+    });
+}
 
 const setNewAccount = (account: BankAccount) => {
     selectedAccount.value = account;
@@ -71,6 +82,7 @@ const doWithdraw = (values: GenericObject, actions: SubmissionContext) => {
     })
         .then(response => {
             setNewAccount(response.data);
+            createConfetti(confetti.shapeFromText({ text: '💶', scalar: 10 }));
         })
         .catch(error => {
             processFormError(error, values, actions);
@@ -84,6 +96,7 @@ const doDeposit = (values: GenericObject, actions: SubmissionContext) => {
     })
         .then(response => {
             setNewAccount(response.data);
+            createConfetti(confetti.shapeFromText({ text: '💸', scalar: 10 }));
         })
         .catch(error => {
             processFormError(error, values, actions);
@@ -98,6 +111,7 @@ onBeforeMount(() => {
         .catch(error => {
             console.error('Error fetching bank accounts:', error);
         });
+
 });
 </script>
 
