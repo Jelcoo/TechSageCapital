@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', {
         bankAccounts: [],
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
-        atmToken: localStorage.getItem('refreshToken') || null,
+        atmToken: localStorage.getItem('atmToken') || null,
     }),
 
     getters: {
@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', {
                     'cf-turnstile-response': turnstileToken,
                 });
 
-                await this.handleAuthSuccess(response.data.atmToken);
+                await this.setAtmToken(response.data.atmToken);
                 return response;
             } catch (error) {
                 return Promise.reject(error);
@@ -172,7 +172,9 @@ export const useUserStore = defineStore('user', {
         logout() {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+            localStorage.removeItem('atmToken');
             delete axiosClient.defaults.headers.common['Authorization'];
+            delete axiosClient.defaults.headers.common['ATM-Authorization'];
             this.resetStores();
         },
 

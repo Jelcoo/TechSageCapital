@@ -98,9 +98,9 @@ router.beforeEach((to, from, next) => {
     } else if (store.isAuthenticated && to.meta.isGuest) {
         next({ name: 'home', replace: true });
     } else if (to.meta.requiresAtmAuth && !store.isAtmAuthenticated) {
-        next({ name: 'atm.atm-login', replace: true });
+        next({ name: 'atm-login', replace: true });
     } else if (store.isAtmAuthenticated && to.meta.isAtmGuest) {
-        next({ name: 'atm.atm-home', replace: true });
+        next({ name: 'atm-home', replace: true });
     } else {
         next();
     }
