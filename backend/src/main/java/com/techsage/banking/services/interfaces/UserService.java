@@ -13,7 +13,7 @@ public interface UserService {
     List<UserDto> getAll();
     UserDto getById(long id);
     User create(User user);
-    User update(User user);
+    UserDto update(long id, UserDto user);
     void softDelete(long id);
     UserDto reinstateUser(long id);
     AuthResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;

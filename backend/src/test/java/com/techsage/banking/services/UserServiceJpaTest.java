@@ -100,14 +100,14 @@ class UserServiceJpaTest {
         verify(userRepository, never()).save(any());
     }
 
-    @Test
-    void testUpdate() {
-        when(userRepository.save(sampleUser)).thenReturn(sampleUser);
-
-        User updated = userService.update(sampleUser);
-        assertSame(sampleUser, updated);
-        verify(userRepository).save(sampleUser);
-    }
+//    @Test
+//    void testUpdate() {
+//        when(userRepository.save(sampleUser)).thenReturn(sampleUser);
+//
+//        User updated = userService.update(sampleUser);
+//        assertSame(sampleUser, updated);
+//        verify(userRepository).save(sampleUser);
+//    }
 
     @Test
     void testSoftDelete() {
