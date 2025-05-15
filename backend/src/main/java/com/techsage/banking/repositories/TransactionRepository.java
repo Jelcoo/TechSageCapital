@@ -11,6 +11,6 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
-    @Query("SELECT coalesce(SUM(t.amount), 0) FROM Transaction t WHERE t.fromAccount = ?1 AND t.createdAt <= ?2 AND t.type = 'WITHDRAWAL'")
+    @Query("SELECT coalesce(SUM(t.amount), 0) FROM Transaction t WHERE t.fromAccount = ?1 AND t.createdAt <= ?2 AND (t.type = 'WITHDRAWAL' OR t.type='ATM_WITHDRAWAL')")
     BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 }
