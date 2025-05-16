@@ -11,6 +11,7 @@ import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.*;
 import java.util.List;
 
 @Service
@@ -30,8 +31,20 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount getById(long id) {
-        return bankAccountRepository.findById(id).get();
+    public List<BankAccountDto> findByUserAndType(User user, BankAccountType type) {
+        List<BankAccount> bankAccounts;
+        if (type == null) {
+            bankAccounts = bankAccountRepository.findByUser(user);
+        } else {
+            bankAccounts = bankAccountRepository.findByUserAndType(user, type);
+        }
+        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
+    }
+
+    @Override
+    public List<BankAccountDto> findByType(BankAccountType type) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByType(type);
+        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
     }
 
     @Override
@@ -40,7 +53,7 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public BankAccount create(User user, BankAccountType bankAccountType, int absoluteMinimumBalance, Double balance) {
+    public BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance) {
         BankAccount bankAccount = new BankAccount();
         boolean exists = false;
         do {
@@ -60,10 +73,5 @@ public class BankAccountServiceJpa implements BankAccountService {
     @Override
     public BankAccount update(BankAccount bankAccount) {
         return bankAccountRepository.save(bankAccount);
-    }
-
-    @Override
-    public void delete(long id) {
-        bankAccountRepository.deleteById(id);
     }
 }

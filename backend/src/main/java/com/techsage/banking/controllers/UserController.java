@@ -58,6 +58,7 @@ public class UserController extends BaseController {
             }
     )
     @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public UserDto me() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getByEmail(authentication.getName());
@@ -149,7 +150,7 @@ public class UserController extends BaseController {
             }
     )
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('EMPLOYEE')" + " or hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public UserDto getById(@PathVariable long id) {
         return userService.getById(id);
     }

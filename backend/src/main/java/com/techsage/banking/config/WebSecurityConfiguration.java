@@ -2,6 +2,7 @@ package com.techsage.banking.config;
 
 import com.techsage.banking.jwt.*;
 import org.springframework.context.annotation.*;
+import org.springframework.core.annotation.*;
 import org.springframework.security.config.annotation.method.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
 import org.springframework.security.config.annotation.web.configuration.*;
@@ -17,6 +18,7 @@ import java.util.*;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfiguration {
+
     private final JwtFilter jwtFilter;
 
     public WebSecurityConfiguration(JwtFilter jwtFilter) {
@@ -40,12 +42,13 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://techsagecapital.nl"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

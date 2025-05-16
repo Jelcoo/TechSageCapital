@@ -30,7 +30,7 @@ public class AuthController extends BaseController {
 
     @Operation(
             summary = "Login a user",
-            description = "Authenticates a user and returns a token or user info if successful.",
+            description = "Authenticates a user and returns a token if successful.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -75,12 +75,7 @@ public class AuthController extends BaseController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Turnstile verification failed",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Registration failed (e.g., duplicate email)",
+                            description = "Registration failed (e.g., duplicate email) or turnstile verification failed",
                             content = @Content(schema = @Schema(implementation = MessageDto.class))
                     )
             }
@@ -91,11 +86,9 @@ public class AuthController extends BaseController {
             turnstileService.verifyToken(registerRequest.getCfTurnstileResponse());
 
             return ResponseEntity.ok().body(userService.register(registerRequest));
-        } catch (TurnstileFailedException e) {
+        } catch (TurnstileFailedException | AuthenticationException e) {
             return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(400).body(new MessageDto(401, e.getMessage()));
-        } catch (Exception e) {
+        }  catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }

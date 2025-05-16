@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.iban4j.Iban;
 
+import java.math.*;
 import java.util.List;
 
 @Data
@@ -26,8 +27,8 @@ public class BankAccount {
     @Convert(converter = IbanConverter.class)
     private Iban iban;
 
-    private Double balance;
-    private int absoluteMinimumBalance;
+    private BigDecimal balance;
+    private BigDecimal absoluteMinimumBalance;
 
     @Enumerated(EnumType.STRING)
     private BankAccountType type;

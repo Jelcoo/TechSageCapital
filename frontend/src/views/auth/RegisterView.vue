@@ -42,6 +42,7 @@ import { ref, useTemplateRef } from 'vue';
 import VueTurnstile from 'vue-turnstile';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import { processFormError } from '@/utils';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -66,11 +67,7 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
             router.push({ name: 'home' });
         })
         .catch((error) => {
-            if (error.response.data.message) {
-                actions.setErrors({ password: error.response.data.message });
-            } else {
-                actions.setErrors(error.response.data);
-            }
+            processFormError(error, values, actions);
             turnstile.value?.reset();
         });
 };

@@ -1,4 +1,5 @@
 import type { BankAccount } from './bankAccount';
+
 export interface User {
     id: number;
     firstName: string;
@@ -46,6 +47,7 @@ export enum Role {
     ADMIN = 'ROLE_ADMIN',
     EMPLOYEE = 'ROLE_EMPLOYEE',
     CUSTOMER = 'ROLE_CUSTOMER',
+    USER = 'ROLE_USER',
 }
 
 export enum AccountStatus {

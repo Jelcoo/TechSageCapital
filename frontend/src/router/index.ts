@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/user';
+import { Role } from '@/types';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -18,11 +19,13 @@ const router = createRouter({
                     path: '',
                     name: 'accountdetails-default',
                     component: () => import('@/views/customer/AccountDetails.vue'),
+                    meta: { authorizedRoles: [Role.USER] },
                 },
                 {
                     path: ':id',
                     name: 'accountdetails-user',
                     component: () => import('@/views/customer/AccountDetails.vue'),
+                    meta: { authorizedRoles: [Role.EMPLOYEE] },
                 },
             ],
         },
@@ -46,7 +49,7 @@ const router = createRouter({
         {
             path: '/employee',
             name: 'employee',
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, authorizedRoles: [Role.EMPLOYEE] },
             children: [
                 {
                     path: '',
@@ -70,18 +73,51 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path: '/atm',
+            name: 'atm',
+            meta: { requiresAuth: true, authorizedRoles: [Role.CUSTOMER] },
+            children: [
+                {
+                    path: '',
+                    name: 'atm-home',
+                    component: () => import('@/views/atm/HomeView.vue'),
+                },
+            ],
+        },
+        {
+            path: '/:catchAll(.*)',
+            name: '404',
+            component: () => import('@/views/status/NotFoundView.vue'),
+        },
     ],
 });
 
 router.beforeEach((to, from, next) => {
     const store = useUserStore();
-    if (to.meta.requiresAuth && !store.isAuthenticated) {
-        next({ name: 'auth.login', replace: true });
-    } else if (store.isAuthenticated && to.meta.isGuest) {
-        next({ name: 'home', replace: true });
-    } else {
-        next();
+
+    const requiresAuth = to.meta.requiresAuth;
+    const isGuestOnly = to.meta.isGuest;
+    const authorizedRoles = to.meta.authorizedRoles as Array<Role> | undefined;
+
+    // Handle regular authentication
+    if (requiresAuth && !store.isAuthenticated) {
+        return next({ name: 'login', replace: true });
     }
+
+    if (isGuestOnly && store.isAuthenticated) {
+        return next({ name: 'home', replace: true });
+    }
+
+    // Role-based access control
+    if (authorizedRoles && authorizedRoles.length > 0) {
+        const hasAccess = authorizedRoles.some((role) => store.roles.includes(role));
+        if (!hasAccess) {
+            return next({ name: 'home', replace: true });
+        }
+    }
+
+    return next();
 });
 
 export default router;
