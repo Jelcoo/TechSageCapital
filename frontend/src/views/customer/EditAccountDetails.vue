@@ -43,9 +43,7 @@ const editUser = async (event: Event) => {
     loading.value = true;
     errorMessage.value = "";
     try {
-        console.log(JSON.stringify(user.value)); //DEBUGGING LINE REMOVE AFTER FIX
         await axiosClient.put(`/users/update/${userId.value}`, user.value);
-        //add error handling here for error codes / messages
         successMessage.value = "User details updated successfully.";
     } catch (error) {
         errorMessage.value = (error as AxiosError).response

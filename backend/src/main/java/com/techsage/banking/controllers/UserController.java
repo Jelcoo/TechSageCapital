@@ -151,8 +151,17 @@ public class UserController extends BaseController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')" + " or hasRole('CUSTOMER')")
-    public UserDto getById(@PathVariable long id) {
-        return userService.getById(id);
+    public ResponseEntity<BaseDto> getById(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok().body(userService.getById(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
     }
 
     @Operation(
@@ -301,7 +310,7 @@ public class UserController extends BaseController {
             }
     )
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('EMPLOYEE')" + " or hasRole('CUSTOMER')")
     public ResponseEntity<BaseDto> UpdateUser(@PathVariable long id,@Valid @RequestBody updateUserDto userDto) {
         try{
             return ResponseEntity.ok().body(userService.update(id, userDto));
