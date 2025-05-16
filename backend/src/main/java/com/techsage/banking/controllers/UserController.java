@@ -5,6 +5,7 @@ import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.models.dto.updateUserDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -301,9 +302,8 @@ public class UserController extends BaseController {
     )
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> UpdateUser(@PathVariable long id,@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<BaseDto> UpdateUser(@PathVariable long id,@Valid @RequestBody updateUserDto userDto) {
         try{
-            System.out.println(userDto);
             return ResponseEntity.ok().body(userService.update(id, userDto));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));

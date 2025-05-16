@@ -5,6 +5,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
+import com.techsage.banking.models.dto.updateUserDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.UserRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
@@ -56,8 +57,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public UserDto update(long id, UserDto user) {
-        // Check if the user exists before updating
+    public UserDto update(long id, updateUserDto user) {
         if (!userRepository.existsById(id)) {
             throw new NoSuchElementException("User with ID " + id + " not found");
         }
