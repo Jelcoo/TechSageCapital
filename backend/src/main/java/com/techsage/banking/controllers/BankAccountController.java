@@ -44,7 +44,7 @@ public class BankAccountController {
             }
     )
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public List<BankAccountDto> getBankAccounts(@RequestParam(required = false) BankAccountType type) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());

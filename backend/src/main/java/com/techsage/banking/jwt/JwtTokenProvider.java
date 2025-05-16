@@ -21,7 +21,6 @@ public class JwtTokenProvider {
 
     private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1 hour
     private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 60 * 60 * 1000L; // 30 days
-    private static final long ATM_TOKEN_VALIDITY = 10 * 60 * 1000L; // 10 minutes
 
     public JwtTokenProvider(JwtKeyProvider keyProvider, UserDetailsServiceJpa userDetailsService) {
         this.keyProvider = keyProvider;
@@ -34,10 +33,6 @@ public class JwtTokenProvider {
 
     public String createRefreshToken(String username) {
         return createToken(username, "refresh", REFRESH_TOKEN_VALIDITY, null);
-    }
-
-    public String createAtmToken(String username) {
-        return createToken(username, "atm", ATM_TOKEN_VALIDITY, null);
     }
 
     private String createToken(String username, String type, long validity, List<UserRole> roles) {

@@ -11,6 +11,7 @@ import com.techsage.banking.models.dto.responses.MessageDto;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.*;
 import org.iban4j.IbanFormatException;
 import org.iban4j.InvalidCheckDigitException;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class TransactionController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> createTransaction(@RequestBody TransactionRequestDto transaction) {
+    public ResponseEntity<BaseDto> createTransaction(@Valid @RequestBody TransactionRequestDto transaction) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
         try {
