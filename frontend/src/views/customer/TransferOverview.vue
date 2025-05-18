@@ -149,9 +149,8 @@ async function transfer() {
             fetchUser();
         }
     } catch (error) {
-        errorMessage.value = (error as AxiosError).response
-            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while transferring funds. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
+        const data = (error as AxiosError).response?.data as { message?: string, toIban?: string };
+        errorMessage.value = data.message ?? (data.toIban ? `${data.toIban}` : "An unknown error occurred.");
     }
 }
 
