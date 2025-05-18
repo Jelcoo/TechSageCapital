@@ -141,7 +141,7 @@ async function transfer() {
         const result = await axiosClient.post(`/transactions/create`, {
             fromIban: fromAccount.value.replace(/\s/g, ''),
             toIban: toAccount.value.replace(/\s/g, ''),
-            amount: amount.value,
+            amount: amount.value.toFixed(2),
             description: description.value
         });
         if (result.status === 201) {
