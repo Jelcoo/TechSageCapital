@@ -19,9 +19,13 @@ async function fetchUser() {
     try {
         if (useRoute().params.id && userStore.roles.includes(Role.EMPLOYEE)) {
             userId.value = Number(useRoute().params.id);
+            const response = await axiosClient.get<User>(`/users/${userId.value}`);
+            user.value = response.data;
         }
-        const response = await axiosClient.get<User>(`/users/${userId.value}`);
-        user.value = response.data;
+        else {
+            const response = await axiosClient.get<User>(`/users/customer?id=${userStore.id}&email=${userStore.email}`);
+            user.value = response.data;
+        }
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
         }

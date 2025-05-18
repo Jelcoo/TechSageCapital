@@ -47,6 +47,15 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
+    public UserDto getSelf(long id, String email) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        if (!user.getEmail().equals(email)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
     public User create(User user) {
         if (userRepository.getByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email is already taken");
