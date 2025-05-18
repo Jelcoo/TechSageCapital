@@ -110,6 +110,12 @@ onMounted(() => {
                                 : `/accountdetails/edit`">Edit
                             </RouterLink>
                         </button>
+                        <button class="btn btn-primary me-2" :disabled="user.bankAccounts.length == 0">
+                            <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
+                                class="text-white text-decoration-none">
+                                Transfer
+                            </RouterLink>
+                        </button>
                         <button class="btn btn-primary me-2"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
                             <RouterLink :to="`/employee/customer/${user.id}/limits`"
