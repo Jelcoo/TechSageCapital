@@ -7,13 +7,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.iban4j.Iban;
 
+import java.math.*;
+
 @Data
 @NoArgsConstructor
 public class BankAccountDto extends BaseDto {
     private Long id;
     private UserInfo user;
     private Iban iban;
-    private Double balance;
+    private BigDecimal balance;
     private int absoluteMinimumBalance;
     private BankAccountType type;
+    public String getIban() {
+        return iban != null ? iban.toFormattedString() : null;
+    }
 }

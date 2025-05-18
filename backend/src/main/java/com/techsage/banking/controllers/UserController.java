@@ -60,6 +60,7 @@ public class UserController extends BaseController {
             }
     )
     @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public UserDto me() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getByEmail(authentication.getName());

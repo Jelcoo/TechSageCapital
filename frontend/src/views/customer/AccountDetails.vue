@@ -6,10 +6,13 @@ import type { User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
+import { formatMoney } from "@/utils";
 
+const route = useRoute();
 const userStore = useUserStore();
-const user = ref<User | null>(null);
+
 const userId = ref(userStore.id);
+const user = ref<User | null>(null);
 const errorMessage = ref("");
 const loading = ref(false);
 
@@ -145,7 +148,7 @@ onMounted(() => {
                                     <strong>IBAN:</strong> {{ account.iban }}
                                 </div>
                                 <div>
-                                    <strong>Account Balance:</strong> €{{ account.balance }}
+                                    <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
                                 </div>
                             </li>
                         </ul>

@@ -2,24 +2,26 @@ package com.techsage.banking.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsage.banking.models.dto.responses.MessageDto;
-import io.jsonwebtoken.*;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import org.springframework.security.core.*;
-import org.springframework.security.core.context.*;
-import org.springframework.stereotype.*;
-import org.springframework.web.filter.*;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.*;
+import java.io.IOException;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+
     private final JwtTokenProvider jwtProvider;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtFilter(JwtTokenProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -35,16 +37,10 @@ public class JwtFilter extends OncePerRequestFilter {
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write(objectMapper.writeValueAsString(new MessageDto(401, "Invalid JWT token")));
-            response.getWriter().flush();
+            sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
             return;
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-            response.getWriter().write(objectMapper.writeValueAsString(new MessageDto(500, "Internal server error")));
-            response.getWriter().flush();
+            sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
             return;
         }
 
@@ -57,5 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private void sendError(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write(objectMapper.writeValueAsString(new MessageDto(status, message)));
+        response.getWriter().flush();
     }
 }

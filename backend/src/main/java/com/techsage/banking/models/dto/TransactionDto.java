@@ -7,6 +7,7 @@ import com.techsage.banking.models.info.UserInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +17,7 @@ public class TransactionDto extends BaseDto {
     private BankAccountInfoWithoutBalance fromAccount;
     private BankAccountInfoWithoutBalance toAccount;
     private UserInfo initiator;
-    private Double amount;
+    private BigDecimal amount;
     private LocalDateTime createdAt;
     private TransactionType type;
     private String description;
