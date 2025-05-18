@@ -45,7 +45,10 @@
                             <textarea name="description" id="description" class="form-control" v-model="description"
                                 style="height: 12px;" />
                         </div>
-                        <button class="btn btn-primary mt-3" @click="transfer">Transfer</button>
+                        <button class="btn btn-primary mt-3" @click="transfer"
+                            :disabled="!fromAccount || !toAccount || amount <= 0">
+                            Transfer
+                        </button>
                     </div>
                     <div class="mt-3">
                         <label for="toAccount" class="form-label">To Account:</label>
