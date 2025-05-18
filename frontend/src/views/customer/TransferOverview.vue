@@ -116,25 +116,6 @@ async function fetchUser() {
     }
 }
 
-// function checkTransfer(event: Event) {
-//     const target = event.target as HTMLSelectElement;
-
-//     if (fromAccount.value?.iban === toAccount.value?.iban) {
-//         errorMessage.value = "You cannot transfer to the same account.";
-//         setTimeout(() => {
-//             errorMessage.value = "";
-//         }, 3000);
-
-//         if (target.id === "fromAccount") {
-//             fromAccount.value = null;
-//             target.selectedIndex = 0;
-//         } else if (target.id === "toAccount") {
-//             toAccount.value = null;
-//             target.selectedIndex = 0;
-//         }
-//     }
-// }
-
 function selectToAccount(account: BankAccount) {
     if (toAccount.value === account.iban) {
         toAccount.value = "";
