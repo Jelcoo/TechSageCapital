@@ -49,7 +49,7 @@ const editUser = async (event: Event) => {
             }
         }
         else {
-            await axiosClient.put(`/users/update/${userId.value}`, user.value);
+            await axiosClient.put(`/users/${userId.value}/update`, user.value);
             successMessage.value = "User details updated successfully.";
         }
     } catch (error) {
