@@ -65,14 +65,14 @@ public class TransactionHelper {
         return fromBankAccount.getUser().getId().equals(initiator.getId());
     }
     private boolean checkSameAccount(BankAccount fromBankAccount, BankAccount toBankAccount) {
-        return fromBankAccount.getId().equals(toBankAccount.getId());
+        return fromBankAccount.getIban().equals(toBankAccount.getIban());
     }
     
     public void validateTransaction(BankAccount fromAccount, BankAccount toAccount, User initiator, BigDecimal amount) throws TransactionException {
         if (fromAccount == null || toAccount == null) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        if (!this.checkSameAccount(fromAccount, toAccount)) {
+        if (this.checkSameAccount(fromAccount, toAccount)) {
             throw new TransactionException(TransactionException.Reason.CHECK_SAME_ACCOUNT);
         }
         if (!this.checkOwnership(fromAccount, initiator)) {
