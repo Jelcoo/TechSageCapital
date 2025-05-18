@@ -5,6 +5,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
+import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.UserRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
@@ -57,8 +58,24 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public User update(User user) {
-        return userRepository.save(user);
+    public UserDto update(long id, UpdateUserRequestDto user) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        User convertedUser = modelMapper.map(user, User.class);
+        convertedUser.setId(id);
+        convertedUser.setPassword(existingUser.getPassword());
+        return modelMapper.map(userRepository.save(convertedUser), UserDto.class);
+    }
+
+    @Override
+    public UserDto updateSelf(String currentEmail , UpdateSelfRequestDto user) {
+        User existingUser = getByEmailRaw(currentEmail);
+        if (!existingUser.getEmail().equals(currentEmail)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
+        return modelMapper.map(userRepository.save(existingUser), UserDto.class);
     }
 
     @Override

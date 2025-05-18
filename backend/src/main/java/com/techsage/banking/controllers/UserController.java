@@ -3,8 +3,10 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
+import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -151,8 +154,17 @@ public class UserController extends BaseController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public UserDto getById(@PathVariable long id) {
-        return userService.getById(id);
+    public ResponseEntity<BaseDto> getById(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok().body(userService.getById(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
     }
 
     @Operation(
@@ -237,7 +249,7 @@ public class UserController extends BaseController {
 
     @Operation(
             summary = "Edit user status",
-            description = "Approves a user and returns a 200 status code.",
+            description = "Edits a users status and returns a 200 status code.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -266,6 +278,86 @@ public class UserController extends BaseController {
     public ResponseEntity<BaseDto> reinstateUser(@PathVariable long id) {
         try{
             return ResponseEntity.ok().body(userService.reinstateUser(id));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
+    @Operation(
+            summary = "Edit user information",
+            description = "Edits a user and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}/update")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserRequestDto userDto) {
+        try{
+            return ResponseEntity.ok().body(userService.update(id, userDto));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
+    @Operation(
+            summary = "Edit customers own information",
+            description = "Edits a customers own information and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<BaseDto> updateSelf(@Valid @RequestBody UpdateSelfRequestDto requestBody) {
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentEmail = authentication.getName();
+            return ResponseEntity.ok().body(userService.updateSelf(currentEmail, requestBody));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }

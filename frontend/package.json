@@ -19,6 +19,7 @@
     "@types/bootstrap": "^5.2.10",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
+    "bootstrap-icons": "^1.13.1",
     "canvas-confetti": "^1.9.3",
     "pinia": "^3.0.1",
     "vee-validate": "^4.15.0",

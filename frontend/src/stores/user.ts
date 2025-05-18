@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 import type { AxiosError, AxiosResponse } from 'axios';
 import { AccountStatus, Role, type User } from '@/types';
+import router from '@/router';
 
 interface StoreUser extends User {
     accessToken: string | null;
@@ -150,6 +151,7 @@ export const useUserStore = defineStore('user', {
             localStorage.removeItem('refreshToken');
             delete axiosClient.defaults.headers.common['Authorization'];
             this.resetStores();
+            router.push({ name: 'home' });
         },
 
         resetStores() {

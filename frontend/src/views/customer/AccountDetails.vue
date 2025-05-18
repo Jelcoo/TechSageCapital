@@ -8,9 +8,8 @@ import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 
-const route = useRoute();
 const userStore = useUserStore();
-
+const route = useRoute();
 const userIdParam = route.params.id;
 const user = ref<User | null>(null);
 const errorMessage = ref("");
@@ -32,11 +31,6 @@ async function fetchUser() {
     } finally {
         loading.value = false;
     }
-}
-
-function editAccount() {
-    console.log("Edit customer with ID:", userStore.id); //debug line
-    //go to edit page
 }
 
 async function softDeleteAccount() {
@@ -102,16 +96,19 @@ onMounted(() => {
 
                     <div class="row mb-3">
                         <div class="col">
-                            <strong>Daily Limit:</strong> €{{ user.dailyLimit }}
+                            <strong>Daily Limit:</strong> {{ formatMoney(user.dailyLimit) }}
                         </div>
                         <div class="col">
-                            <strong>Transfer Limit:</strong> €{{ user.transferLimit }}
+                            <strong>Transfer Limit:</strong> {{ formatMoney(user.transferLimit) }}
                         </div>
                     </div>
 
                     <div class="mb-5">
-                        <button class="btn btn-primary me-2" @click="editAccount()">
-                            Edit
+                        <button class="btn btn-primary me-2">
+                            <RouterLink class="text-white text-decoration-none" :to="userStore.roles.includes(Role.EMPLOYEE)
+                                ? `/accountdetails/edit/${user.id}`
+                                : `/accountdetails/edit`">Edit
+                            </RouterLink>
                         </button>
                         <button class="btn btn-primary me-2" :disabled="user.bankAccounts.length == 0">
                             <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
