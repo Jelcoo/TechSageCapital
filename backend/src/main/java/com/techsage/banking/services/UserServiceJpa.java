@@ -59,9 +59,6 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public UserDto update(long id, UpdateUserRequestDto user) {
-        if (!userRepository.existsById(id)) {
-            throw new NoSuchElementException("User with ID " + id + " not found");
-        }
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         User convertedUser = modelMapper.map(user, User.class);
