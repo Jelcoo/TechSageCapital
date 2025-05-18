@@ -167,48 +167,6 @@ public class UserController extends BaseController {
     }
 
     @Operation(
-            summary = "Returns a customer by ID",
-            description = "Retrieves a customer by their ID.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successful retrieval",
-                            content = @Content(schema = @Schema(implementation = UserDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Forbidden",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    )
-            }
-    )
-    @GetMapping("/customer")
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> getCustomerById(@RequestParam long id, @RequestParam String email) {
-        try {
-            return ResponseEntity.ok().body(userService.getSelf(id, email));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
-        }
-    }
-
-
-    @Operation(
             summary = "Approve user",
             description = "Approves a user and returns the new user object.",
             responses = {
