@@ -311,7 +311,7 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserDto userDto) {
         try{

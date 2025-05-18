@@ -44,7 +44,7 @@ const editUser = async (event: Event) => {
     try {
         if (userStore.id === user.value?.id) {
             if (confirm("This will log you out. Do you want to continue?")) {
-                await axiosClient.put(`/users/update/${userId.value}`, user.value);
+                await axiosClient.put(`/users/${userId.value}/update`, user.value);
                 userStore.logout();
             }
         }
