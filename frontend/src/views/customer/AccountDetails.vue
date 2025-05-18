@@ -9,8 +9,8 @@ import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 
 const userStore = useUserStore();
-
-const userId = ref(userStore.id);
+const route = useRoute();
+const userIdParam = route.params.id;
 const user = ref<User | null>(null);
 const errorMessage = ref("");
 const loading = ref(false);
@@ -19,15 +19,8 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))) {
-            userId.value = Number(useRoute().params.id);
-            const response = await axiosClient.get<User>(`/users/${userId.value}`);
-            user.value = response.data;
-        }
-        else {
-            const response = await axiosClient.get<User>(`/users/customer?id=${userStore.id}&email=${userStore.email}`);
-            user.value = response.data;
-        }
+        const response = await axiosClient.get<User>(`/users/${userIdParam ?? 'me'}`);
+        user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
         }

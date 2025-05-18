@@ -392,14 +392,15 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("/updateSelf/{id}")
+    @PutMapping("/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<BaseDto> updateSelf(@PathVariable long id, @Valid @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<BaseDto> updateSelf(@Valid @RequestBody Map<String, String> requestBody) {
         try{
-            String currentEmail = requestBody.get("currentEmail");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentEmail = authentication.getName();
             String email = requestBody.get("email");
             String phoneNumber = requestBody.get("phoneNumber");
-            return ResponseEntity.ok().body(userService.updateSelf(id, currentEmail, email, phoneNumber));
+            return ResponseEntity.ok().body(userService.updateSelf(currentEmail, email, phoneNumber));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }
@@ -407,6 +408,4 @@ public class UserController extends BaseController {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
-
-
 }

@@ -80,12 +80,8 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public UserDto updateSelf(long id, String currentEmail ,String Email, String phoneNumber) {
-        if (!userRepository.existsById(id)) {
-            throw new NoSuchElementException("User with ID " + id + " not found");
-        }
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+    public UserDto updateSelf(String currentEmail ,String Email, String phoneNumber) {
+        User existingUser = getByEmailRaw(currentEmail);
         if (!existingUser.getEmail().equals(currentEmail)) {
             throw new IllegalArgumentException("Access denied");
         }

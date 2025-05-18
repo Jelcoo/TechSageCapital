@@ -10,6 +10,8 @@ import { AccountStatus } from "@/types/user";
 import router from "@/router";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
+const route = useRoute();
+const userIdParam = route.params.id;
 const userStore = useUserStore();
 const user = ref<User | null>(null);
 const userId = ref(userStore.id);
@@ -21,15 +23,8 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && userStore.roles.includes(Role.EMPLOYEE)) {
-            userId.value = Number(useRoute().params.id);
-            const response = await axiosClient.get<User>(`/users/${userId.value}`);
-            user.value = response.data;
-        }
-        else {
-            const response = await axiosClient.get<User>(`/users/customer?id=${userStore.id}&email=${userStore.email}`);
-            user.value = response.data;
-        }
+        const response = await axiosClient.get<User>(`/users/${userIdParam ?? 'me'}`);
+        user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
         }
@@ -72,7 +67,7 @@ const editSelf = async (event: Event) => {
     errorMessage.value = "";
     try {
         if (confirm("This will log you out. Do you want to continue?")) {
-            await axiosClient.put(`/users/updateSelf/${userStore.id}`, {
+            await axiosClient.put(`/users/me`, {
                 currentEmail: userStore.email,
                 email: user.value?.email,
                 phoneNumber: user.value?.phoneNumber
