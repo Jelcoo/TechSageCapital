@@ -113,7 +113,7 @@ onMounted(() => {
                         <button class="btn btn-primary me-2" @click="editAccount()">
                             Edit
                         </button>
-                        <button class="btn btn-primary me-2">
+                        <button class="btn btn-primary me-2" :disabled="user.bankAccounts.length == 0">
                             <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
                                 class="text-white text-decoration-none">
                                 Transfer
