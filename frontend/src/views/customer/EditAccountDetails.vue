@@ -16,7 +16,6 @@ const userId = ref(userStore.id);
 const errorMessage = ref("");
 const successMessage = ref("");
 const loading = ref(false);
-const confirmUpdate = ref(false);
 
 async function fetchUser() {
     loading.value = true;
