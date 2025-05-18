@@ -5,7 +5,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
-import com.techsage.banking.models.dto.updateUserDto;
+import com.techsage.banking.models.dto.UpdateUserDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.UserRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
@@ -66,7 +66,7 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public UserDto update(long id, updateUserDto user) {
+    public UserDto update(long id, UpdateUserDto user) {
         if (!userRepository.existsById(id)) {
             throw new NoSuchElementException("User with ID " + id + " not found");
         }
@@ -76,6 +76,21 @@ public class UserServiceJpa implements UserService {
         convertedUser.setPassword(existingUser.getPassword());
 
         return modelMapper.map(userRepository.save(convertedUser), UserDto.class);
+    }
+
+    @Override
+    public UserDto updateSelf(long id, String currentEmail ,String Email, String phoneNumber) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User with ID " + id + " not found");
+        }
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        if (!existingUser.getEmail().equals(currentEmail)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+        existingUser.setEmail(Email);
+        existingUser.setPhoneNumber(phoneNumber);
+        return modelMapper.map(userRepository.save(existingUser), UserDto.class);
     }
 
     @Override

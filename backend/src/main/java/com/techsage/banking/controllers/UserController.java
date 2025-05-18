@@ -5,7 +5,7 @@ import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
-import com.techsage.banking.models.dto.updateUserDto;
+import com.techsage.banking.models.dto.UpdateUserDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +20,7 @@ import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -191,7 +192,7 @@ public class UserController extends BaseController {
             }
     )
     @GetMapping("/customer")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> getCustomerById(@RequestParam long id, @RequestParam String email) {
         try {
             return ResponseEntity.ok().body(userService.getSelf(id, email));
@@ -352,10 +353,52 @@ public class UserController extends BaseController {
             }
     )
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('EMPLOYEE')" + " or hasRole('CUSTOMER')")
-    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody updateUserDto userDto) {
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserDto userDto) {
         try{
             return ResponseEntity.ok().body(userService.update(id, userDto));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
+    @Operation(
+            summary = "Edit customers own information",
+            description = "Edits a customers own information and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/updateSelf/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<BaseDto> updateSelf(@PathVariable long id, @Valid @RequestBody Map<String, String> requestBody) {
+        try{
+            String currentEmail = requestBody.get("currentEmail");
+            String email = requestBody.get("email");
+            String phoneNumber = requestBody.get("phoneNumber");
+            return ResponseEntity.ok().body(userService.updateSelf(id, currentEmail, email, phoneNumber));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }

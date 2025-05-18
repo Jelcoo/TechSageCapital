@@ -1,6 +1,5 @@
 package com.techsage.banking.models.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfo;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class updateUserDto extends BaseDto {
+public class UpdateUserDto extends BaseDto {
     private Long id;
     private String firstName;
     private String lastName;

@@ -17,7 +17,7 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && userStore.roles.includes(Role.EMPLOYEE)) {
+        if (useRoute().params.id && (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))) {
             userId.value = Number(useRoute().params.id);
             const response = await axiosClient.get<User>(`/users/${userId.value}`);
             user.value = response.data;

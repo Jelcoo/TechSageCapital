@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient from "@/axios";
 import type { User } from "@/types";
@@ -49,14 +49,35 @@ const editUser = async (event: Event) => {
     try {
         if (userStore.id === user.value?.id) {
             if (confirm("This will log you out. Do you want to continue?")) {
-                await axiosClient.put(`/users/update/${userId.value}`, user.value).then(() => {
-                    userStore.logout();
-                });
+                await axiosClient.put(`/users/update/${userId.value}`, user.value);
+                userStore.logout();
             }
         }
         else {
             await axiosClient.put(`/users/update/${userId.value}`, user.value);
             successMessage.value = "User details updated successfully.";
+        }
+    } catch (error) {
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while editing user details. " + (error as AxiosError).message;
+    } finally {
+        loading.value = false;
+    }
+};
+
+const editSelf = async (event: Event) => {
+    event.preventDefault();
+    loading.value = true;
+    errorMessage.value = "";
+    try {
+        if (confirm("This will log you out. Do you want to continue?")) {
+            await axiosClient.put(`/users/updateSelf/${userStore.id}`, {
+                currentEmail: userStore.email,
+                email: user.value?.email,
+                phoneNumber: user.value?.phoneNumber
+            });
+            userStore.logout();
         }
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
@@ -74,6 +95,12 @@ function returnToPreviousPage() {
 onMounted(() => {
     fetchUser();
 });
+
+const submitHandler = computed(() =>
+    userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)
+        ? editUser
+        : editSelf
+);
 </script>
 
 <template>
@@ -100,7 +127,7 @@ onMounted(() => {
             </div>
 
             <h2>User Details</h2>
-            <form @submit="editUser" class="container row mb-4">
+            <form @submit="submitHandler" class="container row mb-4">
                 <div v-if="user" class="col-12 customer-details">
                     <div class="row mb-3">
                         <div class="col">
