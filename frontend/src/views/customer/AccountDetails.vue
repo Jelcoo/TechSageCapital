@@ -6,6 +6,7 @@ import type { User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
+import { formatMoney } from "@/utils";
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
@@ -101,10 +102,10 @@ onMounted(() => {
 
                     <div class="row mb-3">
                         <div class="col">
-                            <strong>Daily Limit:</strong> &#8364;{{ user.dailyLimit }}
+                            <strong>Daily Limit:</strong> {{ formatMoney(user.dailyLimit) }}
                         </div>
                         <div class="col">
-                            <strong>Transfer Limit:</strong> &#8364;{{ user.transferLimit }}
+                            <strong>Transfer Limit:</strong> {{ formatMoney(user.transferLimit) }}
                         </div>
                     </div>
 
