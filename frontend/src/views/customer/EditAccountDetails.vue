@@ -16,6 +16,7 @@ const userId = ref(userStore.id);
 const errorMessage = ref("");
 const successMessage = ref("");
 const loading = ref(false);
+const confirmUpdate = ref(false);
 
 async function fetchUser() {
     loading.value = true;
@@ -43,8 +44,17 @@ const editUser = async (event: Event) => {
     loading.value = true;
     errorMessage.value = "";
     try {
-        await axiosClient.put(`/users/update/${userId.value}`, user.value);
-        successMessage.value = "User details updated successfully.";
+        if (userStore.id === user.value?.id) {
+            if (confirm("This will log you out. Do you want to continue?")) {
+                await axiosClient.put(`/users/update/${userId.value}`, user.value).then(() => {
+                    userStore.logout();
+                });
+            }
+        }
+        else {
+            await axiosClient.put(`/users/update/${userId.value}`, user.value);
+            successMessage.value = "User details updated successfully.";
+        }
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
