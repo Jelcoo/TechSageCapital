@@ -9,7 +9,10 @@ import { useRoute } from "vue-router";
 import { AccountStatus } from "@/types/user";
 import router from "@/router";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { formatMoney } from "@/utils";
 
+const route = useRoute();
+const userIdParam = route.params.id;
 const userStore = useUserStore();
 const user = ref<User | null>(null);
 const userId = ref(userStore.id);
@@ -21,15 +24,8 @@ async function fetchUser() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && userStore.roles.includes(Role.EMPLOYEE)) {
-            userId.value = Number(useRoute().params.id);
-            const response = await axiosClient.get<User>(`/users/${userId.value}`);
-            user.value = response.data;
-        }
-        else {
-            const response = await axiosClient.get<User>(`/users/customer?id=${userStore.id}&email=${userStore.email}`);
-            user.value = response.data;
-        }
+        const response = await axiosClient.get<User>(`/users/${userIdParam ?? 'me'}`);
+        user.value = response.data;
         if (!user.value || user.value == null) {
             errorMessage.value = "User not found.";
         }
@@ -49,12 +45,12 @@ const editUser = async (event: Event) => {
     try {
         if (userStore.id === user.value?.id) {
             if (confirm("This will log you out. Do you want to continue?")) {
-                await axiosClient.put(`/users/update/${userId.value}`, user.value);
+                await axiosClient.put(`/users/${userId.value}/update`, user.value);
                 userStore.logout();
             }
         }
         else {
-            await axiosClient.put(`/users/update/${userId.value}`, user.value);
+            await axiosClient.put(`/users/${userIdParam}/update`, user.value);
             successMessage.value = "User details updated successfully.";
         }
     } catch (error) {
@@ -72,7 +68,7 @@ const editSelf = async (event: Event) => {
     errorMessage.value = "";
     try {
         if (confirm("This will log you out. Do you want to continue?")) {
-            await axiosClient.put(`/users/updateSelf/${userStore.id}`, {
+            await axiosClient.put(`/users/me`, {
                 currentEmail: userStore.email,
                 email: user.value?.email,
                 phoneNumber: user.value?.phoneNumber
@@ -184,7 +180,7 @@ const submitHandler = computed(() =>
                             <input type="text"
                                 v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                                 v-model="user.dailyLimit" class="form-control" />
-                            <span v-else>&#8364; {{ user.dailyLimit }}</span>
+                            <span v-else> {{ formatMoney(user.dailyLimit) }}</span>
 
                         </div>
                         <div class="col">
@@ -192,7 +188,7 @@ const submitHandler = computed(() =>
                             <input type="text"
                                 v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                                 v-model="user.transferLimit" class="form-control" />
-                            <span v-else>&#8364; {{ user.transferLimit }}</span>
+                            <span v-else> {{ formatMoney(user.transferLimit) }}</span>
 
                         </div>
                     </div>

@@ -3,9 +3,10 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
+import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
-import com.techsage.banking.models.dto.UpdateUserDto;
+import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -167,48 +168,6 @@ public class UserController extends BaseController {
     }
 
     @Operation(
-            summary = "Returns a customer by ID",
-            description = "Retrieves a customer by their ID.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successful retrieval",
-                            content = @Content(schema = @Schema(implementation = UserDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Forbidden",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    )
-            }
-    )
-    @GetMapping("/customer")
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> getCustomerById(@RequestParam long id, @RequestParam String email) {
-        try {
-            return ResponseEntity.ok().body(userService.getSelf(id, email));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
-        }
-    }
-
-
-    @Operation(
             summary = "Approve user",
             description = "Approves a user and returns the new user object.",
             responses = {
@@ -353,9 +312,9 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserDto userDto) {
+    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserRequestDto userDto) {
         try{
             return ResponseEntity.ok().body(userService.update(id, userDto));
         }catch (IllegalArgumentException e) {
@@ -392,14 +351,13 @@ public class UserController extends BaseController {
                     )
             }
     )
-    @PutMapping("/updateSelf/{id}")
+    @PutMapping("/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<BaseDto> updateSelf(@PathVariable long id, @Valid @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<BaseDto> updateSelf(@Valid @RequestBody UpdateSelfRequestDto requestBody) {
         try{
-            String currentEmail = requestBody.get("currentEmail");
-            String email = requestBody.get("email");
-            String phoneNumber = requestBody.get("phoneNumber");
-            return ResponseEntity.ok().body(userService.updateSelf(id, currentEmail, email, phoneNumber));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentEmail = authentication.getName();
+            return ResponseEntity.ok().body(userService.updateSelf(currentEmail, requestBody));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }
@@ -407,6 +365,4 @@ public class UserController extends BaseController {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
-
-
 }

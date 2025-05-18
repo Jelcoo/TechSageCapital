@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/bankAccounts")
 @Tag(name = "Bank Accounts", description = "Endpoints for bank account management")
-public class BankAccountController {
+public class BankAccountController extends BaseController {
     private final BankAccountService bankAccountService;
     private final UserService userService;
 

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/transactions")
 @Tag(name = "Transactions", description = "Endpoints for transaction management")
-public class TransactionController {
+public class TransactionController extends BaseController {
     private final TransactionService transactionService;
     private final UserService userService;
 
