@@ -10,6 +10,7 @@ import org.springframework.web.servlet.resource.*;
 
 import java.util.*;
 
+@ControllerAdvice
 public class BaseController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
