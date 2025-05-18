@@ -4,7 +4,7 @@ import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
-import com.techsage.banking.models.dto.UpdateUserDto;
+import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 
 import javax.naming.*;
@@ -14,9 +14,8 @@ public interface UserService {
     List<UserDto> getAll();
     UserDto getById(long id);
     User create(User user);
-    UserDto update(long id, UpdateUserDto user);
-    UserDto updateSelf(String currentEmail, String email, String phoneNumber);
-    UserDto getSelf(long id , String email);
+    UserDto update(long id, UpdateUserRequestDto user);
+    UserDto updateSelf(String currentEmail, UpdateSelfRequestDto user);
     void softDelete(long id);
     UserDto reinstateUser(long id);
     AuthResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException;

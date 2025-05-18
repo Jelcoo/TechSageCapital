@@ -3,9 +3,10 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
+import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.MessageDto;
-import com.techsage.banking.models.dto.UpdateUserDto;
+import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -313,7 +314,7 @@ public class UserController extends BaseController {
     )
     @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserDto userDto) {
+    public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserRequestDto userDto) {
         try{
             return ResponseEntity.ok().body(userService.update(id, userDto));
         }catch (IllegalArgumentException e) {
@@ -352,13 +353,11 @@ public class UserController extends BaseController {
     )
     @PutMapping("/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<BaseDto> updateSelf(@Valid @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<BaseDto> updateSelf(@Valid @RequestBody UpdateSelfRequestDto requestBody) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentEmail = authentication.getName();
-            String email = requestBody.get("email");
-            String phoneNumber = requestBody.get("phoneNumber");
-            return ResponseEntity.ok().body(userService.updateSelf(currentEmail, email, phoneNumber));
+            return ResponseEntity.ok().body(userService.updateSelf(currentEmail, requestBody));
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         }
