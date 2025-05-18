@@ -9,6 +9,7 @@ import { useRoute } from "vue-router";
 import { AccountStatus } from "@/types/user";
 import router from "@/router";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { formatMoney } from "@/utils";
 
 const route = useRoute();
 const userIdParam = route.params.id;
@@ -179,7 +180,7 @@ const submitHandler = computed(() =>
                             <input type="text"
                                 v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                                 v-model="user.dailyLimit" class="form-control" />
-                            <span v-else>&#8364; {{ user.dailyLimit }}</span>
+                            <span v-else> {{ formatMoney(user.dailyLimit) }}</span>
 
                         </div>
                         <div class="col">
@@ -187,7 +188,7 @@ const submitHandler = computed(() =>
                             <input type="text"
                                 v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                                 v-model="user.transferLimit" class="form-control" />
-                            <span v-else>&#8364; {{ user.transferLimit }}</span>
+                            <span v-else> {{ formatMoney(user.transferLimit) }}</span>
 
                         </div>
                     </div>
