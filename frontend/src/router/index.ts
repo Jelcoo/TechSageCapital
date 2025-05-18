@@ -27,6 +27,18 @@ const router = createRouter({
                     component: () => import('@/views/customer/AccountDetails.vue'),
                     meta: { authorizedRoles: [Role.EMPLOYEE] },
                 },
+                {
+                    path: 'transfer',
+                    name: 'transfer',
+                    component: () => import('@/views/customer/TransferOverview.vue'),
+                    meta: { authorizedRoles: [Role.USER] },
+                },
+                {
+                    path: 'transfer/:id',
+                    name: 'transfer-employee',
+                    component: () => import('@/views/customer/TransferOverview.vue'),
+                    meta: { authorizedRoles: [Role.EMPLOYEE] },
+                }
             ],
         },
         {
