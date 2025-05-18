@@ -8,7 +8,6 @@ import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 
-const route = useRoute();
 const userStore = useUserStore();
 
 const userId = ref(userStore.id);
