@@ -6,7 +6,6 @@ import type { User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
-import router from "@/router";
 
 const userStore = useUserStore();
 const user = ref<User | null>(null);
