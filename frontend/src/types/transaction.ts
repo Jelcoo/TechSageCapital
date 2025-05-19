@@ -23,7 +23,7 @@ export enum TransactionStatus {
     FAILED = 'FAILED',
 }
 
-export interface transactionAccount {
+export interface TransactionAccount {
     firstName: string;
     iban: string;
     id: number;
