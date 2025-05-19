@@ -5,6 +5,7 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.BankAccountDto;
 import com.techsage.banking.models.enums.BankAccountType;
+import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.repositories.BankAccountRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import org.iban4j.Iban;
@@ -17,11 +18,17 @@ import java.util.List;
 @Service
 public class BankAccountServiceJpa implements BankAccountService {
     private final BankAccountRepository bankAccountRepository;
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public BankAccountServiceJpa(BankAccountRepository bankAccountRepository) {
         this.bankAccountRepository = bankAccountRepository;
         this.modelMapper = new ModelMapper();
+        modelMapper.typeMap(BankAccount.class, BankAccountInfoWithoutBalance.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getFirstName(), BankAccountInfoWithoutBalance::setFirstName);
+            mapper.map(src -> src.getUser().getLastName(), BankAccountInfoWithoutBalance::setLastName);
+            mapper.map(src -> src.getIban() == null ? "" : src.getIban().getAccountNumber(), BankAccountInfoWithoutBalance::setIban);
+            mapper.map(BankAccount::getType, BankAccountInfoWithoutBalance::setType);
+        });
     }
 
     @Override
@@ -51,6 +58,16 @@ public class BankAccountServiceJpa implements BankAccountService {
     public BankAccount getByIban(Iban iban) {
         return bankAccountRepository.findByIban(iban);
     }
+
+    @Override
+    public List<BankAccountInfoWithoutBalance> findByFirstNameAndLastName(String firstName, String lastName) {
+        List<BankAccount> bankAccounts = bankAccountRepository
+                .findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCase(firstName, lastName);
+        return bankAccounts.stream()
+                .map(bankAccount -> modelMapper.map(bankAccount, BankAccountInfoWithoutBalance.class))
+                .toList();
+    }
+
 
     @Override
     public BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance) {
