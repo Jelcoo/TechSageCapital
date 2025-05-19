@@ -13,15 +13,12 @@ const transactions = ref<Transaction[]>([]);
 const userStore = useUserStore();
 const bankAccountId = Number(useRoute().params.id);
 
-onMounted(() => {
-    fetchTransactions();
-});
 async function fetchTransactions() {
     loading.value = true;
     errorMessage.value = "";
     try {
         if (useRoute().params.id && (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))) {
-            const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId.value}`);
+            const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}`);
             transactions.value = [response.data];
         }
         else {
@@ -44,6 +41,10 @@ async function fetchTransactions() {
         loading.value = false;
     }
 }
+
+onMounted(() => {
+    fetchTransactions();
+});
 
 </script>
 
@@ -71,9 +72,9 @@ async function fetchTransactions() {
                     <tr v-for="transaction in transactions" :key="transaction.id">
                         <td>{{ transaction.type }}</td>
                         <td>{{ transaction.amount }}</td>
-                        <td>{{ transaction.timeStamp }}</td>
-                        <td>{{ transaction.from }}</td>
-                        <td>{{ transaction.to }}</td>
+                        <td>{{ transaction.createdAt }}</td>
+                        <td>{{ transaction.fromAccount?.iban }}</td>
+                        <td>{{ transaction.toAccount?.iban }}</td>
                         <td>{{ transaction.description }}</td>
                     </tr>
                 </tbody>
