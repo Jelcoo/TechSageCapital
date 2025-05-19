@@ -57,7 +57,7 @@ onMounted(() => {
 
             <div v-if="loading" class="text-center">
                 <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden"></span>
                 </div>
             </div>
 
@@ -147,6 +147,11 @@ onMounted(() => {
                                 </div>
                                 <div>
                                     <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
+                                </div>
+                                <div>
+                                    <RouterLink :to="`/accountdetails/transactions/${account.id}`"
+                                        class="btn btn-primary mt-2">View
+                                        Transactions</RouterLink>
                                 </div>
                             </li>
                         </ul>

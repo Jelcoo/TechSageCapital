@@ -16,5 +16,5 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 
     @Query("SELECT t FROM Transaction t WHERE t.fromAccount = ?1 OR t.toAccount = ?1")
-    List<Transaction> findAllByBankAccount(long id);
+    List<Transaction> findAllByBankAccount(BankAccount bankAccount);
 }

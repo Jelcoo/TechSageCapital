@@ -20,13 +20,17 @@ async function fetchTransactions() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (useRoute().params.id && (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))) {
+        if (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) {
             const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}`);
+            if (!response.data) {
+                errorMessage.value = "No transactions found.";
+            }
+            console.log(response.data);
             transactions.value = [response.data];
         }
         else {
             if (userStore.bankAccounts.some((account) => account.id === bankAccountId)) {
-                const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}`);
+                const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}/me`);
                 transactions.value = [response.data];
             } else {
                 errorMessage.value = "Bank account not found or you do not have access.";
@@ -55,7 +59,7 @@ onMounted(() => {
     <main>
         <h1>Transactions history</h1>
         <div v-if="loading" class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only"></span>
         </div>
         <div v-else-if="errorMessage">{{ errorMessage }}</div>
 

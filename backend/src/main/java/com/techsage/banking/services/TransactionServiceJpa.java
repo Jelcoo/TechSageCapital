@@ -52,10 +52,11 @@ public class TransactionServiceJpa implements TransactionService {
 
     @Override
     public List<TransactionDto> getById(long id) {
+        BankAccount bankAccount = bankAccountService.getById(id);
         if (!transactionRepository.existsById(id)) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        return transactionRepository.findAllByBankAccount(id).stream()
+        return transactionRepository.findAllByBankAccount(bankAccount).stream()
                 .map(transaction -> modelMapper.map(transaction, TransactionDto.class))
                 .toList();
     }

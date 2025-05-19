@@ -41,7 +41,7 @@ public class TransactionController extends BaseController {
         return transactionService.getById(id);
     }
 
-    @GetMapping("/{id}/customer")
+    @GetMapping("/{id}/me")
     @PreAuthorize("hasRole('CUSTOMER')")
     public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
