@@ -36,7 +36,6 @@ async function fetchTransactions() {
             } else {
                 errorMessage.value = "Bank account not found or you do not have access.";
             }
-            errorMessage.value = "Bank account not found.";
         }
         if (!transactions.value || transactions.value.length === 0) {
             errorMessage.value = "No transactions found.";
