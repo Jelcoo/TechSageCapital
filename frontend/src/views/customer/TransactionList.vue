@@ -6,6 +6,9 @@ import type { Transaction } from "@/types";
 import { useRoute } from "vue-router";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
+import { formatDate } from "@/utils/dates";
+import { formatIban } from "@/utils/prettyIban";
+import { formatMoney } from "@/utils";
 
 const loading = ref(false);
 const errorMessage = ref("");
@@ -22,13 +25,13 @@ async function fetchTransactions() {
             transactions.value = [response.data];
         }
         else {
-            if (userStore.bankAccounts.values.id.includes(bankAccountId)) {
+            if (userStore.bankAccounts.some((account) => account.id === bankAccountId)) {
                 const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}`);
                 transactions.value = [response.data];
+            } else {
+                errorMessage.value = "Bank account not found or you do not have access.";
             }
-            else {
-                errorMessage.value = "Bank account not found.";
-            }
+            errorMessage.value = "Bank account not found.";
         }
         if (!transactions.value || transactions.value.length === 0) {
             errorMessage.value = "No transactions found.";
@@ -70,12 +73,17 @@ onMounted(() => {
                 </thead>
                 <tbody>
                     <tr v-for="transaction in transactions" :key="transaction.id">
-                        <td>{{ transaction.type }}</td>
-                        <td>{{ transaction.amount }}</td>
-                        <td>{{ transaction.createdAt }}</td>
-                        <td>{{ transaction.fromAccount?.iban }}</td>
-                        <td>{{ transaction.toAccount?.iban }}</td>
+                        <td>{{ formatDate(transaction.createdAt) }}</td>
+                        <td>{{ transaction.initiator.firstName }} {{
+                            transaction.initiator.lastName }}</td>
+                        <td>{{ formatIban(transaction.fromAccount?.iban ?? "") }}</td>
+                        <td>{{ formatIban(transaction.toAccount?.iban ?? "") }}</td>
                         <td>{{ transaction.description }}</td>
+                        <td class="text-danger text-end"
+                            v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
+                                formatMoney(transaction.amount) }}
+                        </td>
+                        <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
                     </tr>
                 </tbody>
             </table>

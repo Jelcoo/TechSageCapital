@@ -19,7 +19,6 @@ async function fetchTransactions() {
         if (!response.data || response.data.length === 0) {
             errorMessage.value = "No transactions found.";
         }
-        console.log(response.data);
         transactions.value = response.data;
         if (!transactions.value || transactions.value.length === 0) {
             errorMessage.value = "No transactions found.";
