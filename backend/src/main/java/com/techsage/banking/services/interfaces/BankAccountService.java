@@ -16,4 +16,5 @@ public interface BankAccountService {
     BankAccount getByIban(Iban iban);
     BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance);
     BankAccount update(BankAccount bankAccount);
+    BankAccount getById(long id);
 }

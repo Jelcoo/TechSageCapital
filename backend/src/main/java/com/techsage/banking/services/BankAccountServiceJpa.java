@@ -74,4 +74,12 @@ public class BankAccountServiceJpa implements BankAccountService {
     public BankAccount update(BankAccount bankAccount) {
         return bankAccountRepository.save(bankAccount);
     }
+
+    @Override
+    public BankAccount getById(long id) {
+        if (!bankAccountRepository.existsById(id)) {
+            throw new IllegalArgumentException("Bank account not found");
+        }
+        return bankAccountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
+    }
 }

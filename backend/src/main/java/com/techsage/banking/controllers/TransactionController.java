@@ -41,13 +41,12 @@ public class TransactionController extends BaseController {
         return transactionService.getById(id);
     }
 
-//    @GetMapping("/{id}/customer")
-//    @PreAuthorize("hasRole('CUSTOMER')")
-//    public TransactionDto getCustomerTransactionsForId(long id) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User user = userService.getByEmailRaw(authentication.getName());
-//        return transactionService.getByIdForCustomer(id, user);
-//    }
+    @GetMapping("/{id}/customer")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return transactionService.getByIdForCustomer(id, authentication.getName());
+    }
 
 
     @GetMapping
