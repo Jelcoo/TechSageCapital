@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface TransactionService {
     List<TransactionDto> getAll();
-    Transaction getById(long id);
+    List<TransactionDto> getById(long id);
     TransactionDto create(TransactionRequestDto transaction, User user) throws TransactionException;
     BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 }
