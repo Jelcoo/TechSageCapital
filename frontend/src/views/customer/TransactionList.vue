@@ -26,7 +26,6 @@ async function fetchTransactions() {
             if (!response.data) {
                 errorMessage.value = "No transactions found.";
             }
-            console.log(response.data);
             transactions.value = response.data;
         }
         else {
