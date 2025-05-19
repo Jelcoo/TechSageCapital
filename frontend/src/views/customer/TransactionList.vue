@@ -14,6 +14,7 @@ const loading = ref(false);
 const errorMessage = ref("");
 const transactions = ref<Transaction[]>([]);
 const userStore = useUserStore();
+const bankAccount = String(useRoute().params.iban);
 const bankAccountId = Number(useRoute().params.id);
 
 async function fetchTransactions() {
@@ -21,17 +22,17 @@ async function fetchTransactions() {
     errorMessage.value = "";
     try {
         if (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) {
-            const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}`);
+            const response = await axiosClient.get<Transaction[]>(`/transactions/${bankAccountId}`);
             if (!response.data) {
                 errorMessage.value = "No transactions found.";
             }
             console.log(response.data);
-            transactions.value = [response.data];
+            transactions.value = response.data;
         }
         else {
             if (userStore.bankAccounts.some((account) => account.id === bankAccountId)) {
-                const response = await axiosClient.get<Transaction>(`/transactions/${bankAccountId}/me`);
-                transactions.value = [response.data];
+                const response = await axiosClient.get<Transaction[]>(`/transactions/${bankAccountId}/me`);
+                transactions.value = response.data;
             } else {
                 errorMessage.value = "Bank account not found or you do not have access.";
             }
@@ -57,7 +58,7 @@ onMounted(() => {
 
 <template>
     <main>
-        <h1>Transactions history</h1>
+        <h1>Transactions history for {{ bankAccount }}</h1>
         <div v-if="loading" class="spinner-border" role="status">
             <span class="sr-only"></span>
         </div>
@@ -67,21 +68,23 @@ onMounted(() => {
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Type</th>
-                        <th>Amount</th>
                         <th>Date</th>
-                        <th>From</th>
-                        <th>To</th>
+                        <th>Account</th>
                         <th>Description</th>
+                        <th class="text-end">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="transaction in transactions" :key="transaction.id">
+
                         <td>{{ formatDate(transaction.createdAt) }}</td>
-                        <td>{{ transaction.initiator.firstName }} {{
-                            transaction.initiator.lastName }}</td>
-                        <td>{{ formatIban(transaction.fromAccount?.iban ?? "") }}</td>
-                        <td>{{ formatIban(transaction.toAccount?.iban ?? "") }}</td>
+                        <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ?? "")
+                        }}</td>
+                        <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
+                            ?? "") }}</td>
+                        <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">ATM
+                        </td>
+                        <td v-else>Error</td>
                         <td>{{ transaction.description }}</td>
                         <td class="text-danger text-end"
                             v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{

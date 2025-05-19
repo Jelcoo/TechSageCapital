@@ -50,7 +50,7 @@ const router = createRouter({
                     meta: { authorizedRoles: [Role.EMPLOYEE] },
                 },
                 {
-                    path: 'transactions/:id',
+                    path: 'transactions/:id/:iban',
                     name: 'transactions-specific',
                     component: () => import('@/views/customer/TransactionList.vue'),
                 },

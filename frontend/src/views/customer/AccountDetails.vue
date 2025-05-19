@@ -149,7 +149,7 @@ onMounted(() => {
                                     <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
                                 </div>
                                 <div>
-                                    <RouterLink :to="`/accountdetails/transactions/${account.id}`"
+                                    <RouterLink :to="`/accountdetails/transactions/${account.id}/${account.iban}`"
                                         class="btn btn-primary mt-2">View
                                         Transactions</RouterLink>
                                 </div>
