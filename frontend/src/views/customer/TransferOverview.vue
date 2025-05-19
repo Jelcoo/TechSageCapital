@@ -146,6 +146,7 @@ import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 import { Modal } from "bootstrap";
+import { useDebounceFn } from "@vueuse/core";
 
 const route = useRoute();
 
@@ -192,7 +193,7 @@ async function fetchUser() {
     }
 }
 
-async function searchAccounts() {
+const searchAccounts = useDebounceFn(async () => {
     errorMessage.value = "";
     try {
         const response = await axiosClient.get<SearchResponseBankaccount[]>(`/bankAccounts/find?firstName=${firstName.value}&lastName=${lastName.value}`);
@@ -202,7 +203,7 @@ async function searchAccounts() {
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
             : "An error occurred while searching for accounts. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
     }
-}
+}, 500)
 
 function selectToAccount(account: BankAccount | SearchResponseBankaccount) {
     if (toAccount.value === account.iban) {
