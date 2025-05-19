@@ -1,7 +1,7 @@
 export interface Transaction {
     id: number;
-    fromAccount?: transactionAccount; // Foreign key to BankAccount table (sender's account ID)    can be null for ATM deposit
-    toAccount?: transactionAccount; // Foreign key to BankAccount table (receiver's account ID)    can be null for ATM withdrawal
+    fromAccount?: TransactionAccount; // Foreign key to BankAccount table (sender's account ID)    can be null for ATM deposit
+    toAccount?: TransactionAccount; // Foreign key to BankAccount table (receiver's account ID)    can be null for ATM withdrawal
     initiator: TransactionInitiator; // Foreign key to User table (who initiated the transaction)
     amount: number;
     createdAt: Date;
