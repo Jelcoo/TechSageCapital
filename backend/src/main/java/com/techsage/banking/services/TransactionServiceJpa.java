@@ -38,6 +38,7 @@ public class TransactionServiceJpa implements TransactionService {
             mapper.map(src -> src.getUser().getFirstName(), BankAccountInfoWithoutBalance::setFirstName);
             mapper.map(src -> src.getUser().getLastName(), BankAccountInfoWithoutBalance::setLastName);
             mapper.map(src -> src.getIban() == null ? "" : src.getIban().getAccountNumber(), BankAccountInfoWithoutBalance::setIban);
+            mapper.map(BankAccount::getType, BankAccountInfoWithoutBalance::setType);
         });
     }
 

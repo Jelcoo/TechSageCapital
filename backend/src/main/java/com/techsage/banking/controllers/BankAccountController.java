@@ -4,6 +4,7 @@ import com.techsage.banking.models.*;
 import com.techsage.banking.models.dto.BankAccountDto;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.enums.*;
+import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.services.interfaces.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -50,6 +51,12 @@ public class BankAccountController extends BaseController {
         User user = userService.getByEmailRaw(authentication.getName());
 
         return bankAccountService.findByUserAndType(user, type);
+    }
+
+    @GetMapping("/find")
+    @PreAuthorize("hasRole('USER')")
+    public List<BankAccountInfoWithoutBalance> findByName(@RequestParam String firstName, @RequestParam String lastName) {
+        return bankAccountService.findByFirstNameAndLastName(firstName, lastName);
     }
 
     @Operation(

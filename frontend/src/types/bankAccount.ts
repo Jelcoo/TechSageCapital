@@ -7,6 +7,13 @@ export interface BankAccount {
     type: BankAccountType; // 'savings' | 'checking' | optional ATM
     bankAccounts: BankAccount[];
 }
+export interface SearchResponseBankaccount {
+    id: number;
+    firstName: string;
+    lastName: string;
+    iban: string;
+    type: BankAccountType;
+}
 
 export enum BankAccountType {
     SAVINGS = 'SAVINGS',

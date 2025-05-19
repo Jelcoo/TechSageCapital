@@ -52,8 +52,13 @@
                     </div>
                     <div class="mt-3">
                         <label for="toAccount" class="form-label">To Account:</label>
-                        <input type="text" name="toAccount" id="toAccount" class="form-control"
-                            placeholder="NLxxINHOxxxxxxxxxx" v-model="toAccount">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <input type="text" name="toAccount" id="toAccount" class="form-control w-50"
+                                placeholder="NLxxINHOxxxxxxxxxx" v-model="toAccount">
+                            <button type="button" class="btn btn-primary" @click="openModal">
+                                Search Accounts
+                            </button>
+                        </div>
                         <label for="toAccount" class="form-label mt-3">To own account:</label>
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center"
@@ -79,16 +84,69 @@
                 </div>
             </div>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true"
+            ref="searchModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchModalLabel">Search bankAccounts</h5>
+                        <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label for="firstnameSearch" class="form-label">firstname:</label>
+                            <input type="text" name="firstnameSearch" id="firstnameSearch" class="form-control"
+                                v-model="firstName" @input="searchAccounts">
+                            <label for="lastnameSearch" class="form-label">lastname:</label>
+                            <input type="text" name="lastnameSearch" id="lastnameSearch" class="form-control"
+                                v-model="lastName" @input="searchAccounts">
+                        </div>
+                        <div class="mt-3">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    v-for="account in searchResults" :key="account.id">
+                                    <div>
+                                        <div>
+                                            <strong>First Name:</strong> {{ account.firstName }}
+                                        </div>
+                                        <div>
+                                            <strong>Last Name:</strong> {{ account.lastName }}
+                                        </div>
+                                        <div>
+                                            <strong>Account Type:</strong> {{ account.type }}
+                                        </div>
+                                        <div>
+                                            <strong>IBAN:</strong> {{ account.iban }}
+                                        </div>
+                                    </div>
+                                    <button
+                                        :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                        @click="selectToAccount(account)" :disabled="fromAccount === account.iban">
+                                        {{ toAccount === account.iban ? 'Selected' : 'Select' }}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import axiosClient from "@/axios";
-import type { BankAccount, User } from "@/types";
+import type { BankAccount, SearchResponseBankaccount, User } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
+import { Modal } from "bootstrap";
+import { useDebounceFn } from "@vueuse/core";
 
 const route = useRoute();
 
@@ -100,6 +158,22 @@ const fromAccount = ref("");
 const toAccount = ref("");
 const amount = ref(0);
 const description = ref("");
+const firstName = ref("");
+const lastName = ref("");
+const searchResults = ref<SearchResponseBankaccount[]>([]);
+const searchModal = ref<HTMLElement | null>(null);
+let modalInstance: Modal | null = null;
+
+const openModal = (): void => {
+    modalInstance?.show();
+};
+
+const closeModal = (): void => {
+    modalInstance?.hide();
+    firstName.value = "";
+    lastName.value = "";
+    searchResults.value = [];
+};
 
 async function fetchUser() {
     loading.value = true;
@@ -119,12 +193,25 @@ async function fetchUser() {
     }
 }
 
-function selectToAccount(account: BankAccount) {
+const searchAccounts = useDebounceFn(async () => {
+    errorMessage.value = "";
+    try {
+        const response = await axiosClient.get<SearchResponseBankaccount[]>(`/bankAccounts/find?firstName=${firstName.value}&lastName=${lastName.value}`);
+        searchResults.value = response.data;
+    } catch (error) {
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while searching for accounts. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
+    }
+}, 500)
+
+function selectToAccount(account: BankAccount | SearchResponseBankaccount) {
     if (toAccount.value === account.iban) {
         toAccount.value = "";
     } else {
         toAccount.value = account.iban;
     }
+    closeModal();
 }
 
 function selectFromAccount(account: BankAccount) {
@@ -157,6 +244,9 @@ async function transfer() {
 
 onMounted(() => {
     fetchUser();
+    if (searchModal.value) {
+        modalInstance = new Modal(searchModal.value);
+    }
 });
 </script>
 
