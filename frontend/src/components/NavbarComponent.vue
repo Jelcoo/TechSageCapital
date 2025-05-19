@@ -27,6 +27,13 @@
                                     active-class="active">
                                     Customer Overview</RouterLink>
                             </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <RouterLink to="/employee/transactions" class="dropdown-item" active-class="active">
+                                    Transactions</RouterLink>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">

@@ -48,7 +48,12 @@ const router = createRouter({
                     name: 'transfer-employee',
                     component: () => import('@/views/customer/TransferOverview.vue'),
                     meta: { authorizedRoles: [Role.EMPLOYEE] },
-                }
+                },
+                {
+                    path: 'transactions/:id/:iban',
+                    name: 'transactions-specific',
+                    component: () => import('@/views/customer/TransactionList.vue'),
+                },
             ],
         },
         {
@@ -92,6 +97,11 @@ const router = createRouter({
                     path: 'customer/:id/limits',
                     name: 'customer-limits',
                     component: () => import('@/views/employee/LimitsCustomer.vue'),
+                },
+                {
+                    path: 'transactions',
+                    name: 'transactions',
+                    component: () => import('@/views/employee/TransactionsView.vue'),
                 },
             ],
         },

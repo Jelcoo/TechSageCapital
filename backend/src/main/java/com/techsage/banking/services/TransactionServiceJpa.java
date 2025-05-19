@@ -12,6 +12,7 @@ import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.repositories.TransactionRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.TransactionService;
+import com.techsage.banking.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
@@ -28,11 +29,13 @@ public class TransactionServiceJpa implements TransactionService {
     private final ModelMapper modelMapper;
     private final TransactionHelper transactionHelper;
     private final BankAccountService bankAccountService;
+    private final UserService userService;
 
-    public TransactionServiceJpa(TransactionRepository transactionRepository, TransactionHelper transactionHelper, BankAccountService bankAccountService) {
+    public TransactionServiceJpa(TransactionRepository transactionRepository, TransactionHelper transactionHelper, BankAccountService bankAccountService, UserService userService) {
         this.transactionRepository = transactionRepository;
         this.transactionHelper = transactionHelper;
         this.bankAccountService = bankAccountService;
+        this.userService = userService;
         this.modelMapper = new ModelMapper();
         modelMapper.typeMap(BankAccount.class, BankAccountInfoWithoutBalance.class).addMappings(mapper -> {
             mapper.map(src -> src.getUser().getFirstName(), BankAccountInfoWithoutBalance::setFirstName);
@@ -49,8 +52,24 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public Transaction getById(long id) {
-        return transactionRepository.findById(id).get();
+    public List<TransactionDto> getById(long id) {
+        BankAccount bankAccount = bankAccountService.getById(id);
+        if (!transactionRepository.existsById(id)) {
+            throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
+        }
+        return transactionRepository.findAllByBankAccount(bankAccount).stream()
+                .map(transaction -> modelMapper.map(transaction, TransactionDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<TransactionDto> getByIdForCustomer(long id, String email) {
+        User user = userService.getByEmailRaw(email);
+        BankAccount bankAccount = bankAccountService.getById(id);
+        if (bankAccount.getUser() != user) {
+            throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
+        }
+        return getById(id);
     }
 
     @Override

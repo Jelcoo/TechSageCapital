@@ -15,4 +15,8 @@ public class UpdateSelfRequestDto
 
     @NotNull(message = "Phone number is required")
     private String phoneNumber;
+
+    public void setEmail(String email) {
+        this.email = email.toLowerCase();
+    }
 }

@@ -18,4 +18,5 @@ public interface BankAccountService {
     List<BankAccountInfoWithoutBalance> findByFirstNameAndLastName(String firstName, String lastName);
     BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance);
     BankAccount update(BankAccount bankAccount);
+    BankAccount getById(long id);
 }

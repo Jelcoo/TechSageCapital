@@ -36,12 +36,22 @@ public class TransactionController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public Transaction getTransaction(long id) {
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<TransactionDto> getTransactionsForId(@PathVariable long id) {
         return transactionService.getById(id);
     }
 
+    @GetMapping("/{id}/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return transactionService.getByIdForCustomer(id, authentication.getName());
+    }
+
+
     @GetMapping
-    public List<TransactionDto> getTransactions() {
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<TransactionDto> getAllTransactions() {
         return transactionService.getAll();
     }
 

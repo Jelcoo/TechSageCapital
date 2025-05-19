@@ -43,4 +43,8 @@ public class UpdateUserRequestDto extends BaseDto {
 
     @NotNull(message = "Status is required")
     private UserStatus status;
+
+    public void setEmail(String email) {
+        this.email = email.toLowerCase();
+    }
 }
