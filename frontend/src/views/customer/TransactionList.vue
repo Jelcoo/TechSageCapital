@@ -81,7 +81,7 @@ onMounted(() => {
                             <td>{{ formatDate(transaction.createdAt) }}</td>
                             <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ??
                                 "")
-                            }}</td>
+                                }}</td>
                             <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
                                 ?? "") }}</td>
                             <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">
@@ -89,11 +89,14 @@ onMounted(() => {
                             </td>
                             <td v-else>Error</td>
                             <td>{{ transaction.description }}</td>
-                            <td class="text-danger text-end"
-                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
-                                    formatMoney(transaction.amount) }}
+                            <td class="text-end"
+                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">
+                                <span class="badge text-bg-danger fs-6"> -{{ formatMoney(transaction.amount)
+                                }}</span>
                             </td>
-                            <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
+                            <td class="text-end" v-else>
+                                <span class="badge text-bg-success fs-6"> +{{ formatMoney(transaction.amount) }}</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
