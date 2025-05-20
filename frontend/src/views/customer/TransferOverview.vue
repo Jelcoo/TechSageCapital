@@ -10,8 +10,8 @@
             <div v-if="errorMessage" class="alert alert-danger text-center">
                 {{ errorMessage }}
             </div>
-            <div class="container row mb-4">
-                <div class="col-6">
+            <div class="row mb-4">
+                <div class="col-12 col-md-6 mb-4 mb-md-0">
                     <div>
                         <label for="amount" class="form-label">Amount:</label>
                         <input type="number" name="amount" id="amount" class="form-control" v-model="amount">
@@ -38,12 +38,12 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-md-6">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="col-8">
                             <label for="description" class="form-label">Description</label>
                             <textarea name="description" id="description" class="form-control" v-model="description"
-                                style="height: 12px;" />
+                                rows="1" />
                         </div>
                         <button class="btn btn-primary mt-3" @click="transfer"
                             :disabled="!fromAccount || !toAccount || amount <= 0">
@@ -52,12 +52,16 @@
                     </div>
                     <div class="mt-3">
                         <label for="toAccount" class="form-label">To Account:</label>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <input type="text" name="toAccount" id="toAccount" class="form-control w-50"
-                                placeholder="NLxxINHOxxxxxxxxxx" v-model="toAccount">
-                            <button type="button" class="btn btn-primary" @click="openModal">
-                                Search Accounts
-                            </button>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-12 col-sm-8">
+                                <input type="text" name="toAccount" id="toAccount" class="form-control w-50"
+                                    placeholder="NLxxINHOxxxxxxxxxx" v-model="toAccount">
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <button type="button" class="btn btn-primary" @click="openModal">
+                                    Search Accounts
+                                </button>
+                            </div>
                         </div>
                         <label for="toAccount" class="form-label mt-3">To own account:</label>
                         <ul class="list-group">
