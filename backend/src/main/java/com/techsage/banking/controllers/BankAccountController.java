@@ -74,35 +74,4 @@ public class BankAccountController extends BaseController {
     public List<BankAccountInfoWithoutBalance> findByName(@RequestParam String firstName, @RequestParam String lastName) {
         return bankAccountService.findByFirstNameAndLastName(firstName, lastName);
     }
-
-    @Operation(
-            summary = "All accounts",
-            description = "Returns a list of all bank accounts.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountDto.class)))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Forbidden",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    )
-            }
-    )
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<BankAccountDto> getAllBankAccounts(@RequestParam(required = false) BankAccountType type) {
-        if (type == null) {
-            return bankAccountService.getAll();
-        }
-
-        return bankAccountService.findByType(type);
-    }
 }

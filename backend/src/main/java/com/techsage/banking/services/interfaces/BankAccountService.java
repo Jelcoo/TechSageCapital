@@ -11,7 +11,6 @@ import java.math.*;
 import java.util.List;
 
 public interface BankAccountService {
-    List<BankAccountDto> getAll();
     List<BankAccountDto> findByUserAndType(User user, BankAccountType type);
     List<BankAccountDto> findByType(BankAccountType type);
     BankAccount getByIban(Iban iban);

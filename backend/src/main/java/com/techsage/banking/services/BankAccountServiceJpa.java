@@ -32,12 +32,6 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public List<BankAccountDto> getAll() {
-        List<BankAccount> bankAccounts = (List<BankAccount>)bankAccountRepository.findAll();
-        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
-    }
-
-    @Override
     public List<BankAccountDto> findByUserAndType(User user, BankAccountType type) {
         List<BankAccount> bankAccounts;
         if (type == null) {
