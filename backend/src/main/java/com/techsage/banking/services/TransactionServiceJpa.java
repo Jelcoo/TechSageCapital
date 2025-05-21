@@ -52,7 +52,7 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> getById(long id) {
+    public List<TransactionDto> getByAccountId(long id) {
         BankAccount bankAccount = bankAccountService.getById(id);
         if (!transactionRepository.existsById(id)) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
@@ -63,13 +63,13 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> getByIdForCustomer(long id, String email) {
+    public List<TransactionDto> getByAccountIdAndCustomer(long id, String email) {
         User user = userService.getByEmailRaw(email);
         BankAccount bankAccount = bankAccountService.getById(id);
         if (bankAccount.getUser() != user) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        return getById(id);
+        return getByAccountId(id);
     }
 
     @Override

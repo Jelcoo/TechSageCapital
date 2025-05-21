@@ -2,7 +2,6 @@ package com.techsage.banking.controllers;
 
 
 import com.techsage.banking.exceptions.TransactionException;
-import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,10 +61,10 @@ public class TransactionController extends BaseController {
                     )
             }
     )
-    @GetMapping("/{id}")
+    @GetMapping("/{bankAccountId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<TransactionDto> getTransactionsForId(@PathVariable long id) {
-        return transactionService.getById(id);
+    public List<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId) {
+        return transactionService.getByAccountId(bankAccountId);
     }
 
     @Operation(
@@ -85,11 +83,11 @@ public class TransactionController extends BaseController {
                     )
             }
     )
-    @GetMapping("/{id}/me")
+    @GetMapping("/{bankAccountId}/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long id) {
+    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return transactionService.getByIdForCustomer(id, authentication.getName());
+        return transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName());
     }
 
     @Operation(
