@@ -3,13 +3,14 @@ package com.techsage.banking.services;
 import com.techsage.banking.helpers.IbanHelper;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
-import com.techsage.banking.models.dto.BankAccountDto;
+import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.enums.BankAccountType;
 import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.repositories.BankAccountRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.*;
@@ -32,20 +33,14 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public List<BankAccountDto> findByUserAndType(User user, BankAccountType type) {
-        List<BankAccount> bankAccounts;
+    public Page<BankAccountDto> findByUserAndType(User user, BankAccountType type, Pageable pageable) {
+        Page<BankAccount> bankAccountsPage;
         if (type == null) {
-            bankAccounts = bankAccountRepository.findByUser(user);
+            bankAccountsPage = bankAccountRepository.findByUser(user, pageable);
         } else {
-            bankAccounts = bankAccountRepository.findByUserAndType(user, type);
+            bankAccountsPage = bankAccountRepository.findByUserAndType(user, type, pageable);
         }
-        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
-    }
-
-    @Override
-    public List<BankAccountDto> findByType(BankAccountType type) {
-        List<BankAccount> bankAccounts = bankAccountRepository.findByType(type);
-        return bankAccounts.stream().map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).toList();
+        return bankAccountsPage.map(account -> modelMapper.map(account, BankAccountDto.class));
     }
 
     @Override
@@ -54,14 +49,12 @@ public class BankAccountServiceJpa implements BankAccountService {
     }
 
     @Override
-    public List<BankAccountInfoWithoutBalance> findByFirstNameAndLastName(String firstName, String lastName) {
-        List<BankAccount> bankAccounts = bankAccountRepository
-                .findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCaseAndType(firstName, lastName, BankAccountType.CHECKING);
-        return bankAccounts.stream()
-                .map(bankAccount -> modelMapper.map(bankAccount, BankAccountInfoWithoutBalance.class))
-                .toList();
-    }
+    public Page<BankAccountInfoWithoutBalance> findByFirstNameAndLastName(String firstName, String lastName, Pageable pageable) {
+        Page<BankAccount> bankAccountsPage = bankAccountRepository
+                .findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCaseAndType(firstName, lastName, BankAccountType.CHECKING, pageable);
 
+        return bankAccountsPage.map(account -> modelMapper.map(account, BankAccountInfoWithoutBalance.class));
+    }
 
     @Override
     public BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance) {

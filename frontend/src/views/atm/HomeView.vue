@@ -9,10 +9,10 @@
                 <label for="status" class="form-label">Account:</label>
                 <select class="form-select" id="status" v-model="selectedAccount">
                     <option :value="null" disabled selected>
-                        <span v-if="bankAccounts.length === 0">No bank acocunts found.</span>
+                        <span v-if="bankAccounts?.content.length === 0">No bank acocunts found.</span>
                         <span v-else>Select an account</span>
                     </option>
-                    <option v-for="account in bankAccounts" :key="account.id" :value="account">
+                    <option v-for="account in bankAccounts?.content" :key="account.id" :value="account">
                         {{ account.iban }}
                     </option>
                 </select>
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import axiosClient from '@/axios';
+import axiosClient, { type PaginatedResponse } from '@/axios';
 import FormInput from '@/components/forms/FormInput.vue';
 import type { BankAccount } from '@/types';
 import { formatMoney, processFormError } from '@/utils';
@@ -53,7 +53,7 @@ import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee
 import { onBeforeMount, ref } from 'vue';
 import confetti from 'canvas-confetti';
 
-const bankAccounts = ref<BankAccount[]>([]);
+const bankAccounts = ref<PaginatedResponse<BankAccount>>();
 const selectedAccount = ref<BankAccount | null>(null);
 const confettiCanvas = document.getElementById('status') as HTMLCanvasElement;
 
@@ -67,7 +67,10 @@ const createConfetti = (shape: confetti.Shape) => {
 
 const setNewAccount = (account: BankAccount) => {
     selectedAccount.value = account;
-    bankAccounts.value = bankAccounts.value.map(a => {
+    if (bankAccounts.value === undefined) {
+        return;
+    }
+    bankAccounts.value.content = bankAccounts.value.content.map(a => {
         if (a.id === account.id) {
             a = account
         }
@@ -104,7 +107,7 @@ const doDeposit = (values: GenericObject, actions: SubmissionContext) => {
 }
 
 onBeforeMount(() => {
-    axiosClient.get('/bankAccounts?type=CHECKING')
+    axiosClient.get<PaginatedResponse<BankAccount>>('/bankAccounts?type=CHECKING')
         .then(response => {
             bankAccounts.value = response.data;
         })

@@ -130,37 +130,40 @@
                                 <h5 class="mb-1">Search accounts:</h5>
                                 <label for="firstnameSearch" class="form-label">Firstname:</label>
                                 <input type="text" name="firstnameSearch" id="firstnameSearch" class="form-control"
-                                    v-model="firstName" @input="searchAccounts">
+                                    v-model="firstName" @input="debouncedSearch">
                                 <label for="lastnameSearch" class="form-label">Lastname:</label>
                                 <input type="text" name="lastnameSearch" id="lastnameSearch" class="form-control"
-                                    v-model="lastName" @input="searchAccounts">
+                                    v-model="lastName" @input="debouncedSearch">
                             </div>
                             <div class="mt-3">
-                                <ul class="list-group">
-                                    <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
-                                        v-for="account in searchResults" :key="account.id">
-                                        <div>
+                                <PageIndicator v-if="searchResults" :pagination="searchResults"
+                                    @pageSelect="handlePageSelect">
+                                    <ul class="list-group">
+                                        <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
+                                            v-for="account in searchResults.content" :key="account.id">
                                             <div>
-                                                <strong>First Name:</strong> {{ account.firstName }}
+                                                <div>
+                                                    <strong>First Name:</strong> {{ account.firstName }}
+                                                </div>
+                                                <div>
+                                                    <strong>Last Name:</strong> {{ account.lastName }}
+                                                </div>
+                                                <div>
+                                                    <strong>Account Type:</strong> {{ account.type }}
+                                                </div>
+                                                <div>
+                                                    <strong>IBAN:</strong> {{ account.iban }}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <strong>Last Name:</strong> {{ account.lastName }}
-                                            </div>
-                                            <div>
-                                                <strong>Account Type:</strong> {{ account.type }}
-                                            </div>
-                                            <div>
-                                                <strong>IBAN:</strong> {{ account.iban }}
-                                            </div>
-                                        </div>
-                                        <button
-                                            :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
-                                            @click="selectToAccount(account)"
-                                            :disabled="fromAccount?.iban === account.iban">
-                                            {{ toAccount === account.iban ? 'Selected' : 'Select' }}
-                                        </button>
-                                    </li>
-                                </ul>
+                                            <button
+                                                :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                                @click="selectToAccount(account)"
+                                                :disabled="fromAccount?.iban === account.iban">
+                                                {{ toAccount === account.iban ? 'Selected' : 'Select' }}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </PageIndicator>
                             </div>
                         </div>
 
@@ -176,13 +179,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import axiosClient from "@/axios";
+import axiosClient, { type PaginatedResponse } from "@/axios";
 import { BankAccountType, type BankAccount, type SearchResponseBankaccount, type User } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 import { Modal } from "bootstrap";
 import { useDebounceFn } from "@vueuse/core";
+import PageIndicator from "@/components/PageIndicator.vue";
 
 const route = useRoute();
 
@@ -197,9 +201,10 @@ const amount = ref(0);
 const description = ref("");
 const firstName = ref("");
 const lastName = ref("");
-const searchResults = ref<SearchResponseBankaccount[]>([]);
+const searchResults = ref<PaginatedResponse<SearchResponseBankaccount> | null>(null);
 const searchModal = ref<HTMLElement | null>(null);
 let modalInstance: Modal | null = null;
+const page = ref(1);
 
 const openModal = (): void => {
     modalInstance?.show();
@@ -209,7 +214,7 @@ const closeModal = (): void => {
     modalInstance?.hide();
     firstName.value = "";
     lastName.value = "";
-    searchResults.value = [];
+    searchResults.value = null;
 };
 
 async function fetchUser() {
@@ -230,17 +235,21 @@ async function fetchUser() {
     }
 }
 
-const searchAccounts = useDebounceFn(async () => {
+const searchAccounts = async function () {
     errorMessage.value = "";
     try {
-        const response = await axiosClient.get<SearchResponseBankaccount[]>(`/bankAccounts/find?firstName=${firstName.value}&lastName=${lastName.value}`);
+        const response = await axiosClient.get<PaginatedResponse<SearchResponseBankaccount>>(`/bankAccounts/find?firstName=${firstName.value}&lastName=${lastName.value}&page=${page.value}`);
         searchResults.value = response.data;
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
             : "An error occurred while searching for accounts. " + (error as AxiosError).message; // error.message is for debugging REMOVE LATER
     }
-}, 500)
+}
+
+const debouncedSearch = useDebounceFn(() => {
+    searchAccounts();
+}, 500);
 
 function selectToAccount(account: BankAccount | SearchResponseBankaccount) {
     if (toAccount.value === account.iban) {
@@ -295,8 +304,10 @@ watch(fromAccount, (newFromAccount, oldFromAccount) => {
     }
 });
 
-
-
+function handlePageSelect(pageNumber: number) {
+    page.value = pageNumber;
+    searchAccounts();
+}
 
 onMounted(() => {
     fetchUser();

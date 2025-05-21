@@ -9,10 +9,8 @@ import com.techsage.banking.models.enums.*;
 import org.springframework.data.domain.*;
 
 import javax.naming.*;
-import java.util.*;
 
 public interface UserService {
-    List<UserDto> getAll();
     UserDto getById(long id);
     User create(User user);
     UserDto update(long id, UpdateUserRequestDto user);

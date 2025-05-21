@@ -37,12 +37,6 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public List<UserDto> getAll() {
-        List<User> users = (List<User>)userRepository.findAll();
-        return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
-    }
-
-    @Override
     public UserDto getById(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         return modelMapper.map(user, UserDto.class);
