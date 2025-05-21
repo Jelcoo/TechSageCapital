@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { AccountStatus, type User } from '@/types';
-import axiosClient from '@/axios';
+import axiosClient, { type PaginatedResponse } from '@/axios';
 import type { AxiosError } from 'axios';
+import PageIndicator from '@/components/PageIndicator.vue';
 
-const customers = ref<User[]>([]);
+const customers = ref<PaginatedResponse<User>>();
 const errorMessage = ref('');
 const loading = ref(false);
 const searchQuery = ref('ACTIVE');
+const page = ref(1);
 
 function fetchCustomers() {
-    axiosClient.get(`/users?status=${searchQuery.value}`).then(({ data }) => {
+    axiosClient.get(`/users?status=${searchQuery.value}&page=${page.value}`).then(({ data }) => {
         customers.value = data;
     });
 }
@@ -43,6 +45,11 @@ async function reinstate(customerId: number) {
     }
 }
 
+function handlePageSelect(pageNumber: number) {
+    page.value = pageNumber;
+    fetchCustomers();
+}
+
 onMounted(() => {
     fetchCustomers();
 });
@@ -72,60 +79,62 @@ onMounted(() => {
                         <option value="DELETED">Deleted</option>
                     </select>
                 </div>
-                <div v-if="customers.length === 0" class="text-center">
+                <div v-if="!customers" class="text-center">
                     <p class="lead">No Customers found.</p>
                 </div>
-                <div class="table-responsive" v-else>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Firstname</th>
-                                <th>Lastname</th>
-                                <th>Email</th>
-                                <th>Phone Number</th>
-                                <th>BSN</th>
-                                <th>Daily limit</th>
-                                <th>Transfer limit</th>
-                                <th>status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="customer in customers" :key="customer.id">
-                                <td>{{ customer.firstName }}</td>
-                                <td>{{ customer.lastName }}</td>
-                                <td>{{ customer.email }}</td>
-                                <td>{{ customer.phoneNumber }}</td>
-                                <td>{{ customer.bsn }}</td>
-                                <td>{{ customer.dailyLimit }}</td>
-                                <td>{{ customer.transferLimit }}</td>
-                                <td>{{ customer.status }}</td>
-                                <td>
-                                    <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
-                                        <button class="btn btn-primary">
-                                            <RouterLink :to="`/accountdetails/${customer.id}`"
-                                                class="text-white text-decoration-none">Details</RouterLink>
-                                        </button>
-                                        <button class="btn btn-danger"
-                                            @click="softDeleteCustomer(customer.id)">Delete</button>
-                                    </div>
-                                    <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
-                                        <button class="btn btn-primary">
-                                            <RouterLink :to="`/employee/customer/${customer.id}/approve`"
-                                                class="text-white text-decoration-none">Approve</RouterLink>
-                                        </button>
-                                        <button class="btn btn-danger"
-                                            @click="softDeleteCustomer(customer.id)">Reject</button>
-                                    </div>
-                                    <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
-                                        <button class="btn btn-primary"
-                                            @click="reinstate(customer.id)">Reinstate</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <PageIndicator v-else :pagination="customers" @pageSelect="handlePageSelect">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Firstname</th>
+                                    <th>Lastname</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
+                                    <th>BSN</th>
+                                    <th>Daily limit</th>
+                                    <th>Transfer limit</th>
+                                    <th>status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="customer in customers.content" :key="customer.id">
+                                    <td>{{ customer.firstName }}</td>
+                                    <td>{{ customer.lastName }}</td>
+                                    <td>{{ customer.email }}</td>
+                                    <td>{{ customer.phoneNumber }}</td>
+                                    <td>{{ customer.bsn }}</td>
+                                    <td>{{ customer.dailyLimit }}</td>
+                                    <td>{{ customer.transferLimit }}</td>
+                                    <td>{{ customer.status }}</td>
+                                    <td>
+                                        <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
+                                            <button class="btn btn-primary">
+                                                <RouterLink :to="`/accountdetails/${customer.id}`"
+                                                    class="text-white text-decoration-none">Details</RouterLink>
+                                            </button>
+                                            <button class="btn btn-danger"
+                                                @click="softDeleteCustomer(customer.id)">Delete</button>
+                                        </div>
+                                        <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
+                                            <button class="btn btn-primary">
+                                                <RouterLink :to="`/employee/customer/${customer.id}/approve`"
+                                                    class="text-white text-decoration-none">Approve</RouterLink>
+                                            </button>
+                                            <button class="btn btn-danger"
+                                                @click="softDeleteCustomer(customer.id)">Reject</button>
+                                        </div>
+                                        <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
+                                            <button class="btn btn-primary"
+                                                @click="reinstate(customer.id)">Reinstate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </PageIndicator>
             </div>
         </div>
     </main>

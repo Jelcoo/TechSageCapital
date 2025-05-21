@@ -21,7 +21,7 @@ public class PageResponseDto<T> {
         this.currentPage = page.getNumber() + 1;
         this.totalRecords = page.getTotalElements();
         this.recordsPerPage = page.getSize();
-        this.recordsThisPage = page.getTotalElements();
+        this.recordsThisPage = page.getNumberOfElements();
         this.totalPages = page.getTotalPages();
 
         for (int i = 2; i >= 1; i--) {
