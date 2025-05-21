@@ -11,7 +11,7 @@ import java.util.*;
 @Repository
 public interface BankAccountRepository extends CrudRepository<BankAccount, Long> {
     BankAccount findByIban(Iban iban);
-    List<BankAccount> findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCase(String firstName, String lastName);
+    List<BankAccount> findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCaseAndType(String firstName, String lastName, BankAccountType bankAccountType);
     List<BankAccount> findByUser(User user);
     List<BankAccount> findByUserAndType(User user, BankAccountType type);
     List<BankAccount> findByType(BankAccountType type);

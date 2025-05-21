@@ -62,7 +62,7 @@ public class BankAccountServiceJpa implements BankAccountService {
     @Override
     public List<BankAccountInfoWithoutBalance> findByFirstNameAndLastName(String firstName, String lastName) {
         List<BankAccount> bankAccounts = bankAccountRepository
-                .findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCase(firstName, lastName);
+                .findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCaseAndType(firstName, lastName, BankAccountType.CHECKING);
         return bankAccounts.stream()
                 .map(bankAccount -> modelMapper.map(bankAccount, BankAccountInfoWithoutBalance.class))
                 .toList();
