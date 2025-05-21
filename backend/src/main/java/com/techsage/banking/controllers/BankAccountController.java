@@ -29,7 +29,7 @@ public class BankAccountController extends BaseController {
     }
 
     @Operation(
-            summary = "Bank Accounts",
+            summary = "All own accounts",
             description = "Returns a list of bank accounts for the authenticated user.",
             responses = {
                     @ApiResponse(
@@ -53,6 +53,22 @@ public class BankAccountController extends BaseController {
         return bankAccountService.findByUserAndType(user, type);
     }
 
+    @Operation(
+            summary = "Search bank accounts",
+            description = "Searches for bank accounts by first name and last name.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountInfoWithoutBalance.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @GetMapping("/find")
     @PreAuthorize("hasRole('USER')")
     public List<BankAccountInfoWithoutBalance> findByName(@RequestParam String firstName, @RequestParam String lastName) {
@@ -60,8 +76,8 @@ public class BankAccountController extends BaseController {
     }
 
     @Operation(
-            summary = "Bank Accounts",
-            description = "Returns a list of all bank accounts",
+            summary = "All accounts",
+            description = "Returns a list of all bank accounts.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

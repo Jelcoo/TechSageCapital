@@ -36,6 +36,32 @@ public class AtmController extends BaseController {
         this.userService = userService;
     }
 
+    @Operation(
+            summary = "Deposit money",
+            description = "Deposits money into a bank account.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful deposit",
+                            content = @Content(schema = @Schema(implementation = BankAccountDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Bank account not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @PostMapping("/deposit")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<BaseDto> deposit(@Valid @RequestBody AtmDepositDto deposit) {
@@ -53,6 +79,32 @@ public class AtmController extends BaseController {
         }
     }
 
+    @Operation(
+            summary = "Withdraw money",
+            description = "Withdraws money from a bank account.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful withdrawal",
+                            content = @Content(schema = @Schema(implementation = BankAccountDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Bank account not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @PostMapping("/withdraw")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<BaseDto> withdraw(@Valid @RequestBody AtmWithdrawDto withdraw) {
