@@ -60,7 +60,7 @@ onMounted(() => {
         <div class="container py-5">
             <h1 class="display-4 fw-bold text-center mb-4">Customers</h1>
 
-            <div v-if="loading" class="text-center">
+            <div v-if="loading || !customers" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
@@ -70,72 +70,70 @@ onMounted(() => {
                 {{ errorMessage }}
             </div>
 
-            <div v-if="!loading && !errorMessage">
-                <div class="mb-3">
-                    <label for="status" class="form-label">Account Status:</label>
-                    <select class="form-select" id="status" v-model="searchQuery" @change="fetchCustomers">
-                        <option value="ACTIVE" selected>Active</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="DELETED">Deleted</option>
-                    </select>
-                </div>
-                <div v-if="!customers" class="text-center">
-                    <p class="lead">No Customers found.</p>
-                </div>
-                <PageIndicator v-else :pagination="customers" @pageSelect="handlePageSelect">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Firstname</th>
-                                    <th>Lastname</th>
-                                    <th>Email</th>
-                                    <th>Phone Number</th>
-                                    <th>BSN</th>
-                                    <th>Daily limit</th>
-                                    <th>Transfer limit</th>
-                                    <th>status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="customer in customers.content" :key="customer.id">
-                                    <td>{{ customer.firstName }}</td>
-                                    <td>{{ customer.lastName }}</td>
-                                    <td>{{ customer.email }}</td>
-                                    <td>{{ customer.phoneNumber }}</td>
-                                    <td>{{ customer.bsn }}</td>
-                                    <td>{{ customer.dailyLimit }}</td>
-                                    <td>{{ customer.transferLimit }}</td>
-                                    <td>{{ customer.status }}</td>
-                                    <td>
-                                        <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
-                                            <button class="btn btn-primary">
-                                                <RouterLink :to="`/accountdetails/${customer.id}`"
-                                                    class="text-white text-decoration-none">Details</RouterLink>
-                                            </button>
-                                            <button class="btn btn-danger"
-                                                @click="softDeleteCustomer(customer.id)">Delete</button>
-                                        </div>
-                                        <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
-                                            <button class="btn btn-primary">
-                                                <RouterLink :to="`/employee/customer/${customer.id}/approve`"
-                                                    class="text-white text-decoration-none">Approve</RouterLink>
-                                            </button>
-                                            <button class="btn btn-danger"
-                                                @click="softDeleteCustomer(customer.id)">Reject</button>
-                                        </div>
-                                        <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
-                                            <button class="btn btn-primary"
-                                                @click="reinstate(customer.id)">Reinstate</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </PageIndicator>
+            <div class="mb-3">
+                <label for="status" class="form-label">Account Status:</label>
+                <select class="form-select" id="status" v-model="searchQuery" @change="fetchCustomers">
+                    <option value="ACTIVE" selected>Active</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="DELETED">Deleted</option>
+                </select>
             </div>
+            <div v-if="!customers || customers?.content.length === 0" class="text-center">
+                <p class="lead">No Customers found.</p>
+            </div>
+            <PageIndicator v-else :pagination="customers" @pageSelect="handlePageSelect">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>BSN</th>
+                                <th>Daily limit</th>
+                                <th>Transfer limit</th>
+                                <th>status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="customer in customers.content" :key="customer.id">
+                                <td>{{ customer.firstName }}</td>
+                                <td>{{ customer.lastName }}</td>
+                                <td>{{ customer.email }}</td>
+                                <td>{{ customer.phoneNumber }}</td>
+                                <td>{{ customer.bsn }}</td>
+                                <td>{{ customer.dailyLimit }}</td>
+                                <td>{{ customer.transferLimit }}</td>
+                                <td>{{ customer.status }}</td>
+                                <td>
+                                    <div v-if="customer.status === AccountStatus.ACTIVE" class="d-flex gap-2">
+                                        <button class="btn btn-primary">
+                                            <RouterLink :to="`/accountdetails/${customer.id}`"
+                                                class="text-white text-decoration-none">Details</RouterLink>
+                                        </button>
+                                        <button class="btn btn-danger"
+                                            @click="softDeleteCustomer(customer.id)">Delete</button>
+                                    </div>
+                                    <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">
+                                        <button class="btn btn-primary">
+                                            <RouterLink :to="`/employee/customer/${customer.id}/approve`"
+                                                class="text-white text-decoration-none">Approve</RouterLink>
+                                        </button>
+                                        <button class="btn btn-danger"
+                                            @click="softDeleteCustomer(customer.id)">Reject</button>
+                                    </div>
+                                    <div v-else-if="customer.status === AccountStatus.DELETED" class="d-flex gap-2">
+                                        <button class="btn btn-primary"
+                                            @click="reinstate(customer.id)">Reinstate</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </PageIndicator>
         </div>
     </main>
 </template>
