@@ -44,7 +44,7 @@ public class TransactionController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(schema = @Schema(implementation = TransactionDto.class))
+                            content = @Content(schema = @Schema(implementation = TransactionPagedDto.class))
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -77,7 +77,7 @@ public class TransactionController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionPagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -101,7 +101,7 @@ public class TransactionController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionPagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",

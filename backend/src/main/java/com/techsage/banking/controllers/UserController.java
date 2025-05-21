@@ -78,7 +78,7 @@ public class UserController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserPagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",
