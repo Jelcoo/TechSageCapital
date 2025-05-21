@@ -1,6 +1,6 @@
 <template>
     <main>
-        <div class="container py-5 col-6">
+        <div class="container py-5 col-md-6 col-12">
             <h1 class="display-4 fw-bold text-left mb-2">Transfer Overview</h1>
             <div v-if="loading" class="text-center">
                 <div class="spinner-border text-primary" role="status">
