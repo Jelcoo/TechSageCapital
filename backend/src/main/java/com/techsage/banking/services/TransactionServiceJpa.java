@@ -5,7 +5,7 @@ import com.techsage.banking.helpers.TransactionHelper;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
-import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.TransactionType;
 import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
@@ -16,6 +16,7 @@ import com.techsage.banking.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import org.iban4j.Iban;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.*;
@@ -46,30 +47,29 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> getAll() {
-        List<Transaction> transactions = (List<Transaction>) transactionRepository.findAll();
-        return transactions.stream().map(transaction -> modelMapper.map(transaction, TransactionDto.class)).toList();
+    public Page<TransactionDto> getAll(Pageable pageable) {
+        Page<Transaction> transactionsPage = transactionRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return transactionsPage.map(transaction -> modelMapper.map(transaction, TransactionDto.class));
     }
 
     @Override
-    public List<TransactionDto> getByAccountId(long id) {
+    public Page<TransactionDto> getByAccountId(long id, Pageable pageable) {
         BankAccount bankAccount = bankAccountService.getById(id);
         if (!transactionRepository.existsById(id)) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        return transactionRepository.findAllByBankAccount(bankAccount).stream()
-                .map(transaction -> modelMapper.map(transaction, TransactionDto.class))
-                .toList();
+        Page<Transaction> transactionsPage = transactionRepository.findAllByBankAccount(bankAccount, pageable);
+        return transactionsPage.map(transaction -> modelMapper.map(transaction, TransactionDto.class));
     }
 
     @Override
-    public List<TransactionDto> getByAccountIdAndCustomer(long id, String email) {
+    public Page<TransactionDto> getByAccountIdAndCustomer(long id, String email, Pageable pageable) {
         User user = userService.getByEmailRaw(email);
         BankAccount bankAccount = bankAccountService.getById(id);
         if (bankAccount.getUser() != user) {
             throw new TransactionException(TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND);
         }
-        return getByAccountId(id);
+        return getByAccountId(id, pageable);
     }
 
     @Override

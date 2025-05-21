@@ -5,7 +5,7 @@ import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
-import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.*;
@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.*;
 import org.iban4j.IbanFormatException;
 import org.iban4j.InvalidCheckDigitException;
+import org.springdoc.core.annotations.*;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.Authentication;
@@ -63,8 +65,9 @@ public class TransactionController extends BaseController {
     )
     @GetMapping("/{bankAccountId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId) {
-        return transactionService.getByAccountId(bankAccountId);
+    public PageResponseDto<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
+        Page<TransactionDto> page = transactionService.getByAccountId(bankAccountId, pageable);
+        return new PageResponseDto<>(page);
     }
 
     @Operation(
@@ -85,9 +88,10 @@ public class TransactionController extends BaseController {
     )
     @GetMapping("/{bankAccountId}/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId) {
+    public PageResponseDto<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName());
+        Page<TransactionDto> page = transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName(), pageable);
+        return new PageResponseDto<>(page);
     }
 
     @Operation(
@@ -113,8 +117,9 @@ public class TransactionController extends BaseController {
     )
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<TransactionDto> getAllTransactions() {
-        return transactionService.getAll();
+    public PageResponseDto<TransactionDto> getAllTransactions(@ParameterObject Pageable pageable) {
+        Page<TransactionDto> page = transactionService.getAll(pageable);
+        return new PageResponseDto<>(page);
     }
 
     @Operation(

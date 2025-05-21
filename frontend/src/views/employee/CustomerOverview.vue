@@ -12,7 +12,7 @@ const searchQuery = ref('ACTIVE');
 const page = ref(1);
 
 function fetchCustomers() {
-    axiosClient.get(`/users?status=${searchQuery.value}&page=${page.value}`).then(({ data }) => {
+    axiosClient.get<PaginatedResponse<User>>(`/users?status=${searchQuery.value}&page=${page.value}`).then(({ data }) => {
         customers.value = data;
     });
 }
