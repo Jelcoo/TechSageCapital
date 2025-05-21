@@ -11,6 +11,7 @@ import com.techsage.banking.repositories.UserRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +34,6 @@ public class UserServiceJpa implements UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtProvider = jwtProvider;
         this.bankAccountService = bankAccountService;
-    }
-
-    @Override
-    public List<UserDto> getAll() {
-        List<User> users = (List<User>)userRepository.findAll();
-        return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
     }
 
     @Override
@@ -161,9 +156,9 @@ public class UserServiceJpa implements UserService {
         return userRepository.getByEmail(email).orElse(null);
     }
 
-    public List<UserDto> findByStatus(UserStatus status) {
-        List<User> users = userRepository.findByStatus(status);
-        return users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+    public Page<UserDto> findByStatus(UserStatus status, Pageable pageable) {
+        Page<User> usersPage = userRepository.findByStatus(status, pageable);
+        return usersPage.map(user -> modelMapper.map(user, UserDto.class));
     }
 
     @Override

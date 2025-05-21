@@ -5,7 +5,7 @@ import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
 import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
 import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
-import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
@@ -14,12 +14,16 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.*;
+import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.*;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -74,7 +78,7 @@ public class UserController extends BaseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserPagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -90,8 +94,9 @@ public class UserController extends BaseController {
     )
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status) {
-        return userService.findByStatus(status);
+    public PageResponseDto<UserDto> getAll(@RequestParam(defaultValue = "ACTIVE") UserStatus status, @ParameterObject Pageable pageable) {
+        Page<UserDto> page = userService.findByStatus(status, pageable);
+        return new PageResponseDto<>(page);
     }
 
     @Operation(

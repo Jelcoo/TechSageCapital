@@ -6,12 +6,11 @@ import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
+import org.springframework.data.domain.*;
 
 import javax.naming.*;
-import java.util.*;
 
 public interface UserService {
-    List<UserDto> getAll();
     UserDto getById(long id);
     User create(User user);
     UserDto update(long id, UpdateUserRequestDto user);
@@ -23,7 +22,7 @@ public interface UserService {
     AuthResponseDto register(RegisterRequestDto registerRequestDto) throws AuthenticationException;
     UserDto getByEmail(String email);
     User getByEmailRaw(String email);
-    List<UserDto> findByStatus(UserStatus status);
+    Page<UserDto> findByStatus(UserStatus status, Pageable pageable);
     UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) throws IllegalArgumentException;
     UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException;
 }
