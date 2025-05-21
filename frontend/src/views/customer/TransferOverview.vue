@@ -10,6 +10,9 @@
             <div v-if="errorMessage" class="alert alert-danger text-center">
                 {{ errorMessage }}
             </div>
+            <div v-if="successMessage" class="alert alert-success text-center">
+                {{ successMessage }}
+            </div>
             <div class="d-flex flex-column gap-3">
                 <div>
                     <label for="fromAccount" class="form-label mt-3">From:</label>
@@ -29,7 +32,7 @@
                             </div>
                             <button
                                 :class="['btn', 'btn-primary', fromAccount?.iban === account.iban ? 'btn-success' : '']"
-                                @click="selectFromAccount(account)" :disabled="toAccount?.iban === account.iban">
+                                @click="selectFromAccount(account)">
                                 {{ fromAccount?.iban === account.iban ? 'Selected' : 'Select' }}
                             </button>
                         </li>
@@ -62,7 +65,7 @@
                     <div>
                         <label for="toAccount" class="form-label">To:</label>
                         <ul class="list-group">
-                            <li :class="['list-group-item d-flex justify-content-between align-items-center', fromAccount?.iban === account.iban ? 'list-group-item-light selected' : '']"
+                            <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
                                 v-for="account in user?.bankAccounts.filter(account => account.type != BankAccountType.SAVINGS)"
                                 :key="account.id">
                                 <div class="text-white">
@@ -76,10 +79,9 @@
                                         <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
                                     </div>
                                 </div>
-                                <button
-                                    :class="['btn', 'btn-primary', toAccount?.iban === account.iban ? 'btn-success' : '']"
-                                    @click="selectToAccount(account)" :disabled="fromAccount?.iban === account.iban">
-                                    {{ toAccount?.iban === account.iban ? 'Selected' : 'Select' }}
+                                <button :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                    @click="selectToAccount(account)">
+                                    {{ toAccount === account.iban ? 'Selected' : 'Select' }}
                                 </button>
                             </li>
                         </ul>
@@ -103,7 +105,7 @@
                             <div>
                                 <h5 class="mb-3">To own account:</h5>
                                 <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
                                         v-for="account in user?.bankAccounts" :key="account.id">
                                         <div>
                                             <div>
@@ -117,10 +119,9 @@
                                             </div>
                                         </div>
                                         <button
-                                            :class="['btn', 'btn-primary', toAccount?.iban === account.iban ? 'btn-success' : '']"
-                                            @click="selectToAccount(account)"
-                                            :disabled="fromAccount?.iban === account.iban">
-                                            {{ toAccount?.iban === account.iban ? 'Selected' : 'Select' }}
+                                            :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                            @click="selectToAccount(account)">
+                                            {{ toAccount === account.iban ? 'Selected' : 'Select' }}
                                         </button>
                                     </li>
                                 </ul>
@@ -136,7 +137,7 @@
                             </div>
                             <div class="mt-3">
                                 <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
                                         v-for="account in searchResults" :key="account.id">
                                         <div>
                                             <div>
@@ -153,15 +154,16 @@
                                             </div>
                                         </div>
                                         <button
-                                            :class="['btn', 'btn-primary', toAccount?.iban === account.iban ? 'btn-success' : '']"
+                                            :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
                                             @click="selectToAccount(account)"
                                             :disabled="fromAccount?.iban === account.iban">
-                                            {{ toAccount?.iban === account.iban ? 'Selected' : 'Select' }}
+                                            {{ toAccount === account.iban ? 'Selected' : 'Select' }}
                                         </button>
                                     </li>
                                 </ul>
                             </div>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
                         </div>
@@ -173,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axiosClient from "@/axios";
 import { BankAccountType, type BankAccount, type SearchResponseBankaccount, type User } from "@/types";
 import type { AxiosError } from "axios";
@@ -187,9 +189,10 @@ const route = useRoute();
 const userIdParam = route.params.id;
 const user = ref<User | null>(null);
 const errorMessage = ref("");
+const successMessage = ref("");
 const loading = ref(false);
 const fromAccount = ref<BankAccount | null>(null);
-const toAccount = ref<BankAccount | SearchResponseBankaccount | null>(null);
+const toAccount = ref("");
 const amount = ref(0);
 const description = ref("");
 const firstName = ref("");
@@ -240,10 +243,10 @@ const searchAccounts = useDebounceFn(async () => {
 }, 500)
 
 function selectToAccount(account: BankAccount | SearchResponseBankaccount) {
-    if (toAccount.value?.iban === account.iban) {
-        toAccount.value = null;
+    if (toAccount.value === account.iban) {
+        toAccount.value = '';
     } else {
-        toAccount.value = account;
+        toAccount.value = account.iban;
     }
     closeModal();
 }
@@ -261,12 +264,12 @@ async function transfer() {
     try {
         const result = await axiosClient.post(`/transactions/create`, {
             fromIban: fromAccount.value?.iban.replace(/\s/g, ''),
-            toIban: toAccount.value?.iban.replace(/\s/g, ''),
+            toIban: toAccount.value.replace(/\s/g, ''),
             amount: amount.value.toFixed(2),
             description: description.value
         });
         if (result.status === 201) {
-            alert("Transfer successful!");
+            successMessage.value = "Transfer successful.";
             fetchUser();
         }
     } catch (error) {
@@ -274,6 +277,25 @@ async function transfer() {
         errorMessage.value = data.message ?? (data.toIban ? `${data.toIban}` : "An unknown error occurred.");
     }
 }
+
+watch(fromAccount, (newFromAccount, oldFromAccount) => {
+    if (newFromAccount?.type === BankAccountType.SAVINGS && user.value) {
+        const availableToAccounts = user.value.bankAccounts.filter(account => account.type != BankAccountType.SAVINGS)
+        if (availableToAccounts.length === 1) {
+            toAccount.value = availableToAccounts[0].iban;
+        } else {
+            toAccount.value = '';
+        }
+    } else if (
+        oldFromAccount?.type === BankAccountType.SAVINGS &&
+        (!newFromAccount || newFromAccount.type !== BankAccountType.SAVINGS)
+    ) {
+        // Deselecting a savings account
+        toAccount.value = '';
+    }
+});
+
+
 
 
 onMounted(() => {
