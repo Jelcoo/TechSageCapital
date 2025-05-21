@@ -32,12 +32,11 @@ async function fetchTransactions() {
     }
 }
 
+
+
 onMounted(() => {
     fetchTransactions();
 });
-
-
-
 </script>
 
 <template>
@@ -70,10 +69,12 @@ onMounted(() => {
                             <td>{{ formatIban(transaction.toAccount?.iban ?? "") }}</td>
                             <td>{{ transaction.description }}</td>
                             <td class="text-danger text-end"
-                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
-                                    formatMoney(transaction.amount) }}
+                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'"><span
+                                    class="badge text-bg-danger fs-6"> -{{ formatMoney(transaction.amount)
+                                    }}</span>
                             </td>
-                            <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
+                            <td class="text-success text-end" v-else><span class="badge text-bg-success fs-6"> +{{
+                                formatMoney(transaction.amount) }}</span></td>
                         </tr>
                     </tbody>
                 </table>

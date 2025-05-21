@@ -15,6 +15,6 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     @Query("SELECT coalesce(SUM(t.amount), 0) FROM Transaction t WHERE t.fromAccount = ?1 AND t.createdAt <= ?2 AND (t.type = 'WITHDRAWAL' OR t.type='ATM_WITHDRAWAL')")
     BigDecimal findSumOfTransactionsByFromAccount(BankAccount bankAccount, LocalDateTime date);
 
-    @Query("SELECT t FROM Transaction t WHERE t.fromAccount = ?1 OR t.toAccount = ?1")
+    @Query("SELECT t FROM Transaction t WHERE ((t.type = 'WITHDRAWAL' OR t.type = 'ATM_WITHDRAWAL') AND t.fromAccount = ?1) OR ((t.type = 'DEPOSIT' OR t.type = 'ATM_DEPOSIT') AND t.toAccount = ?1) ORDER BY t.createdAt DESC")
     List<Transaction> findAllByBankAccount(BankAccount bankAccount);
 }
