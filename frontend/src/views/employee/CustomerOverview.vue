@@ -75,7 +75,7 @@ onMounted(() => {
                 <div v-if="customers.length === 0" class="text-center">
                     <p class="lead">No Customers found.</p>
                 </div>
-                <div v-else>
+                <div class="table-responsive" v-else>
                     <table class="table table-striped">
                         <thead>
                             <tr>

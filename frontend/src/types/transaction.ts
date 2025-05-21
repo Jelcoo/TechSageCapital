@@ -5,12 +5,12 @@ export interface Transaction {
     initiator: TransactionInitiator; // Foreign key to User table (who initiated the transaction)
     amount: number;
     createdAt: Date;
-    type: Type;
+    type: TransactionType;
     description: string;
     status: TransactionStatus;
 }
 
-export enum Type {
+export enum TransactionType {
     DEPOSIT = 'DEPOSIT',
     WITHDRAWAL = 'WITHDRAWAL',
     ATM_WITHDRAWAL = 'ATM_WITHDRAWAL',
@@ -38,12 +38,11 @@ export interface TransactionInitiator {
     transferLimit: number;
 }
 
-
 export interface CreateTransaction {
     from?: number; // Foreign key to BankAccount table (sender's account ID)    can be null for ATM deposit
     to?: number; // Foreign key to BankAccount table (receiver's account ID)    can be null for ATM withdrawal
     initiator: number; // Foreign key to User table (who initiated the transaction)
     amount: number;
-    type: Type;
+    type: TransactionType;
     description: string;
 }
