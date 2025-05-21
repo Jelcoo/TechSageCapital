@@ -74,10 +74,9 @@ onMounted(() => {
                 </thead>
                 <tbody>
                     <tr v-for="transaction in transactions" :key="transaction.id">
-
                         <td>{{ formatDate(transaction.createdAt) }}</td>
                         <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ?? "")
-                        }}</td>
+                            }}</td>
                         <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
                             ?? "") }}</td>
                         <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">ATM

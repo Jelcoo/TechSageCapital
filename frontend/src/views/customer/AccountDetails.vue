@@ -103,20 +103,20 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="mb-5">
-                        <button class="btn btn-primary me-2">
+                    <div class="mb-5 d-flex gap-2 flex-wrap">
+                        <button class="btn btn-primary">
                             <RouterLink class="text-white text-decoration-none" :to="userStore.roles.includes(Role.EMPLOYEE)
                                 ? `/accountdetails/edit/${user.id}`
                                 : `/accountdetails/edit`">Edit
                             </RouterLink>
                         </button>
-                        <button class="btn btn-primary me-2" :disabled="user.bankAccounts.length == 0">
+                        <button class="btn btn-primary" :disabled="user.bankAccounts.length == 0">
                             <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
                                 class="text-white text-decoration-none">
                                 Transfer
                             </RouterLink>
                         </button>
-                        <button class="btn btn-primary me-2"
+                        <button class="btn btn-primary"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
                             <RouterLink :to="`/employee/customer/${user.id}/limits`"
                                 class="text-white text-decoration-none">Edit user limits</RouterLink>
