@@ -3,11 +3,13 @@ import { RouterLink, } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import PendingHomeView from './PendingHomeView.vue';
 import { AccountStatus } from '@/types';
+import ActiveHomeView from './ActiveHomeView.vue';
 const userStore = useUserStore();
 </script>
 
 <template>
     <PendingHomeView v-if="userStore.status == AccountStatus.PENDING" />
+    <ActiveHomeView v-else-if="userStore.status == AccountStatus.ACTIVE" />
     <main v-else>
         <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center head-bg text-white"
             style="width: 100%;">
