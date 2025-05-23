@@ -7,7 +7,7 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
-import BankAccountComponent from "@/components/BankaccountComponent.vue";
+import BankAccountComponent from "@/components/BankAccountComponent.vue";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -141,7 +141,7 @@ onMounted(() => {
                         </div>
                         <ul class="list-group">
                             <BankAccountComponent v-for="account in user.bankAccounts" :key="account.id"
-                                :bank-account="account" />
+                                :bank-account="account" :show-transactions-button="true" />
                         </ul>
                     </div>
                     <div v-else class="alert alert-info">

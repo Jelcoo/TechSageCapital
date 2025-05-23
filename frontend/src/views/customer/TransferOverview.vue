@@ -17,25 +17,17 @@
                 <div>
                     <label for="fromAccount" class="form-label mt-3">From:</label>
                     <ul class="list-group">
-                        <li :class="['list-group-item d-flex justify-content-between align-items-center', fromAccount?.iban === account.iban ? 'list-group-item-light selected' : '']"
-                            v-for="account in user?.bankAccounts" :key="account.id">
-                            <div class="text-white">
-                                <div>
-                                    <strong>Account Type:</strong> {{ account.type }}
-                                </div>
-                                <div>
-                                    <strong>IBAN:</strong> {{ account.iban }}
-                                </div>
-                                <div>
-                                    <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                                </div>
-                            </div>
-                            <button
-                                :class="['btn', 'btn-primary', fromAccount?.iban === account.iban ? 'btn-success' : '']"
-                                @click="selectFromAccount(account)">
-                                {{ fromAccount?.iban === account.iban ? 'Selected' : 'Select' }}
-                            </button>
-                        </li>
+                        <BankAccountComponent v-for="account in user?.bankAccounts" :key="account.id"
+                            :bankAccount="account"
+                            :custom-class="fromAccount?.iban === account.iban ? 'list-group-item-light selected' : ''">
+                            <template v-slot:button>
+                                <button
+                                    :class="['btn', 'btn-primary', fromAccount?.iban === account.iban ? 'btn-success' : '']"
+                                    @click="selectFromAccount(account)">
+                                    {{ fromAccount?.iban === account.iban ? 'Selected' : 'Select' }}
+                                </button>
+                            </template>
+                        </BankAccountComponent>
                     </ul>
                 </div>
                 <div>
@@ -65,25 +57,17 @@
                     <div>
                         <label for="toAccount" class="form-label">To:</label>
                         <ul class="list-group">
-                            <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
-                                v-for="account in user?.bankAccounts.filter(account => account.type != BankAccountType.SAVINGS)"
-                                :key="account.id">
-                                <div class="text-white">
-                                    <div>
-                                        <strong>Account Type:</strong> {{ account.type }}
-                                    </div>
-                                    <div>
-                                        <strong>IBAN:</strong> {{ account.iban }}
-                                    </div>
-                                    <div>
-                                        <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                                    </div>
-                                </div>
-                                <button :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
-                                    @click="selectToAccount(account)">
-                                    {{ toAccount === account.iban ? 'Selected' : 'Select' }}
-                                </button>
-                            </li>
+                            <BankAccountComponent v-for="account in user?.bankAccounts" :key="account.id"
+                                :bankAccount="account"
+                                :custom-class="toAccount === account.iban ? 'list-group-item-light selected' : ''">
+                                <template v-slot:button>
+                                    <button
+                                        :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                        @click="selectToAccount(account)">
+                                        {{ toAccount === account.iban ? 'Selected' : 'Select' }}
+                                    </button>
+                                </template>
+                            </BankAccountComponent>
                         </ul>
                     </div>
                 </div>
@@ -105,25 +89,17 @@
                             <div>
                                 <h5 class="mb-3">To own account:</h5>
                                 <ul class="list-group">
-                                    <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
-                                        v-for="account in user?.bankAccounts" :key="account.id">
-                                        <div>
-                                            <div>
-                                                <strong>Account Type:</strong> {{ account.type }}
-                                            </div>
-                                            <div>
-                                                <strong>IBAN:</strong> {{ account.iban }}
-                                            </div>
-                                            <div>
-                                                <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                                            </div>
-                                        </div>
-                                        <button
-                                            :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
-                                            @click="selectToAccount(account)">
-                                            {{ toAccount === account.iban ? 'Selected' : 'Select' }}
-                                        </button>
-                                    </li>
+                                    <BankAccountComponent v-for="account in user?.bankAccounts" :key="account.id"
+                                        :bankAccount="account"
+                                        :custom-class="toAccount === account.iban ? 'list-group-item-light selected' : ''">
+                                        <template v-slot:button>
+                                            <button
+                                                :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                                @click="selectToAccount(account)">
+                                                {{ toAccount === account.iban ? 'Selected' : 'Select' }}
+                                            </button>
+                                        </template>
+                                    </BankAccountComponent>
                                 </ul>
                             </div>
                             <div class="mt-3">
@@ -139,29 +115,18 @@
                                 <PageIndicator v-if="searchResults" :pagination="searchResults"
                                     @pageSelect="handlePageSelect">
                                     <ul class="list-group">
-                                        <li :class="['list-group-item d-flex justify-content-between align-items-center', toAccount === account.iban ? 'list-group-item-light selected' : '']"
-                                            v-for="account in searchResults.content" :key="account.id">
-                                            <div>
-                                                <div>
-                                                    <strong>First Name:</strong> {{ account.firstName }}
-                                                </div>
-                                                <div>
-                                                    <strong>Last Name:</strong> {{ account.lastName }}
-                                                </div>
-                                                <div>
-                                                    <strong>Account Type:</strong> {{ account.type }}
-                                                </div>
-                                                <div>
-                                                    <strong>IBAN:</strong> {{ account.iban }}
-                                                </div>
-                                            </div>
-                                            <button
-                                                :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
-                                                @click="selectToAccount(account)"
-                                                :disabled="fromAccount?.iban === account.iban">
-                                                {{ toAccount === account.iban ? 'Selected' : 'Select' }}
-                                            </button>
-                                        </li>
+                                        <BankAccountComponent v-for="account in user?.bankAccounts" :key="account.id"
+                                            :bankAccount="account"
+                                            :custom-class="toAccount === account.iban ? 'list-group-item-light selected' : ''">
+                                            <template v-slot:button>
+                                                <button
+                                                    :class="['btn', 'btn-primary', toAccount === account.iban ? 'btn-success' : '']"
+                                                    @click="selectToAccount(account)"
+                                                    :disabled="fromAccount?.iban === account.iban">
+                                                    {{ toAccount === account.iban ? 'Selected' : 'Select' }}
+                                                </button>
+                                            </template>
+                                        </BankAccountComponent>
                                     </ul>
                                 </PageIndicator>
                             </div>
@@ -183,10 +148,10 @@ import axiosClient, { type PaginatedResponse } from "@/axios";
 import { BankAccountType, type BankAccount, type SearchResponseBankaccount, type User } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
-import { formatMoney } from "@/utils";
 import { Modal } from "bootstrap";
 import { useDebounceFn } from "@vueuse/core";
 import PageIndicator from "@/components/PageIndicator.vue";
+import BankAccountComponent from "@/components/BankAccountComponent.vue";
 
 const route = useRoute();
 
