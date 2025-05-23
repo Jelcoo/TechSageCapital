@@ -16,13 +16,6 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <RouterLink to="/employee" class="dropdown-item" exact-active-class="active">Home
-                                </RouterLink>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
                                 <RouterLink to="/employee/customers-overview" class="dropdown-item"
                                     active-class="active">
                                     Customer Overview</RouterLink>
