@@ -98,6 +98,10 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid username/password");
         }
 
+        if (user.get().getStatus() == UserStatus.DELETED) {
+            throw new AuthenticationException("Account is not accessible");
+        }
+
         if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM)) {
             return this.setUserAtmJwt(user.get());
         } else {
