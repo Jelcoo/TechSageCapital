@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { faMoneyBillTransfer, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -26,7 +27,7 @@ const userStore = useUserStore();
 
             <div v-if="userStore.bankAccounts.length > 0" class="bank-accounts">
                 <ul class="list-group">
-                    <BankaccountComponent v-for="account in userStore.bankAccounts" :key="account.id"
+                    <BankAccountComponent v-for="account in userStore.bankAccounts" :key="account.id"
                         :bank-account="account" />
                 </ul>
             </div>
