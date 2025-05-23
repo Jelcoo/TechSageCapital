@@ -60,9 +60,10 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
-        AuthenticationClaim tokenType = claims.get("type", AuthenticationClaim.class);
+        String typeString = claims.get("type", String.class);
+        AuthenticationClaim tokenType = AuthenticationClaim.valueOf(typeString);
 
-        if (!tokenType.equals(AuthenticationClaim.ACCESS_TOKEN)) {
+        if (!tokenType.equals(AuthenticationClaim.ACCESS_TOKEN) && !tokenType.equals(AuthenticationClaim.ATM_TOKEN)) {
             throw new JwtException("Invalid token type");
         }
 
