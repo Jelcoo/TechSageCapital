@@ -7,6 +7,7 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
+import BankaccountComponent from "@/components/BankaccountComponent.vue";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -139,22 +140,8 @@ onMounted(() => {
                             </div>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item" v-for="account in user.bankAccounts" :key="account.id">
-                                <div>
-                                    <strong>Account Type:</strong> {{ account.type }}
-                                </div>
-                                <div>
-                                    <strong>IBAN:</strong> {{ account.iban }}
-                                </div>
-                                <div>
-                                    <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                                </div>
-                                <div>
-                                    <RouterLink :to="`/accountdetails/transactions/${account.id}/${account.iban}`"
-                                        class="btn btn-primary mt-2">View
-                                        Transactions</RouterLink>
-                                </div>
-                            </li>
+                            <BankaccountComponent v-for="account in user.bankAccounts" :key="account.id"
+                                :bank-account="account" />
                         </ul>
                     </div>
                     <div v-else class="alert alert-info">

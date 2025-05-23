@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
-import { formatMoney } from "@/utils";
 import { faMoneyBillTransfer, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -27,26 +26,8 @@ const userStore = useUserStore();
 
             <div v-if="userStore.bankAccounts.length > 0" class="bank-accounts">
                 <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between" v-for="account in userStore.bankAccounts"
-                        :key="account.id">
-                        <div>
-                            <div>
-                                <strong>Account Type:</strong> {{ account.type }}
-                            </div>
-                            <div>
-                                <strong>IBAN:</strong> {{ account.iban }}
-                            </div>
-                            <div>
-                                <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                            </div>
-                        </div>
-
-                        <div class="ml-auto">
-                            <RouterLink :to="`/accountdetails/transactions/${account.id}/${account.iban}`"
-                                class="btn btn-primary">View
-                                Transactions</RouterLink>
-                        </div>
-                    </li>
+                    <BankaccountComponent v-for="account in userStore.bankAccounts" :key="account.id"
+                        :bank-account="account" />
                 </ul>
             </div>
             <div v-else class="alert alert-info">
