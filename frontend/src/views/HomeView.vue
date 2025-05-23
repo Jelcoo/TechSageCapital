@@ -2,13 +2,15 @@
 import { RouterLink, } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import PendingHomeView from './PendingHomeView.vue';
-import { AccountStatus } from '@/types';
+import { Role, AccountStatus } from '@/types';
 import ActiveHomeView from './ActiveHomeView.vue';
+import EmployeeHome from './EmployeeHome.vue';
 const userStore = useUserStore();
 </script>
 
 <template>
-    <PendingHomeView v-if="userStore.status == AccountStatus.PENDING" />
+    <EmployeeHome v-if="userStore.roles.includes(Role.EMPLOYEE)" />
+    <PendingHomeView v-else-if="userStore.status == AccountStatus.PENDING" />
     <ActiveHomeView v-else-if="userStore.status == AccountStatus.ACTIVE" />
     <main v-else>
         <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center head-bg text-white"
