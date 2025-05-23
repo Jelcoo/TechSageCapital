@@ -141,6 +141,7 @@ public class UserServiceJpa implements UserService {
         AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAccessToken(user.getEmail(), user.getRoles()));
         response.setRefreshToken(jwtProvider.createRefreshToken(user.getEmail()));
+        response.setScope(AuthenticationScope.BANK);
 
         // Store refresh token in user entity
         user.setRefreshToken(response.getRefreshToken());
@@ -153,6 +154,7 @@ public class UserServiceJpa implements UserService {
     private AuthResponseDto setUserAtmJwt(User user) {
         AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAtmToken(user.getEmail(), user.getRoles()));
+        response.setScope(AuthenticationScope.ATM);
 
         return response;
     }
