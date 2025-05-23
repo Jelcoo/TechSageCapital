@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user';
+import { AuthenticationScope, useUserStore } from '@/stores/user';
 import { Role } from '@/types';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -109,13 +109,7 @@ const router = createRouter({
             path: '/atm',
             name: 'atm',
             meta: { requiresAuth: true, authorizedRoles: [Role.CUSTOMER] },
-            children: [
-                {
-                    path: '',
-                    name: 'atm-home',
-                    component: () => import('@/views/atm/HomeView.vue'),
-                },
-            ],
+            component: () => import('@/views/atm/HomeView.vue'),
         },
         {
             path: '/:catchAll(.*)',
@@ -138,6 +132,14 @@ router.beforeEach((to, from, next) => {
     }
 
     if (isGuestOnly && store.isAuthenticated) {
+        return next({ name: 'home', replace: true });
+    }
+
+    // Handle special case for ATM
+    if (store.authenticationScope === AuthenticationScope.ATM && to.name !== 'atm') {
+        return next({ name: 'atm', replace: true });
+    }
+    if (store.authenticationScope === AuthenticationScope.BANK && to.name === 'atm') {
         return next({ name: 'home', replace: true });
     }
 
