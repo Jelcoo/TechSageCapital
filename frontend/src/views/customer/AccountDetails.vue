@@ -36,7 +36,8 @@ async function fetchUser() {
 async function softDeleteAccount() {
     if (confirm("Are you sure you want to delete this customer?")) {
         try {
-            await axiosClient.delete(`/users/${userStore.id}/softDelete`);
+            const response = await axiosClient.delete<User>(`/users/${userIdParam}/softDelete`);
+            user.value = response.data;
         } catch (error) {
             errorMessage.value = (error as AxiosError).response
                 ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."

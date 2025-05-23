@@ -74,11 +74,11 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public void softDelete(long id) {
+    public UserDto softDelete(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.DELETED);
-        userRepository.save(user);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @Override
