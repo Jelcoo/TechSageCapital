@@ -38,6 +38,9 @@
                     </form>
                 </VeeForm>
             </div>
+            <button class="btn btn-danger mt-3" @click="logout">
+                Logout
+            </button>
         </div>
     </div>
 </template>
@@ -52,7 +55,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { onBeforeMount, ref } from 'vue';
 import confetti from 'canvas-confetti';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
+const userStore = useUserStore();
+const router = useRouter();
 const bankAccounts = ref<PaginatedResponse<BankAccount>>();
 const selectedAccount = ref<BankAccount | null>(null);
 const confettiCanvas = document.getElementById('status') as HTMLCanvasElement;
@@ -64,6 +71,11 @@ const createConfetti = (shape: confetti.Shape) => {
         scalar: 10
     });
 }
+
+const logout = () => {
+    userStore.logout();
+    router.push('/');
+};
 
 const setNewAccount = (account: BankAccount) => {
     selectedAccount.value = account;
@@ -114,7 +126,6 @@ onBeforeMount(() => {
         .catch(error => {
             console.error('Error fetching bank accounts:', error);
         });
-
 });
 </script>
 
