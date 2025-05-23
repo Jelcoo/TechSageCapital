@@ -36,7 +36,8 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item" v-if="userStore.roles.includes(Role.CUSTOMER)">
+                    <li class="nav-item"
+                        v-if="userStore.roles.includes(Role.CUSTOMER) && userStore.status == AccountStatus.ACTIVE">
                         <RouterLink to="/transfer" class="nav-link" active-class="active">Transfer</RouterLink>
                     </li>
                     <li class="nav-item">
@@ -84,7 +85,7 @@
 import { useUserStore } from "@/stores/user";
 import { computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import { Role } from '@/types';
+import { AccountStatus, Role } from '@/types';
 
 const router = useRouter();
 const userStore = useUserStore();
