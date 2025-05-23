@@ -9,6 +9,11 @@ interface StoreUser extends User {
     refreshToken: string | null;
 }
 
+export enum AuthenticationScope {
+    BANK = 'BANK',
+    ATM = 'ATM',
+}
+
 export const useUserStore = defineStore('user', {
     state: (): StoreUser => ({
         id: 0,
@@ -37,12 +42,13 @@ export const useUserStore = defineStore('user', {
             return axiosClient.get('/users/me');
         },
 
-        async login(email: string, password: string, turnstileToken: string) {
+        async login(email: string, password: string, turnstileToken: string, scope: AuthenticationScope) {
             try {
                 const response = await axiosClient.post('/auth/login', {
                     email,
                     password,
                     'cf-turnstile-response': turnstileToken,
+                    scope,
                 });
 
                 await this.handleAuthSuccess(response.data);

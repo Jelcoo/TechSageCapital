@@ -98,7 +98,11 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        return this.setUserJwt(user.get());
+        if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM)) {
+            return this.setUserAtmJwt(user.get());
+        } else {
+            return this.setUserJwt(user.get());
+        }
     }
 
     @Override
@@ -142,6 +146,13 @@ public class UserServiceJpa implements UserService {
         user.setRefreshToken(response.getRefreshToken());
         user.setRefreshTokenCreatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return response;
+    }
+
+    private AuthResponseDto setUserAtmJwt(User user) {
+        AuthResponseDto response = new AuthResponseDto();
+        response.setAccessToken(jwtProvider.createAtmToken(user.getEmail(), user.getRoles()));
 
         return response;
     }

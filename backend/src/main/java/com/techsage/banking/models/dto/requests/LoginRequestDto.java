@@ -2,6 +2,7 @@ package com.techsage.banking.models.dto.requests;
 
 import com.fasterxml.jackson.annotation.*;
 import com.techsage.banking.models.dto.*;
+import com.techsage.banking.models.enums.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -18,4 +19,11 @@ public class LoginRequestDto extends BaseDto {
     @JsonProperty("cf-turnstile-response")
     private String cfTurnstileResponse;
 
+    @NotNull(message = "Authentication scope is required")
+    @JsonProperty("scope")
+    private AuthenticationScope authenticationScope;
+
+    public void setAuthenticationScope(String scope) {
+        this.authenticationScope = AuthenticationScope.valueOf(scope);
+    }
 }
