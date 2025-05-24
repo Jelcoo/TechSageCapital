@@ -7,6 +7,17 @@
                     <h1 class="h3 fw-normal">Sign in</h1>
                     <p class="text-body-secondary">Please sign in with your credentials.</p>
 
+                    <ul class="nav nav-underline">
+                        <li class="nav-item">
+                            <button class="nav-link" :class="{ active: selectedScope === AuthenticationScope.BANK }"
+                                @click="selectedScope = AuthenticationScope.BANK">Bank</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" :class="{ active: selectedScope === AuthenticationScope.ATM }"
+                                @click="selectedScope = AuthenticationScope.ATM">ATM</button>
+                        </li>
+                    </ul>
+
                     <VeeForm v-slot="{ handleSubmit }" as="div">
                         <form @submit="handleSubmit($event, onSubmit)">
                             <FormInput name="email" label="Email" type="text" placeholder="Email address" />
@@ -29,9 +40,10 @@ import FormInput from '@/components/forms/FormInput.vue';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
 import { ref, useTemplateRef } from 'vue';
 import VueTurnstile from 'vue-turnstile';
-import { useUserStore } from '@/stores/user';
+import { AuthenticationScope, useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import { processFormError } from '@/utils';
+
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -39,10 +51,11 @@ const router = useRouter();
 const turnstileToken = import.meta.env.VITE_TURNSTILE_KEY;
 const turnstileRef = ref('');
 const turnstile = useTemplateRef('turnstile');
+const selectedScope = ref<AuthenticationScope>(AuthenticationScope.BANK);
 
 const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
     userStore
-        .login(values.email, values.password, turnstileRef.value)
+        .login(values.email, values.password, turnstileRef.value, selectedScope.value)
         .then(() => {
             router.push({ name: 'home' });
         })

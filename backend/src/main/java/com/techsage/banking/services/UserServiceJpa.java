@@ -74,11 +74,11 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public void softDelete(long id) {
+    public UserDto softDelete(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
         user.setStatus(UserStatus.DELETED);
-        userRepository.save(user);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @Override
@@ -98,7 +98,15 @@ public class UserServiceJpa implements UserService {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        return this.setUserJwt(user.get());
+        if (user.get().getStatus() == UserStatus.DELETED) {
+            throw new AuthenticationException("Account is not accessible");
+        }
+
+        if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM)) {
+            return this.setUserAtmJwt(user.get());
+        } else {
+            return this.setUserJwt(user.get());
+        }
     }
 
     @Override
@@ -137,11 +145,20 @@ public class UserServiceJpa implements UserService {
         AuthResponseDto response = new AuthResponseDto();
         response.setAccessToken(jwtProvider.createAccessToken(user.getEmail(), user.getRoles()));
         response.setRefreshToken(jwtProvider.createRefreshToken(user.getEmail()));
+        response.setScope(AuthenticationScope.BANK);
 
         // Store refresh token in user entity
         user.setRefreshToken(response.getRefreshToken());
         user.setRefreshTokenCreatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return response;
+    }
+
+    private AuthResponseDto setUserAtmJwt(User user) {
+        AuthResponseDto response = new AuthResponseDto();
+        response.setAccessToken(jwtProvider.createAtmToken(user.getEmail(), user.getRoles()));
+        response.setScope(AuthenticationScope.ATM);
 
         return response;
     }

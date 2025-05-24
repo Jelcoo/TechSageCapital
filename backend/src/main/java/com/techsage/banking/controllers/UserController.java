@@ -23,9 +23,6 @@ import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.*;
-import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -127,8 +124,14 @@ public class UserController extends BaseController {
     )
     @DeleteMapping("/{id}/softDelete")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public void softDeleteUser(@PathVariable long id) {
-        userService.softDelete(id);
+    public ResponseEntity<BaseDto> softDeleteUser(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok().body(userService.softDelete(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
     }
 
     @Operation(
@@ -166,8 +169,7 @@ public class UserController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
@@ -212,8 +214,7 @@ public class UserController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
@@ -256,8 +257,7 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.updateLimits(id, userLimitsRequestDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
@@ -296,12 +296,11 @@ public class UserController extends BaseController {
     @PutMapping("/{id}/reinstate")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> reinstateUser(@PathVariable long id) {
-        try{
+        try {
             return ResponseEntity.ok().body(userService.reinstateUser(id));
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
@@ -340,12 +339,11 @@ public class UserController extends BaseController {
     @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> updateUser(@PathVariable long id,@Valid @RequestBody UpdateUserRequestDto userDto) {
-        try{
+        try {
             return ResponseEntity.ok().body(userService.update(id, userDto));
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
@@ -388,10 +386,9 @@ public class UserController extends BaseController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentEmail = authentication.getName();
             return ResponseEntity.ok().body(userService.updateSelf(currentEmail, requestBody));
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
