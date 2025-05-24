@@ -7,6 +7,9 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
+import BankAccountComponent from "@/components/BankAccountComponent.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faArrowUp19, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -107,25 +110,28 @@ onMounted(() => {
                         <button class="btn btn-primary">
                             <RouterLink class="text-white text-decoration-none" :to="userStore.roles.includes(Role.EMPLOYEE)
                                 ? `/accountdetails/edit/${user.id}`
-                                : `/accountdetails/edit`">Edit
+                                : `/accountdetails/edit`">
+                                <FontAwesomeIcon :icon="faPencil" class="me-2" /> Edit
                             </RouterLink>
                         </button>
                         <button class="btn btn-primary" :disabled="user.bankAccounts.length == 0"
                             v-if="userStore.roles.includes(Role.EMPLOYEE)">
                             <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
                                 class="text-white text-decoration-none">
-                                Transfer
+                                <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" /> Transfer
                             </RouterLink>
                         </button>
                         <button class="btn btn-primary"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
                             <RouterLink :to="`/employee/customer/${user.id}/limits`"
-                                class="text-white text-decoration-none">Edit user limits</RouterLink>
+                                class="text-white text-decoration-none">
+                                <FontAwesomeIcon :icon="faArrowUp19" class="me-2" /> Edit user limits
+                            </RouterLink>
                         </button>
                         <button class="btn btn-danger"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                             @click="softDeleteAccount()">
-                            Delete
+                            <FontAwesomeIcon :icon="faTrash" class="me-2" /> Delete
                         </button>
 
                     </div>
@@ -139,22 +145,8 @@ onMounted(() => {
                             </div>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item" v-for="account in user.bankAccounts" :key="account.id">
-                                <div>
-                                    <strong>Account Type:</strong> {{ account.type }}
-                                </div>
-                                <div>
-                                    <strong>IBAN:</strong> {{ account.iban }}
-                                </div>
-                                <div>
-                                    <strong>Account Balance:</strong> {{ formatMoney(account.balance) }}
-                                </div>
-                                <div>
-                                    <RouterLink :to="`/accountdetails/transactions/${account.id}/${account.iban}`"
-                                        class="btn btn-primary mt-2">View
-                                        Transactions</RouterLink>
-                                </div>
-                            </li>
+                            <BankAccountComponent v-for="account in user.bankAccounts" :key="account.id"
+                                :bank-account="account" :show-transactions-button="true" />
                         </ul>
                     </div>
                     <div v-else class="alert alert-info">

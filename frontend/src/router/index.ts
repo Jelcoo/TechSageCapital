@@ -73,11 +73,6 @@ const router = createRouter({
             meta: { requiresAuth: true, authorizedRoles: [Role.EMPLOYEE] },
             children: [
                 {
-                    path: '',
-                    name: 'employee-dashboard',
-                    component: () => import('@/views/employee/EmployeeDashboard.vue'),
-                },
-                {
                     path: 'customers-overview',
                     name: 'customers-overview',
                     component: () => import('@/views/employee/CustomerOverview.vue'),
