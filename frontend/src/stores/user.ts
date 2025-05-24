@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 import type { AxiosError, AxiosResponse } from 'axios';
-import { AccountStatus, type User } from '@/types';
+import { type User } from '@/types';
 import router from '@/router';
 
 interface StoreUser extends User {
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
         dailyLimit: 0,
         transferLimit: 0,
         createdAt: new Date(),
-        status: AccountStatus.ACTIVE,
+        status: null,
         bankAccounts: [],
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
