@@ -33,9 +33,6 @@
                         v-if="userStore.roles.includes(Role.CUSTOMER) && userStore.status == AccountStatus.ACTIVE">
                         <RouterLink to="/transfer" class="nav-link" active-class="active">Transfer</RouterLink>
                     </li>
-                    <li class="nav-item">
-                        <RouterLink to="/atm" class="nav-link" active-class="active">ATM</RouterLink>
-                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" v-if="!isAuthenticated">
                     <li class="nav-item">
