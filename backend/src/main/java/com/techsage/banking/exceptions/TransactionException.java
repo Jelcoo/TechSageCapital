@@ -40,4 +40,3 @@ public class TransactionException extends RuntimeException {
         return "TransactionException: " + reason.getMessage();
     }
 }
-

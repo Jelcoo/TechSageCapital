@@ -6,6 +6,7 @@ import com.techsage.banking.models.info.BankAccountInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class UserDto extends BaseDto {
 
     private List<UserRole> roles;
 
-    private Double dailyLimit;
-    private Double transferLimit;
+    private BigDecimal dailyLimit;
+    private BigDecimal transferLimit;
     private LocalDateTime createdAt;
 
     @JsonIgnore
