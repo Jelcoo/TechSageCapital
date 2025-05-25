@@ -2,23 +2,25 @@ package com.techsage.banking.controllers;
 
 
 import com.techsage.banking.exceptions.TransactionException;
-import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
-import com.techsage.banking.models.dto.BaseDto;
-import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
-import com.techsage.banking.models.dto.responses.MessageDto;
+import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.services.interfaces.TransactionService;
 import com.techsage.banking.services.interfaces.UserService;
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.*;
 import org.iban4j.IbanFormatException;
 import org.iban4j.InvalidCheckDigitException;
+import org.springdoc.core.annotations.*;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,27 +36,118 @@ public class TransactionController extends BaseController {
         this.transactionService = transactionService;
         this.userService = userService;
     }
-
-    @GetMapping("/{id}")
+    
+    @Operation(
+            summary = "Get transaction by ID",
+            description = "Returns a transaction by its ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(schema = @Schema(implementation = TransactionPagedDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Transaction not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{bankAccountId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<TransactionDto> getTransactionsForId(@PathVariable long id) {
-        return transactionService.getById(id);
+    public PageResponseDto<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
+        Page<TransactionDto> page = transactionService.getByAccountId(bankAccountId, pageable);
+        return new PageResponseDto<>(page);
     }
 
-    @GetMapping("/{id}/me")
+    @Operation(
+            summary = "Get own transactions",
+            description = "Returns a list of transactions for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionPagedDto.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{bankAccountId}/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public List<TransactionDto> getCustomerTransactionsForId(@PathVariable long id) {
+    public PageResponseDto<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return transactionService.getByIdForCustomer(id, authentication.getName());
+        Page<TransactionDto> page = transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName(), pageable);
+        return new PageResponseDto<>(page);
     }
 
-
+    @Operation(
+            summary = "Get all transactions",
+            description = "Returns a list of all transactions.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful retrieval",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionPagedDto.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<TransactionDto> getAllTransactions() {
-        return transactionService.getAll();
+    public PageResponseDto<TransactionDto> getAllTransactions(@ParameterObject Pageable pageable) {
+        Page<TransactionDto> page = transactionService.getAll(pageable);
+        return new PageResponseDto<>(page);
     }
 
+    @Operation(
+            summary = "Create a transaction",
+            description = "Creates a new transaction.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Transaction created successfully",
+                            content = @Content(schema = @Schema(implementation = TransactionDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Bank account not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
     @PostMapping("/create")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> createTransaction(@Valid @RequestBody TransactionRequestDto transaction) {

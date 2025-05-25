@@ -1,28 +1,24 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import axiosClient from "@/axios";
+import axiosClient, { type PaginatedResponse } from "@/axios";
 import type { Transaction } from "@/types";
 import type { AxiosError } from "axios";
 import { formatDate } from "@/utils/dates";
 import { formatIban } from "@/utils/prettyIban";
 import { formatMoney } from "@/utils";
+import PageIndicator from "@/components/PageIndicator.vue";
 
 const loading = ref(false);
 const errorMessage = ref("");
-const transactions = ref<Transaction[]>([]);
+const transactions = ref<PaginatedResponse<Transaction>>();
+const page = ref(1);
 
 async function fetchTransactions() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        const response = await axiosClient.get<Transaction[]>(`/transactions`);
-        if (!response.data || response.data.length === 0) {
-            errorMessage.value = "No transactions found.";
-        }
+        const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions?page=${page.value}`);
         transactions.value = response.data;
-        if (!transactions.value || transactions.value.length === 0) {
-            errorMessage.value = "No transactions found.";
-        }
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
@@ -32,7 +28,10 @@ async function fetchTransactions() {
     }
 }
 
-
+function handlePageSelect(pageNumber: number) {
+    page.value = pageNumber;
+    fetchTransactions();
+}
 
 onMounted(() => {
     fetchTransactions();
@@ -43,12 +42,12 @@ onMounted(() => {
     <main>
         <div class="container">
             <h1>Transactions</h1>
-            <div v-if="loading" class="spinner-border" role="status">
+            <div v-if="loading || !transactions" class="spinner-border" role="status">
                 <span class="sr-only"></span>
             </div>
             <div v-else-if="errorMessage">{{ errorMessage }}</div>
 
-            <div v-else>
+            <PageIndicator v-else :pagination="transactions" @pageSelect="handlePageSelect">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -61,7 +60,7 @@ onMounted(() => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="transaction in transactions" :key="transaction.id">
+                        <tr v-for="transaction in transactions.content" :key="transaction.id">
                             <td>{{ formatDate(transaction.createdAt) }}</td>
                             <td>{{ transaction.initiator.firstName }} {{
                                 transaction.initiator.lastName }}</td>
@@ -78,7 +77,7 @@ onMounted(() => {
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </PageIndicator>
         </div>
     </main>
 </template>

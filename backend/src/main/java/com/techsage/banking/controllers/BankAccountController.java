@@ -1,7 +1,7 @@
 package com.techsage.banking.controllers;
 
 import com.techsage.banking.models.*;
-import com.techsage.banking.models.dto.BankAccountDto;
+import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.*;
+import org.springdoc.core.annotations.*;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.prepost.*;
 import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
@@ -29,13 +31,13 @@ public class BankAccountController extends BaseController {
     }
 
     @Operation(
-            summary = "Bank Accounts",
+            summary = "All own accounts",
             description = "Returns a list of bank accounts for the authenticated user.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountPagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -46,47 +48,34 @@ public class BankAccountController extends BaseController {
     )
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public List<BankAccountDto> getBankAccounts(@RequestParam(required = false) BankAccountType type) {
+    public PageResponseDto<BankAccountDto> getBankAccounts(@RequestParam(required = false) BankAccountType type, @ParameterObject Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
 
-        return bankAccountService.findByUserAndType(user, type);
-    }
-
-    @GetMapping("/find")
-    @PreAuthorize("hasRole('USER')")
-    public List<BankAccountInfoWithoutBalance> findByName(@RequestParam String firstName, @RequestParam String lastName) {
-        return bankAccountService.findByFirstNameAndLastName(firstName, lastName);
+        Page<BankAccountDto> page = bankAccountService.findByUserAndType(user, type, pageable);
+        return new PageResponseDto<>(page);
     }
 
     @Operation(
-            summary = "Bank Accounts",
-            description = "Returns a list of all bank accounts",
+            summary = "Search bank accounts",
+            description = "Searches for bank accounts by first name and last name.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountDto.class)))
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = BankAccountWithoutBalancePagedDto.class)))
                     ),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
                             content = @Content(schema = @Schema(implementation = MessageDto.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Forbidden",
-                            content = @Content(schema = @Schema(implementation = MessageDto.class))
                     )
             }
     )
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<BankAccountDto> getAllBankAccounts(@RequestParam(required = false) BankAccountType type) {
-        if (type == null) {
-            return bankAccountService.getAll();
-        }
-
-        return bankAccountService.findByType(type);
+    @GetMapping("/find")
+    @PreAuthorize("hasRole('USER')")
+    public PageResponseDto<BankAccountInfoWithoutBalance> findByName(@RequestParam String firstName, @RequestParam String lastName, @ParameterObject Pageable pageable) {
+        Page<BankAccountInfoWithoutBalance> page = bankAccountService.findByFirstNameAndLastName(firstName, lastName, pageable);
+        return new PageResponseDto<>(page);
     }
 }

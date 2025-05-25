@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 import type { AxiosError, AxiosResponse } from 'axios';
-import { AccountStatus, Role, type User } from '@/types';
+import { type User } from '@/types';
 import router from '@/router';
 
 interface StoreUser extends User {
     accessToken: string | null;
     refreshToken: string | null;
+    authenticationScope: AuthenticationScope | null;
+}
+
+export enum AuthenticationScope {
+    BANK = 'BANK',
+    ATM = 'ATM',
 }
 
 export const useUserStore = defineStore('user', {
@@ -17,14 +23,15 @@ export const useUserStore = defineStore('user', {
         email: '',
         phoneNumber: '',
         bsn: '',
-        roles: [Role.CUSTOMER],
+        roles: [],
         dailyLimit: 0,
         transferLimit: 0,
         createdAt: new Date(),
-        status: AccountStatus.ACTIVE,
+        status: null,
         bankAccounts: [],
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
+        authenticationScope: (localStorage.getItem('authenticationScope') as AuthenticationScope) || null,
     }),
 
     getters: {
@@ -37,12 +44,13 @@ export const useUserStore = defineStore('user', {
             return axiosClient.get('/users/me');
         },
 
-        async login(email: string, password: string, turnstileToken: string) {
+        async login(email: string, password: string, turnstileToken: string, scope: AuthenticationScope) {
             try {
                 const response = await axiosClient.post('/auth/login', {
                     email,
                     password,
                     'cf-turnstile-response': turnstileToken,
+                    scope,
                 });
 
                 await this.handleAuthSuccess(response.data);
@@ -88,7 +96,7 @@ export const useUserStore = defineStore('user', {
                     refreshToken: this.refreshToken,
                 });
 
-                this.setTokens(data.accessToken, data.refreshToken);
+                this.setTokens(data.accessToken, data.refreshToken, data.claim);
                 return true;
             } catch (error) {
                 console.error('Error refreshing tokens:', error);
@@ -129,16 +137,18 @@ export const useUserStore = defineStore('user', {
             }
         },
 
-        handleAuthSuccess(data: { accessToken: string; refreshToken: string }) {
+        handleAuthSuccess(data: { accessToken: string; refreshToken: string; scope: AuthenticationScope }) {
             this.resetStores();
-            this.setTokens(data.accessToken, data.refreshToken);
+            this.setTokens(data.accessToken, data.refreshToken, data.scope);
         },
 
-        setTokens(accessToken: string, refreshToken: string) {
+        setTokens(accessToken: string, refreshToken: string, scope: AuthenticationScope) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
+            this.authenticationScope = scope;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('authenticationScope', scope);
             axiosClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         },
 
@@ -149,6 +159,7 @@ export const useUserStore = defineStore('user', {
         logout() {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+            localStorage.removeItem('authenticationScope');
             delete axiosClient.defaults.headers.common['Authorization'];
             this.resetStores();
             router.push({ name: 'home' });

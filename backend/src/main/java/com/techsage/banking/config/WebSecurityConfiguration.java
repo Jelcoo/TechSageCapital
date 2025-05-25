@@ -20,9 +20,11 @@ import java.util.*;
 public class WebSecurityConfiguration {
 
     private final JwtFilter jwtFilter;
+    private final UserStatusFilter userStatusFilter;
 
-    public WebSecurityConfiguration(JwtFilter jwtFilter) {
+    public WebSecurityConfiguration(JwtFilter jwtFilter, UserStatusFilter userStatusFilter) {
         this.jwtFilter = jwtFilter;
+        this.userStatusFilter = userStatusFilter;
     }
 
     @Bean
@@ -31,6 +33,7 @@ public class WebSecurityConfiguration {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterAfter(userStatusFilter, JwtFilter.class);
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         return httpSecurity.build();

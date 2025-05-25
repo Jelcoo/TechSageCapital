@@ -16,13 +16,6 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <RouterLink to="/employee" class="dropdown-item" exact-active-class="active">Home
-                                </RouterLink>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
                                 <RouterLink to="/employee/customers-overview" class="dropdown-item"
                                     active-class="active">
                                     Customer Overview</RouterLink>
@@ -36,8 +29,9 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <RouterLink to="/atm" class="nav-link" active-class="active">ATM</RouterLink>
+                    <li class="nav-item"
+                        v-if="userStore.roles.includes(Role.CUSTOMER) && userStore.status == AccountStatus.ACTIVE">
+                        <RouterLink to="/transfer" class="nav-link" active-class="active">Transfer</RouterLink>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" v-if="!isAuthenticated">
@@ -81,7 +75,7 @@
 import { useUserStore } from "@/stores/user";
 import { computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import { Role } from '@/types';
+import { AccountStatus, Role } from '@/types';
 
 const router = useRouter();
 const userStore = useUserStore();

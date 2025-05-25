@@ -11,7 +11,7 @@ export interface User {
     dailyLimit: number;
     transferLimit: number;
     createdAt: Date;
-    status: AccountStatus;
+    status: AccountStatus | null;
     bankAccounts: BankAccount[];
 }
 

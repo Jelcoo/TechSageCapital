@@ -1,6 +1,6 @@
 package com.techsage.banking.jwt;
 
-import com.techsage.banking.models.enums.UserRole;
+import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.UserDetailsServiceJpa;
 import io.jsonwebtoken.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +20,7 @@ public class JwtTokenProvider {
     private final UserDetailsServiceJpa userDetailsService;
 
     private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1 hour
+    private static final long ATM_TOKEN_VALIDITY = 10 * 60 * 1000L; // 10 minutes
     private static final long REFRESH_TOKEN_VALIDITY = 30 * 24 * 60 * 60 * 1000L; // 30 days
 
     public JwtTokenProvider(JwtKeyProvider keyProvider, UserDetailsServiceJpa userDetailsService) {
@@ -28,14 +29,18 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String username, List<UserRole> roles) {
-        return createToken(username, "access", ACCESS_TOKEN_VALIDITY, roles);
+        return createToken(username, AuthenticationClaim.ACCESS_TOKEN, ACCESS_TOKEN_VALIDITY, roles);
+    }
+
+    public String createAtmToken(String username, List<UserRole> roles) {
+        return createToken(username, AuthenticationClaim.ATM_TOKEN, ATM_TOKEN_VALIDITY, roles);
     }
 
     public String createRefreshToken(String username) {
-        return createToken(username, "refresh", REFRESH_TOKEN_VALIDITY, null);
+        return createToken(username, AuthenticationClaim.REFRESH_TOKEN, REFRESH_TOKEN_VALIDITY, null);
     }
 
-    private String createToken(String username, String type, long validity, List<UserRole> roles) {
+    private String createToken(String username, AuthenticationClaim type, long validity, List<UserRole> roles) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validity);
         Key privateKey = keyProvider.getPrivateKey();
@@ -55,9 +60,10 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
-        String tokenType = claims.get("type", String.class);
+        String typeString = claims.get("type", String.class);
+        AuthenticationClaim tokenType = AuthenticationClaim.valueOf(typeString);
 
-        if (!"access".equals(tokenType)) {
+        if (!tokenType.equals(AuthenticationClaim.ACCESS_TOKEN) && !tokenType.equals(AuthenticationClaim.ATM_TOKEN)) {
             throw new JwtException("Invalid token type");
         }
 

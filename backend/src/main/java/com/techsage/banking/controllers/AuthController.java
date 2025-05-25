@@ -103,6 +103,11 @@ public class AuthController extends BaseController {
                             content = @Content(schema = @Schema(implementation = AuthResponseDto.class))
                     ),
                     @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
                             responseCode = "401",
                             description = "Invalid refresh token",
                             content = @Content(schema = @Schema(implementation = MessageDto.class))
