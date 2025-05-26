@@ -43,6 +43,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Transactions per hour</h5>
+                                <Line :data="statistics.transactionTodayChart" :options="lineConfig" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div v-else>
@@ -58,10 +66,10 @@ import { type Statistics } from '@/types';
 import { formatMoney } from '@/utils';
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { Pie } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, type ChartOptions, Colors } from 'chart.js'
+import { Line, Pie } from 'vue-chartjs'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, type ChartOptions, Colors, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 
-ChartJS.register(ArcElement, Tooltip, Legend, Colors)
+ChartJS.register(ArcElement, Tooltip, Legend, Colors, CategoryScale, LinearScale, PointElement, LineElement);
 
 const statistics = ref<Statistics | null>(null);
 
@@ -82,6 +90,54 @@ const pieConfig: ChartOptions<"pie"> = {
         }
     }
 };
+
+const lineConfig: ChartOptions<"line"> = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: 'bottom',
+        },
+        tooltip: {
+            callbacks: {
+                label: (context) => {
+                    const label = context.dataset.label || '';
+                    const value = context.raw as number;
+                    const axisId = context.dataset.yAxisID;
+
+                    if (axisId === 'y') {
+                        return `${label}: ${formatMoney(value)}`;
+                    } else {
+                        return `${label}: ${value}`;
+                    }
+                }
+            }
+        },
+    },
+    scales: {
+        y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+                display: true,
+                text: 'Amount ($)'
+            }
+        },
+        y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            grid: {
+                drawOnChartArea: false,
+            },
+            title: {
+                display: true,
+                text: 'Count'
+            }
+        },
+    }
+};
+
 
 onMounted(() => {
     axiosClient.get<Statistics>('/statistics')

@@ -12,4 +12,5 @@ public class StatisticsResponseDto extends BaseDto {
     private long transactionCount;
     private BigDecimal totalBankCapital;
     private Map<String, Object> transactionTypeChart;
+    private Map<String, Object> transactionTodayChart;
 }

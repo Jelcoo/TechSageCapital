@@ -1,13 +1,9 @@
+import type { ChartData } from 'chart.js';
+
 export interface Statistics {
     customerCount: number;
     transactionCount: number;
     totalBankCapital: number;
-    transactionTypeChart: {
-        labels: string[];
-        datasets: {
-            label: string;
-            data: number[];
-            backgroundColor: string[];
-        }[];
-    };
+    transactionTypeChart: ChartData<'pie'>;
+    transactionTodayChart: ChartData<'line'>;
 }
