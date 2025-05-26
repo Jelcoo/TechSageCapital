@@ -6,6 +6,7 @@ import com.techsage.banking.repositories.*;
 import com.techsage.banking.services.interfaces.*;
 import org.springframework.stereotype.*;
 
+import java.math.*;
 import java.util.*;
 
 @Service
@@ -38,7 +39,12 @@ public class StatisticsServiceJpa implements StatisticsService {
 
         Map<String, Object> dataset = new HashMap<>();
         dataset.put("label", "Transactions");
-        dataset.put("data", List.of(120, 90, 150, 20));
+
+        List<BigDecimal> data = new ArrayList<>();
+        for (TransactionType transactionType : TransactionType.values()) {
+            data.add(transactionRepository.sumByTransactionType(transactionType));
+        }
+        dataset.put("data", data);
 
         chartData.put("datasets", List.of(dataset));
 
