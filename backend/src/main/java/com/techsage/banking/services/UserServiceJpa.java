@@ -191,12 +191,4 @@ public class UserServiceJpa implements UserService {
         bankAccountService.create(user, BankAccountType.SAVINGS, BigDecimal.valueOf(0), BigDecimal.valueOf(0.0));
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
-
-    @Override
-    public UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException {
-        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
-        user.setTransferLimit(userLimitsRequestDto.getTransferLimit());
-        user.setDailyLimit(userLimitsRequestDto.getDailyTransferLimit());
-        return modelMapper.map(userRepository.save(user), UserDto.class);
-    }
 }
