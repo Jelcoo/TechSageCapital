@@ -147,4 +147,17 @@ class BankAccountServiceJpaTest {
 
         assertThrows(IllegalArgumentException.class, () -> bankAccountServiceJpa.getById(1L));
     }
+
+    @Test
+    void testUpdateAbsoluteMinimumBalance() {
+        when(bankAccountRepository.findById(1L)).thenReturn(Optional.of(bankAccount));
+
+        BigDecimal absoluteMinimumBalance = BigDecimal.valueOf(-100);
+        when(bankAccountRepository.save(bankAccount)).thenReturn(bankAccount);
+
+        BankAccountDto result = bankAccountServiceJpa.updateAbsoluteMinimumBalance(1L, absoluteMinimumBalance);
+
+        assertEquals(bankAccount.getAbsoluteMinimumBalance(), result.getAbsoluteMinimumBalance());
+        verify(bankAccountRepository).save(bankAccount);
+    }
 }

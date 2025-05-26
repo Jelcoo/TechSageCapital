@@ -16,7 +16,7 @@ public class BankAccountDto extends BaseDto {
     private UserInfo user;
     private Iban iban;
     private BigDecimal balance;
-    private int absoluteMinimumBalance;
+    private BigDecimal absoluteMinimumBalance;
     private BankAccountType type;
     public String getIban() {
         return iban != null ? iban.toFormattedString() : null;
