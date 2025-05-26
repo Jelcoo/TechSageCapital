@@ -255,21 +255,4 @@ class UserServiceJpaTest {
         assertEquals(UserStatus.ACTIVE, result.getStatus());
         verify(bankAccountService, times(2)).create(eq(user), any(), any(), any());
     }
-
-    @Test
-    void updateLimits_existingUser_updatesLimits() {
-        User user = new User();
-        user.setId(1L);
-
-        UserLimitsRequestDto dto = new UserLimitsRequestDto();
-        dto.setTransferLimit(BigDecimal.valueOf(1000));
-        dto.setDailyTransferLimit(BigDecimal.valueOf(3000));
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any())).thenReturn(user);
-
-        UserDto result = userService.updateLimits(1L, dto);
-        assertEquals(BigDecimal.valueOf(1000), result.getTransferLimit());
-        assertEquals(BigDecimal.valueOf(3000), result.getDailyLimit());
-    }
 }

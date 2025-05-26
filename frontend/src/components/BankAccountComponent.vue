@@ -22,12 +22,14 @@ const props = defineProps<{
                 <strong>Account Balance:</strong> {{ formatMoney(props.bankAccount.balance) }}
             </div>
         </div>
-        <div v-if="props.showTransactionsButton">
-            <RouterLink :to="`/accountdetails/transactions/${props.bankAccount.id}/${props.bankAccount.iban}`"
-                class="btn btn-primary">
-                View
-                Transactions</RouterLink>
+        <div class="d-flex align-items-center gap-2">
+            <div v-if="props.showTransactionsButton">
+                <RouterLink :to="`/accountdetails/transactions/${props.bankAccount.id}/${props.bankAccount.iban}`"
+                    class="btn btn-primary">
+                    View
+                    Transactions</RouterLink>
+            </div>
+            <slot name="button" />
         </div>
-        <slot name="button" />
     </li>
 </template>

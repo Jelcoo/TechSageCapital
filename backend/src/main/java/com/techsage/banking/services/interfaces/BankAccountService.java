@@ -9,7 +9,6 @@ import org.iban4j.Iban;
 import org.springframework.data.domain.*;
 
 import java.math.*;
-import java.util.List;
 
 public interface BankAccountService {
     Page<BankAccountDto> findByUserAndType(User user, BankAccountType type, Pageable pageable);
@@ -18,4 +17,5 @@ public interface BankAccountService {
     BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance);
     BankAccount update(BankAccount bankAccount);
     BankAccount getById(long id);
+    BankAccountDto updateAbsoluteMinimumBalance(long id, BigDecimal absoluteMinimumBalance);
 }

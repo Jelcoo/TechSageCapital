@@ -24,5 +24,4 @@ public interface UserService {
     User getByEmailRaw(String email);
     Page<UserDto> findByStatus(UserStatus status, Pageable pageable);
     UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) throws IllegalArgumentException;
-    UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException;
 }
