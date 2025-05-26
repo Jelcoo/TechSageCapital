@@ -1,11 +1,13 @@
 package com.techsage.banking.models.dto.requests;
 
+import com.techsage.banking.validators.DailyLimit;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.*;
 
 @Data
+@DailyLimit(first = "dailyTransferLimit", second = "transferLimit")
 public class ApprovalRequestDto {
     @NotNull(message = "Transfer limit is required")
     @Min(value = 0, message = "Transfer limit must be at least 0")
