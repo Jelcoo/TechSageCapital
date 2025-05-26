@@ -13,6 +13,10 @@
                                 :value="user?.bankAccounts ? user.transferLimit : 0" />
                             <FormInput name="dailyTransferLimit" label="Daily transfer limit" type="number"
                                 placeholder="100.00" :value="user?.bankAccounts ? user.dailyLimit : 0" />
+                            <FormInput name="absoluteLimitChecking" label="Absolute limit checking" type="number"
+                                placeholder="100.00" value="0" />
+                            <FormInput name="absoluteLimitSavings" label="Absolute limit savings" type="number"
+                                placeholder="100.00" value="0" />
                             <button class="btn btn-primary w-100 py-2 my-3" type="submit">{{ props.button }}</button>
                         </form>
                     </VeeForm>

@@ -4,7 +4,6 @@ import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
 import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
-import com.techsage.banking.models.dto.requests.UserLimitsRequestDto;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
