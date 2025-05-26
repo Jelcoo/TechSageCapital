@@ -9,7 +9,7 @@ import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faArrowUp19, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -120,13 +120,6 @@ onMounted(() => {
                             <RouterLink :to="`/accountdetails/transfer${userIdParam ? `/${user.id}` : ''}`"
                                 class="text-white text-decoration-none">
                                 <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" /> Transfer
-                            </RouterLink>
-                        </button>
-                        <button class="btn btn-primary"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
-                            <RouterLink :to="`/employee/customer/${user.id}/limits`"
-                                class="text-white text-decoration-none">
-                                <FontAwesomeIcon :icon="faArrowUp19" class="me-2" /> Edit user limits
                             </RouterLink>
                         </button>
                         <button class="btn btn-danger"

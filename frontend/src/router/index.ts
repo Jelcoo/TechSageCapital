@@ -83,11 +83,6 @@ const router = createRouter({
                     component: () => import('@/views/employee/ApproveCustomer.vue'),
                 },
                 {
-                    path: 'customer/:id/limits',
-                    name: 'customer-limits',
-                    component: () => import('@/views/employee/LimitsCustomer.vue'),
-                },
-                {
                     path: 'transactions',
                     name: 'transactions',
                     component: () => import('@/views/employee/TransactionsView.vue'),
