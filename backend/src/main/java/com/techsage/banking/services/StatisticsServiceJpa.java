@@ -1,5 +1,6 @@
 package com.techsage.banking.services;
 
+import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.repositories.*;
@@ -36,68 +37,60 @@ public class StatisticsServiceJpa implements StatisticsService {
         return statisticsResponseDto;
     }
 
-    private Map<String, Object> getTransactionTypeChart() {
-        Map<String, Object> chartData = new HashMap<>();
-        chartData.put("labels", TransactionType.values());
+    private ChartJsDataDto getTransactionTypeChart() {
+        ChartJsDataDto chartData = new ChartJsDataDto();
 
-        Map<String, Object> dataset = new HashMap<>();
-        dataset.put("label", "Transactions");
+        ChartDatasetDto dataset = new ChartDatasetDto();
+        dataset.setLabel("Transactions");
 
-        List<BigDecimal> data = new ArrayList<>();
         for (TransactionType transactionType : TransactionType.values()) {
-            data.add(transactionRepository.sumByTransactionType(transactionType));
+            chartData.addLabel(transactionType.name());
+            dataset.addData(transactionRepository.sumByTransactionType(transactionType));
         }
-        dataset.put("data", data);
 
-        chartData.put("datasets", List.of(dataset));
-
-        return chartData;
-    }
-
-    private Map<String, Object> getTransactionTodayChart() {
-        Map<String, Object> chartData = new HashMap<>();
-        chartData.put("labels", this.generateHourlyLabels());
-
-        chartData.put("datasets", List.of(
-                this.getTransactionsTodayValueChart(),
-                this.getTransactionsTodayCountChart())
-        );
+        chartData.addDataset(dataset);
 
         return chartData;
     }
 
-    private Map<String, Object> getTransactionsTodayValueChart() {
-        Map<String, Object> dataset = new HashMap<>();
-        dataset.put("label", "Transaction (value)");
+    private ChartJsDataDto getTransactionTodayChart() {
+        ChartJsDataDto chartData = new ChartJsDataDto();
+        chartData.setLabels(this.generateHourlyLabels());
 
-        List<BigDecimal> data = new ArrayList<>();
+        chartData.addDataset(this.getTransactionsTodayValueChart());
+        chartData.addDataset(this.getTransactionsTodayCountChart());
+
+        return chartData;
+    }
+
+    private ChartDatasetDto getTransactionsTodayValueChart() {
+        ChartDatasetDto dataset = new ChartDatasetDto();
+        dataset.setLabel("Transaction (value)");
+
         for (int hour = 0; hour < 24; hour++) {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime startOfHour = now.withHour(hour).withMinute(0).withSecond(0).withNano(0);
             LocalDateTime endOfHour = now.withHour(hour).withMinute(59).withSecond(59).withNano(999999999);
             BigDecimal sum = transactionRepository.sumByTransactionTime(startOfHour, endOfHour);
-            data.add(sum == null ? BigDecimal.ZERO : sum);
+            dataset.addData(sum == null ? BigDecimal.ZERO : sum);
         }
-        dataset.put("data", data);
-        dataset.put("yAxisID", "y");
+        dataset.setYAxisID("y");
 
         return dataset;
     }
 
-    private Map<String, Object> getTransactionsTodayCountChart() {
-        Map<String, Object> dataset = new HashMap<>();
-        dataset.put("label", "Transaction (count)");
+    private ChartDatasetDto getTransactionsTodayCountChart() {
+        ChartDatasetDto dataset = new ChartDatasetDto();
+        dataset.setLabel("Transaction (count)");
 
-        List<BigDecimal> data = new ArrayList<>();
         for (int hour = 0; hour < 24; hour++) {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime startOfHour = now.withHour(hour).withMinute(0).withSecond(0).withNano(0);
             LocalDateTime endOfHour = now.withHour(hour).withMinute(59).withSecond(59).withNano(999999999);
             BigDecimal sum = transactionRepository.countByTransactionTime(startOfHour, endOfHour);
-            data.add(sum == null ? BigDecimal.ZERO : sum);
+            dataset.addData(sum == null ? BigDecimal.ZERO : sum);
         }
-        dataset.put("data", data);
-        dataset.put("yAxisID", "y1");
+        dataset.setYAxisID("y1");
 
         return dataset;
     }

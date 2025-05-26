@@ -120,7 +120,7 @@ const lineConfig: ChartOptions<"line"> = {
             position: 'left',
             title: {
                 display: true,
-                text: 'Amount ($)'
+                text: 'Amount (€)'
             }
         },
         y1: {
