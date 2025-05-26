@@ -43,6 +43,14 @@ export interface UpdateUser {
     status?: AccountStatus;
 }
 
+export interface UpdatePassword {
+    id: number;
+    email?: string;
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+}
+
 export enum Role {
     ADMIN = 'ROLE_ADMIN',
     EMPLOYEE = 'ROLE_EMPLOYEE',

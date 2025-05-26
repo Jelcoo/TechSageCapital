@@ -9,7 +9,7 @@ import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faArrowUp19, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp19, faKey, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -113,6 +113,13 @@ onMounted(() => {
                                 ? `/accountdetails/edit/${user.id}`
                                 : `/accountdetails/edit`">
                                 <FontAwesomeIcon :icon="faPencil" class="me-2" /> Edit
+                            </RouterLink>
+                        </button>
+                        <button class="btn btn-primary">
+                            <RouterLink class="text-white text-decoration-none" :to="userStore.roles.includes(Role.EMPLOYEE)
+                                ? `/accountdetails/editpassword/${user.id}`
+                                : `/accountdetails/editpassword`">
+                                <FontAwesomeIcon :icon="faKey" class="me-2" /> Change password
                             </RouterLink>
                         </button>
                         <button class="btn btn-primary" :disabled="user.bankAccounts.length == 0"
