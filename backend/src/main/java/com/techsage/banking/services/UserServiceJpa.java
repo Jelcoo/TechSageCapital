@@ -66,7 +66,7 @@ public class UserServiceJpa implements UserService {
     public UserDto updateSelf(String currentEmail , UpdateSelfRequestDto user) {
         User existingUser = getByEmailRaw(currentEmail);
         if (!existingUser.getEmail().equals(currentEmail)) {
-            throw new IllegalArgumentException("Access denied");
+            throw new IllegalArgumentException("Email is already taken");
         }
         existingUser.setEmail(user.getEmail());
         existingUser.setPhoneNumber(user.getPhoneNumber());
