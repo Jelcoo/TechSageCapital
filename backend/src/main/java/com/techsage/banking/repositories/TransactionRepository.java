@@ -20,4 +20,6 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     Page<Transaction> findAllByBankAccount(BankAccount bankAccount, Pageable pageable);
 
     Page<Transaction> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+
 }
