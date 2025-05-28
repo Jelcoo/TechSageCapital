@@ -1,6 +1,7 @@
 <template>
     <main>
         <div class="container py-5 col-md-6 col-12">
+            <BackButton />
             <h1 class="display-4 fw-bold text-left mb-2">Transfer Overview</h1>
             <div v-if="loading" class="text-center">
                 <div class="spinner-border text-primary" role="status">
@@ -152,6 +153,7 @@ import { Modal } from "bootstrap";
 import { useDebounceFn } from "@vueuse/core";
 import PageIndicator from "@/components/PageIndicator.vue";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
+import BackButton from "@/components/BackButton.vue";
 
 const route = useRoute();
 

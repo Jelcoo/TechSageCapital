@@ -7,6 +7,7 @@ import type { AxiosError } from 'axios';
 import { Role } from "@/types";
 import { useRoute } from "vue-router";
 import type { User } from "@/types";
+import BackButton from "@/components/BackButton.vue";
 
 const route = useRoute();
 const userIdParam = route.params.id;
@@ -81,7 +82,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+    <div class="container py-5">
+        <BackButton />
         <h1>Change Password</h1>
 
         <div v-if="loading" class="text-center">

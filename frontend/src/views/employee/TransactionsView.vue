@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/dates";
 import { formatIban } from "@/utils/prettyIban";
 import { formatMoney } from "@/utils";
 import PageIndicator from "@/components/PageIndicator.vue";
+import BackButton from "@/components/BackButton.vue";
 
 const loading = ref(false);
 const errorMessage = ref("");
@@ -40,7 +41,8 @@ onMounted(() => {
 
 <template>
     <main>
-        <div class="container">
+        <div class="container py-5">
+            <BackButton />
             <h1>Transactions</h1>
             <div v-if="loading || !transactions" class="spinner-border" role="status">
                 <span class="sr-only"></span>

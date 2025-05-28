@@ -11,6 +11,7 @@ import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowUp19, faKey, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Modal } from "bootstrap";
+import BackButton from "@/components/BackButton.vue";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -97,6 +98,7 @@ onMounted(() => {
 <template>
     <main>
         <div class="container py-5">
+            <BackButton />
             <h1 class="display-4 fw-bold text-left mb-5">Account details</h1>
 
             <div v-if="loading" class="text-center">

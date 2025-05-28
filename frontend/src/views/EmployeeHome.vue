@@ -76,6 +76,10 @@ import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { Line, Pie } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, type ChartOptions, Colors, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+const currentTime = ref(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
 ChartJS.register(ArcElement, Tooltip, Legend, Colors, CategoryScale, LinearScale, PointElement, LineElement);
 
