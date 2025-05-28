@@ -26,9 +26,16 @@ const userStore = useUserStore();
             </div>
 
             <div v-if="userStore.bankAccounts.length > 0" class="bank-accounts">
+                <div class="row mb-3">
+                    <div class="col">
+                        <strong>Total Balance:</strong> €{{userStore.bankAccounts.reduce((acc, account) => acc +
+                            account.balance, 0)}}
+                    </div>
+                </div>
                 <ul class="list-group">
                     <BankAccountComponent v-for="account in userStore.bankAccounts" :key="account.id"
-                        :bank-account="account" />
+                        :bank-account="account" :show-transactions-button="true">
+                    </BankAccountComponent>
                 </ul>
             </div>
             <div v-else class="alert alert-info">
