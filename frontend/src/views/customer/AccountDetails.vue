@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient from "@/axios";
-import type { User } from "@/types";
+import type { BankAccount, User } from "@/types";
 import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
@@ -10,6 +10,7 @@ import { formatMoney } from "@/utils";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowUp19, faKey, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Modal } from "bootstrap";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -17,6 +18,11 @@ const userIdParam = route.params.id;
 const user = ref<User | null>(null);
 const errorMessage = ref("");
 const loading = ref(false);
+const successMessage = ref("");
+const absoluteLimit = ref(0);
+const bankAccountId = ref(0);
+const updateModal = ref<HTMLElement | null>(null);
+let modalInstance: Modal | null = null;
 
 async function fetchUser() {
     loading.value = true;
@@ -49,8 +55,42 @@ async function softDeleteAccount() {
     }
 }
 
+const openModal = (account: BankAccount): void => {
+    modalInstance?.show();
+    bankAccountId.value = account.id;
+    absoluteLimit.value = account.absoluteMinimumBalance;
+};
+
+const closeModal = (): void => {
+    modalInstance?.hide();
+    bankAccountId.value = 0;
+    absoluteLimit.value = 0;
+};
+
+async function updateAbsoluteLimit() {
+    try {
+        errorMessage.value = "";
+        successMessage.value = "";
+        const response = await axiosClient.put<BankAccount>(`/bankAccounts/${bankAccountId.value}/absoluteLimit`, {
+            absoluteMinimumBalance: absoluteLimit.value,
+        });
+        if (response.status === 200) {
+            successMessage.value = "Absolute limit updated successfully.";
+        }
+    } catch (error) {
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while updating the absolute limit. " + (error as AxiosError).message; // remove error.message later if it's for debugging
+    }
+    closeModal();
+    fetchUser();
+};
+
 onMounted(() => {
     fetchUser();
+    if (updateModal.value) {
+        modalInstance = new Modal(updateModal.value);
+    }
 });
 </script>
 
@@ -67,6 +107,9 @@ onMounted(() => {
 
             <div v-if="errorMessage" class="alert alert-danger text-center">
                 {{ errorMessage }}
+            </div>
+            <div v-if="successMessage" class="alert alert-success text-center">
+                {{ successMessage }}
             </div>
             <h2>User Details</h2>
             <div class="container row mb-4">
@@ -129,13 +172,6 @@ onMounted(() => {
                                 <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" /> Transfer
                             </RouterLink>
                         </button>
-                        <button class="btn btn-primary"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)">
-                            <RouterLink :to="`/employee/customer/${user.id}/limits`"
-                                class="text-white text-decoration-none">
-                                <FontAwesomeIcon :icon="faArrowUp19" class="me-2" /> Edit user limits
-                            </RouterLink>
-                        </button>
                         <button class="btn btn-danger"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
                             @click="softDeleteAccount()">
@@ -154,11 +190,39 @@ onMounted(() => {
                         </div>
                         <ul class="list-group">
                             <BankAccountComponent v-for="account in user.bankAccounts" :key="account.id"
-                                :bank-account="account" :show-transactions-button="true" />
+                                :bank-account="account" :show-transactions-button="true">
+                                <template #button>
+                                    <button class="btn btn-primary" @click="openModal(account)">
+                                        <FontAwesomeIcon :icon="faArrowUp19" class="me-2" />Edit absolute limit
+                                    </button>
+                                </template>
+                            </BankAccountComponent>
                         </ul>
                     </div>
                     <div v-else class="alert alert-info">
                         No bank accounts found for this user.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true"
+            ref="updateModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateModalLabel">Update absolute limit</h5>
+                        <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="absoluteLimit" class="form-label">Absolute Limit</label>
+                            <input type="number" class="form-control" id="absoluteLimit" v-model="absoluteLimit">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="updateAbsoluteLimit">Save</button>
                     </div>
                 </div>
             </div>

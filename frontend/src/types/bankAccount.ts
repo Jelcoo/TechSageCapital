@@ -3,7 +3,7 @@ export interface BankAccount {
     owner_id: number; // Foreign key to User table
     iban: string;
     balance: number;
-    absoluteMinimum: number; // Minimum balance required in the account
+    absoluteMinimumBalance: number; // Minimum balance required in the account
     type: BankAccountType; // 'savings' | 'checking' | optional ATM
     bankAccounts: BankAccount[];
 }

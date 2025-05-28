@@ -69,4 +69,4 @@ jobs:
           cd backend
           docker stop springboot-app || true
           docker rm springboot-app || true
-          docker run -d --name springboot-app -p 8080:8080 springboot-app
+          docker run -d --restart=always --name springboot-app -p 8080:8080 springboot-app

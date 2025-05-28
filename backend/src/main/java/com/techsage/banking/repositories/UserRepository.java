@@ -12,4 +12,5 @@ import java.util.*;
 public interface UserRepository extends CrudRepository<User, Long> {
     Optional<User> getByEmail(String email);
     Page<User> findByStatus(UserStatus status, Pageable pageable);
+    long countByRoles(UserRole role);
 }

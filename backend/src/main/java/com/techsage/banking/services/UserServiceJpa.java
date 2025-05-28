@@ -66,7 +66,7 @@ public class UserServiceJpa implements UserService {
     public UserDto updateSelf(String currentEmail , UpdateSelfRequestDto user) {
         User existingUser = getByEmailRaw(currentEmail);
         if (!existingUser.getEmail().equals(currentEmail)) {
-            throw new IllegalArgumentException("Access denied");
+            throw new IllegalArgumentException("Email is already taken");
         }
         existingUser.setEmail(user.getEmail());
         existingUser.setPhoneNumber(user.getPhoneNumber());
@@ -187,16 +187,8 @@ public class UserServiceJpa implements UserService {
         user.setStatus(UserStatus.ACTIVE);
         user.setTransferLimit(approvalRequestDto.getTransferLimit());
         user.setDailyLimit(approvalRequestDto.getDailyTransferLimit());
-        bankAccountService.create(user, BankAccountType.CHECKING, BigDecimal.valueOf(0), BigDecimal.valueOf(0.0));
-        bankAccountService.create(user, BankAccountType.SAVINGS, BigDecimal.valueOf(0), BigDecimal.valueOf(0.0));
-        return modelMapper.map(userRepository.save(user), UserDto.class);
-    }
-
-    @Override
-    public UserDto updateLimits(long id, UserLimitsRequestDto userLimitsRequestDto) throws IllegalArgumentException {
-        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
-        user.setTransferLimit(userLimitsRequestDto.getTransferLimit());
-        user.setDailyLimit(userLimitsRequestDto.getDailyTransferLimit());
+        bankAccountService.create(user, BankAccountType.CHECKING, approvalRequestDto.getAbsoluteLimitChecking(), BigDecimal.valueOf(0.0));
+        bankAccountService.create(user, BankAccountType.SAVINGS, approvalRequestDto.getAbsoluteLimitSavings(), BigDecimal.valueOf(0.0));
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 }

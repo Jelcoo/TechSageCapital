@@ -88,4 +88,4 @@ jobs:
         run: |
           docker stop vue-app || true
           docker rm vue-app || true
-          docker run -d --name vue-app -p 80:80 vue-app
+          docker run -d --restart=always --name vue-app -p 80:80 vue-app

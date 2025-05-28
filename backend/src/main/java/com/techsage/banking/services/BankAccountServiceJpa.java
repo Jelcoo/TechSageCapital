@@ -14,7 +14,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.*;
-import java.util.List;
 
 @Service
 public class BankAccountServiceJpa implements BankAccountService {
@@ -82,5 +81,12 @@ public class BankAccountServiceJpa implements BankAccountService {
     @Override
     public BankAccount getById(long id) {
         return bankAccountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
+    }
+
+    @Override
+    public BankAccountDto updateAbsoluteMinimumBalance(long id, BigDecimal absoluteMinimumBalance) {
+        BankAccount bankAccount = this.getById(id);
+        bankAccount.setAbsoluteMinimumBalance(absoluteMinimumBalance);
+        return modelMapper.map(bankAccountRepository.save(bankAccount), BankAccountDto.class);
     }
 }
