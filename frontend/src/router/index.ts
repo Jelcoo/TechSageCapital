@@ -54,7 +54,7 @@ const router = createRouter({
                     component: () => import('@/views/customer/ChangePassword.vue'),
                 },
                 {
-                    path: 'editpassword/${user.id}',
+                    path: 'editpassword/:id',
                     name: 'accountdetails-change-user-password',
                     component: () => import('@/views/customer/ChangePassword.vue'),
                 },
