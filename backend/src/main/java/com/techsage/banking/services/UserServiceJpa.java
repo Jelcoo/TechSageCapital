@@ -191,4 +191,21 @@ public class UserServiceJpa implements UserService {
         bankAccountService.create(user, BankAccountType.SAVINGS, approvalRequestDto.getAbsoluteLimitSavings(), BigDecimal.valueOf(0.0));
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
+
+    @Override
+    public UserDto updatePassword(long id, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) throws IllegalArgumentException {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        user.setPassword(bCryptPasswordEncoder.encode(updateUserPasswordRequestDto.getNewPassword()));
+        return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Override
+    public AuthResponseDto updateOwnPassword(String email, UpdatePasswordRequestDto updatePasswordRequestDto) throws IllegalArgumentException {
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new NoSuchElementException("User with email " + email + " not found"));
+        if (!bCryptPasswordEncoder.matches(updatePasswordRequestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
+        return this.setUserJwt(user);
+    }
 }

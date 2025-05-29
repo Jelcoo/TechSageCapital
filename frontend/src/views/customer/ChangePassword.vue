@@ -21,28 +21,15 @@ const editUserPassword = async (event: Event) => {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (userStore.id === userId.value) {
-            if (confirm("This will log you out. Do you want to continue?")) {
-                await axiosClient.put(`/users/${userId.value}/updatePassword`, {  //Check security
-                    currentPassword: (event.target as HTMLFormElement).currentPassword.value,
-                    newPassword: (event.target as HTMLFormElement).newPassword.value,
-                    confirmNewPassword: (event.target as HTMLFormElement).confirmNewPassword.value
-                });
-                userStore.logout();
-            }
-        }
-        else {
-            await axiosClient.put(`/users/${userIdParam}/updatePassword`, {  //Check security
-                currentPassword: (event.target as HTMLFormElement).currentPassword.value,
-                newPassword: (event.target as HTMLFormElement).newPassword.value,
-                confirmNewPassword: (event.target as HTMLFormElement).confirmNewPassword.value
-            });
-            successMessage.value = "User details updated successfully.";
-        }
+        await axiosClient.put(`/users/${userIdParam}/updatePassword`, {
+            newPassword: (event.target as HTMLFormElement).newPassword.value,
+            confirmNewPassword: (event.target as HTMLFormElement).confirmNewPassword.value
+        });
+        successMessage.value = "User password updated successfully.";
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while editing user details. " + (error as AxiosError).message;
+            : "An error occurred while editing user password. " + (error as AxiosError).message;
     } finally {
         loading.value = false;
     }
@@ -55,25 +42,23 @@ const editOwnPassword = async (event: Event) => {
     loading.value = true;
     errorMessage.value = "";
     try {
-        if (confirm("This will log you out. Do you want to continue?")) {
-            await axiosClient.put(`/users/me`, {  //Check security
-                currentPassword: (event.target as HTMLFormElement).currentPassword.value,
-                newPassword: (event.target as HTMLFormElement).newPassword.value,
-                confirmNewPassword: (event.target as HTMLFormElement).confirmNewPassword.value
-            });
-            userStore.logout();
-        }
+        await axiosClient.put(`/users/me/updatePassword`, {
+            currentPassword: (event.target as HTMLFormElement).currentPassword.value,
+            newPassword: (event.target as HTMLFormElement).newPassword.value,
+            confirmNewPassword: (event.target as HTMLFormElement).confirmNewPassword.value
+        });
+        successMessage.value = "Your password has been updated successfully.";
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
             ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
-            : "An error occurred while editing user details. " + (error as AxiosError).message;
+            : "An error occurred while editing password. " + (error as AxiosError).message;
     } finally {
         loading.value = false;
     }
 };
 
 const submitHandler = computed(() =>
-    userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)
+    (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) && userIdParam !== userId.value
         ? editUserPassword
         : editOwnPassword
 );
@@ -104,7 +89,9 @@ const submitHandler = computed(() =>
         </div>
 
         <form @submit.prevent="submitHandler">
-            <FormInput name="currentPassword" label="Current Password" type="password"
+            <FormInput
+                v-if="(!userStore.roles.includes(Role.EMPLOYEE) && !userStore.roles.includes(Role.ADMIN)) || userId === userIdParam"
+                name="currentPassword" label="Current Password" type="password"
                 placeholder="Enter your current password" />
             <FormInput name="newPassword" label="New Password" type="password" placeholder="Enter a new password" />
             <FormInput name="confirmNewPassword" label="Confirm New Password" type="password"
