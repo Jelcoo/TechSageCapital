@@ -18,7 +18,6 @@ const startDate = ref("");
 const endDate = ref("");
 const amountFilterType = ref("");
 const amountFilterValue = ref<number | null>(null);
-const ibanFilter = ref("");
 const fromIbanFilter = ref("");
 const toIbanFilter = ref("");
 
