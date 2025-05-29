@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient, { type PaginatedResponse } from "@/axios";
 import type { Transaction } from "@/types";
@@ -19,6 +19,12 @@ const userStore = useUserStore();
 const bankAccount = String(useRoute().params.iban);
 const bankAccountId = Number(useRoute().params.id);
 const page = ref(1);
+const startDate = ref("");
+const endDate = ref("");
+const amountFilterType = ref("");
+const amountFilterValue = ref<number | null>(null);
+const ibanFilter = ref("");
+const showFilters = ref(false);
 
 async function fetchTransactions() {
     loading.value = true;
@@ -50,6 +56,40 @@ function handlePageSelect(pageNumber: number) {
     fetchTransactions();
 }
 
+const filteredTransactions = computed(() => {
+    if (!transactions.value?.content) return [];
+    return transactions.value.content.filter((transaction) => {
+        const transactionDate = new Date(transaction.createdAt);
+        const start = new Date(startDate.value);
+        const end = endDate.value
+            ? new Date(new Date(endDate.value).setHours(23, 59, 59, 999))
+            : null;
+
+        const dateMatch =
+            (!startDate.value || transactionDate >= start) &&
+            (!endDate.value || (end !== null && transactionDate <= end));
+
+        let amountMatch = true;
+        if (amountFilterType.value && amountFilterValue.value !== null && amountFilterValue.value !== undefined) {
+            if (amountFilterType.value === "lt") {
+                amountMatch = transaction.amount < amountFilterValue.value;
+            } else if (amountFilterType.value === "eq") {
+                amountMatch = transaction.amount === amountFilterValue.value;
+            } else if (amountFilterType.value === "gt") {
+                amountMatch = transaction.amount > amountFilterValue.value;
+            }
+        }
+
+        const iban = ibanFilter.value.replace(/\s/g, "").trim().toUpperCase();
+        const ibanMatch =
+            !iban ||
+            (transaction.fromAccount?.iban?.toUpperCase().includes(iban)) ||
+            (transaction.toAccount?.iban?.toUpperCase().includes(iban));
+
+        return dateMatch && amountMatch && ibanMatch;
+    });
+});
+
 onMounted(() => {
     fetchTransactions();
 });
@@ -65,39 +105,78 @@ onMounted(() => {
                 <span class="sr-only"></span>
             </div>
             <div v-else-if="errorMessage">{{ errorMessage }}</div>
+            <template v-else>
+                <button class="btn btn-primary mb-3" @click="showFilters = !showFilters">
+                    {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
+                </button>
 
-            <PageIndicator v-else :pagination="transactions" @pageSelect="handlePageSelect">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Account</th>
-                            <th>Description</th>
-                            <th class="text-end">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="transaction in transactions.content" :key="transaction.id">
-                            <td>{{ formatDate(transaction.createdAt) }}</td>
-                            <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ??
-                                "")
-                                }}</td>
-                            <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
-                                ?? "") }}</td>
-                            <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">
-                                ATM
-                            </td>
-                            <td v-else>Error</td>
-                            <td>{{ transaction.description }}</td>
-                            <td class="text-danger text-end"
-                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
-                                    formatMoney(transaction.amount) }}
-                            </td>
-                            <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </PageIndicator>
+                <div class="row mb-3" v-show="showFilters">
+                    <div class="col">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input id="startDate" type="date" v-model="startDate" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input id="endDate" type="date" v-model="endDate" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="amountFilterType" class="form-label">Amount Filter</label>
+                        <select id="amountFilterType" v-model="amountFilterType" class="form-select">
+                            <option value="">Any</option>
+                            <option value="lt">Less than</option>
+                            <option value="eq">Equal to</option>
+                            <option value="gt">Greater than</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="amountFilterValue" class="form-label">Amount</label>
+                        <input id="amountFilterValue" type="number" v-model.number="amountFilterValue"
+                            class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="ibanFilter" class="form-label">IBAN</label>
+                        <input id="ibanFilter" type="text" v-model="ibanFilter" class="form-control"
+                            placeholder="Enter IBAN" />
+                    </div>
+                </div>
+
+                <PageIndicator v-if="transactions" :pagination="transactions" @pageSelect="handlePageSelect">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Account</th>
+                                <th>Description</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="transaction in filteredTransactions" :key="transaction.id">
+                                <td>{{ formatDate(transaction.createdAt) }}</td>
+                                <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban
+                                    ??
+                                    "")
+                                    }}</td>
+                                <td v-else-if="transaction.type === 'DEPOSIT'">{{
+                                    formatIban(transaction.fromAccount?.iban
+                                        ?? "") }}</td>
+                                <td
+                                    v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">
+                                    ATM
+                                </td>
+                                <td v-else>Error</td>
+                                <td>{{ transaction.description }}</td>
+                                <td class="text-danger text-end"
+                                    v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">
+                                    -{{
+                                        formatMoney(transaction.amount) }}
+                                </td>
+                                <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </PageIndicator>
+            </template>
         </div>
     </main>
 </template>
