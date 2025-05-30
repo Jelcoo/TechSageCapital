@@ -83,7 +83,7 @@ void testGetAllTransactions() {
         TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(fromAccount, pageable, filterRequestDto))
+        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), any(TransactionFilterRequestDto.class)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
@@ -106,7 +106,7 @@ void testGetAllTransactions() {
         when(userService.getByEmailRaw("user@example.com")).thenReturn(user);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(), any(), any()))
+        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), any(TransactionFilterRequestDto.class)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto);
