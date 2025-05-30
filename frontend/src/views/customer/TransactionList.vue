@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient, { type PaginatedResponse } from "@/axios";
 import type { Transaction } from "@/types";
@@ -72,11 +72,11 @@ function handlePageSelect(pageNumber: number) {
     fetchTransactions();
 }
 
-onMounted(() => {
+function applyFilters() {
     fetchTransactions();
-});
+}
 
-watch([startDate, endDate, amountFilterType, amountFilterValue, ibanFilter], () => {
+onMounted(() => {
     fetchTransactions();
 });
 
@@ -96,35 +96,43 @@ watch([startDate, endDate, amountFilterType, amountFilterValue, ibanFilter], () 
                     {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
                 </button>
 
-                <div class="row mb-3" v-show="showFilters">
-                    <div class="col">
-                        <label for="startDate" class="form-label">Start Date</label>
-                        <input id="startDate" type="date" v-model="startDate" class="form-control" />
+                <div class="mb-3" v-show="showFilters">
+                    <div class="row">
+                        <div class="col">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input id="startDate" type="date" v-model="startDate" class="form-control" />
+                        </div>
+                        <div class="col">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input id="endDate" type="date" v-model="endDate" class="form-control" />
+                        </div>
+                        <div class="col">
+                            <label for="amountFilterType" class="form-label">Amount Filter</label>
+                            <select id="amountFilterType" v-model="amountFilterType" class="form-select">
+                                <option default value="">Any</option>
+                                <option value="LESS_THAN">Less than</option>
+                                <option value="EQUALS">Equal to</option>
+                                <option value="GREATER_THAN">Greater than</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="amountFilterValue" class="form-label">Amount</label>
+                            <input id="amountFilterValue" type="number" v-model.number="amountFilterValue"
+                                class="form-control" />
+                        </div>
+                        <div class="col">
+                            <label for="ibanFilter" class="form-label">IBAN</label>
+                            <input id="ibanFilter" type="text" v-model="ibanFilter" class="form-control"
+                                placeholder="Enter IBAN" />
+                        </div>
                     </div>
-                    <div class="col">
-                        <label for="endDate" class="form-label">End Date</label>
-                        <input id="endDate" type="date" v-model="endDate" class="form-control" />
-                    </div>
-                    <div class="col">
-                        <label for="amountFilterType" class="form-label">Amount Filter</label>
-                        <select id="amountFilterType" v-model="amountFilterType" class="form-select">
-                            <option default value="">Any</option>
-                            <option value="LESS_THAN">Less than</option>
-                            <option value="EQUALS">Equal to</option>
-                            <option value="GREATER_THAN">Greater than</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="amountFilterValue" class="form-label">Amount</label>
-                        <input id="amountFilterValue" type="number" v-model.number="amountFilterValue"
-                            class="form-control" />
-                    </div>
-                    <div class="col">
-                        <label for="ibanFilter" class="form-label">IBAN</label>
-                        <input id="ibanFilter" type="text" v-model="ibanFilter" class="form-control"
-                            placeholder="Enter IBAN" />
+                    <div class="row mt-3">
+                        <div class="col d-flex align-items-end">
+                            <button class="btn btn-primary" @click="applyFilters">Apply</button>
+                        </div>
                     </div>
                 </div>
+
 
                 <PageIndicator v-if="transactions" :pagination="transactions" @pageSelect="handlePageSelect">
                     <table class="table table-striped">
@@ -139,10 +147,11 @@ watch([startDate, endDate, amountFilterType, amountFilterValue, ibanFilter], () 
                         <tbody>
                             <tr v-for="transaction in transactions.content" :key="transaction.id">
                                 <td>{{ formatDate(transaction.createdAt) }}</td>
-                                <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban
-                                    ??
-                                    "")
-                                    }}</td>
+                                <td v-if="transaction.type === 'WITHDRAWAL'">{{
+                                    formatIban(transaction.toAccount?.iban
+                                        ??
+                                        "")
+                                }}</td>
                                 <td v-else-if="transaction.type === 'DEPOSIT'">{{
                                     formatIban(transaction.fromAccount?.iban
                                         ?? "") }}</td>
@@ -155,10 +164,11 @@ watch([startDate, endDate, amountFilterType, amountFilterValue, ibanFilter], () 
                                 <td class="text-danger text-end"
                                     v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">
                                     <span class="badge text-bg-danger fs-6"> -{{ formatMoney(transaction.amount)
-                                    }}</span>
+                                        }}</span>
                                 </td>
-                                <td class="text-success text-end" v-else><span class="badge text-bg-success fs-6"> +{{
-                                    formatMoney(transaction.amount) }}</span></td>
+                                <td class="text-success text-end" v-else><span class="badge text-bg-success fs-6">
+                                        +{{
+                                            formatMoney(transaction.amount) }}</span></td>
                             </tr>
                         </tbody>
                     </table>
