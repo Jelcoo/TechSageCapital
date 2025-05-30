@@ -88,6 +88,7 @@ class TransactionServiceJpaTest {
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
 
+        assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
 
@@ -111,6 +112,7 @@ class TransactionServiceJpaTest {
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto);
 
+        assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
 
