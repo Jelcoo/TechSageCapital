@@ -85,7 +85,7 @@ class TransactionServiceJpaTest {
         Pageable pageable = PageRequest.of(0, 5);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), eq(filterRequestDto)))
+        when(transactionRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
@@ -107,7 +107,7 @@ class TransactionServiceJpaTest {
         when(userService.getByEmailRaw("user@example.com")).thenReturn(user);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), any(TransactionFilterRequestDto.class)))
+        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto);
