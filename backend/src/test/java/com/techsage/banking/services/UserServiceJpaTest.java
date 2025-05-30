@@ -22,6 +22,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Tag("unit")
 class UserServiceJpaTest {
 
     @Mock private UserRepository userRepository;

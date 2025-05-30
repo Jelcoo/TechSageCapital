@@ -8,8 +8,7 @@ import com.techsage.banking.models.enums.UserRole;
 import com.techsage.banking.repositories.BankAccountRepository;
 import com.techsage.banking.repositories.TransactionRepository;
 import com.techsage.banking.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +17,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Tag("unit")
 class StatisticsServiceJpaTest {
 
     private UserRepository userRepository;

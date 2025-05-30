@@ -1,6 +1,7 @@
 package com.techsage.banking.controllers;
 
 import lombok.*;
+import org.junit.jupiter.api.*;
 import org.junit.platform.suite.api.*;
 import org.springframework.test.web.servlet.request.*;
 
@@ -9,6 +10,7 @@ import org.springframework.test.web.servlet.request.*;
         AuthControllerTest.class,
         UserControllerTest.class
 })
+@Tag("integration-suite")
 public class ControllerTestSuite {
     @Setter
     private static String jwtToken;

@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag("integration")
 class AuthControllerTest {
 
     @Autowired

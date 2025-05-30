@@ -12,8 +12,7 @@ import com.techsage.banking.repositories.TransactionRepository;
 import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.UserService;
 import org.iban4j.Iban;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.data.domain.*;
@@ -27,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@Tag("unit")
 class TransactionServiceJpaTest {
 
     @Mock private TransactionRepository transactionRepository;

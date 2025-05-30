@@ -15,6 +15,7 @@ import java.math.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Tag("unit")
 class AtmServiceJpaTest {
 
     private BankAccountService bankAccountService;

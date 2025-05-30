@@ -2,8 +2,7 @@ package com.techsage.banking.services;
 
 import com.techsage.banking.exceptions.TurnstileFailedException;
 import com.techsage.banking.services.TurnstileService.TurnstileResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@Tag("unit")
 class TurnstileServiceTest {
 
     @Mock
