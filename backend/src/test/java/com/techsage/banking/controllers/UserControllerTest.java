@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.*;
 import org.springframework.test.web.servlet.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -26,7 +25,7 @@ class UserControllerTest {
 
     @Test
     void getAll() throws Exception {
-        this.mockMvc.perform(get("/users").with(ControllerTestSuite.authorized())).andDo(print())
+        this.mockMvc.perform(get("/users").with(ControllerTestSuite.authorized()))
                 .andExpect(status().isOk());
     }
 }
