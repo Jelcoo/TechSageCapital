@@ -1,5 +1,6 @@
 package com.techsage.banking.services;
 
+import com.techsage.banking.DatabaseSpecifications.AllTransactionSpecification;
 import com.techsage.banking.DatabaseSpecifications.TransactionSpecifications;
 import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.helpers.TransactionHelper;
@@ -7,6 +8,7 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.*;
+import com.techsage.banking.models.dto.requests.AllTransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.TransactionType;
@@ -50,8 +52,9 @@ public class TransactionServiceJpa implements TransactionService {
     }
 
     @Override
-    public Page<TransactionDto> getAll(Pageable pageable) {
-        Page<Transaction> transactionsPage = transactionRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public Page<TransactionDto> getAll(Pageable pageable, AllTransactionFilterRequestDto filter) {
+        Specification<Transaction> spec = AllTransactionSpecification.filterByCriteria(filter);
+        Page<Transaction> transactionsPage = transactionRepository.findAll(spec, pageable);
         return transactionsPage.map(transaction -> modelMapper.map(transaction, TransactionDto.class));
     }
 

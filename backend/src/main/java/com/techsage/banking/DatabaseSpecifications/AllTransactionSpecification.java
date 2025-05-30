@@ -1,7 +1,8 @@
 package com.techsage.banking.DatabaseSpecifications;
+
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
-import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
+import com.techsage.banking.models.dto.requests.AllTransactionFilterRequestDto;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -11,33 +12,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class TransactionSpecifications {
-
-    public static Specification<Transaction> filterByBankAccountAndCriteria(
-            BankAccount bankAccount,
-            TransactionFilterRequestDto filter) {
+public class AllTransactionSpecification {
+    public static Specification<Transaction> filterByCriteria(
+            AllTransactionFilterRequestDto filter) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            // Account filter
-            Predicate withdrawPredicate = cb.and(
-                    cb.or(
-                            cb.equal(root.get("type"), "WITHDRAWAL"),
-                            cb.equal(root.get("type"), "ATM_WITHDRAWAL")
-                    ),
-                    cb.equal(root.get("fromAccount"), bankAccount)
-            );
-
-            Predicate depositPredicate = cb.and(
-                    cb.or(
-                            cb.equal(root.get("type"), "DEPOSIT"),
-                            cb.equal(root.get("type"), "ATM_DEPOSIT")
-                    ),
-                    cb.equal(root.get("toAccount"), bankAccount)
-            );
-
-            predicates.add(cb.or(withdrawPredicate, depositPredicate));
 
             // Start date filter
             if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
@@ -52,11 +31,12 @@ public class TransactionSpecifications {
             }
 
             // IBAN filter
-            if (filter.getIbanFilter() != null && !filter.getIbanFilter().isEmpty()) {
-                predicates.add(cb.or(
-                        cb.equal(root.get("fromAccount").get("iban"), filter.getIbanFilter()),
-                        cb.equal(root.get("toAccount").get("iban"), filter.getIbanFilter())
-                ));
+            if (filter.getFromIbanFilter() != null && !filter.getFromIbanFilter().isEmpty()) {
+                predicates.add(cb.equal(root.get("fromAccount").get("iban"), filter.getFromIbanFilter()));
+            }
+
+            if (filter.getToIbanFilter() != null && !filter.getToIbanFilter().isEmpty()) {
+                predicates.add(cb.equal(root.get("toAccount").get("iban"), filter.getToIbanFilter()));
             }
 
             // Amount filter
@@ -77,7 +57,7 @@ public class TransactionSpecifications {
                 }
             }
 
-            // Order by createdAt descending
+            //Order by createdAt descending
             if (query != null) {
                 query.orderBy(cb.desc(root.get("createdAt")));
             }
@@ -86,4 +66,3 @@ public class TransactionSpecifications {
         };
     }
 }
-

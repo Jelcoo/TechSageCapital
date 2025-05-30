@@ -6,6 +6,7 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.requests.AllTransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.TransactionType;
@@ -70,7 +71,7 @@ class TransactionServiceJpaTest {
         when(transactionRepository.findAllByOrderByCreatedAtDesc(pageable))
                 .thenReturn(new PageImpl<>(List.of(transaction)));
 
-        Page<TransactionDto> result = transactionServiceJpa.getAll(pageable);
+        Page<TransactionDto> result = transactionServiceJpa.getAll(pageable, new AllTransactionFilterRequestDto());
 
         assertEquals(1, result.getTotalElements());
         verify(transactionRepository).findAllByOrderByCreatedAtDesc(pageable);
