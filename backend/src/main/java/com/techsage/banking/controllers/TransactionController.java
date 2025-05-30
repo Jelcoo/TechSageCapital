@@ -4,6 +4,8 @@ package com.techsage.banking.controllers;
 import com.techsage.banking.exceptions.TransactionException;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.*;
+import com.techsage.banking.models.dto.requests.AllTransactionFilterRequestDto;
+import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.dto.responses.*;
 import com.techsage.banking.services.interfaces.TransactionService;
@@ -65,8 +67,8 @@ public class TransactionController extends BaseController {
     )
     @GetMapping("/{bankAccountId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public PageResponseDto<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
-        Page<TransactionDto> page = transactionService.getByAccountId(bankAccountId, pageable);
+    public PageResponseDto<TransactionDto> getTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable, TransactionFilterRequestDto filter) {
+        Page<TransactionDto> page = transactionService.getByAccountId(bankAccountId, pageable, filter);
         return new PageResponseDto<>(page);
     }
 
@@ -88,9 +90,9 @@ public class TransactionController extends BaseController {
     )
     @GetMapping("/{bankAccountId}/me")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public PageResponseDto<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable) {
+    public PageResponseDto<TransactionDto> getCustomerTransactionsForId(@PathVariable long bankAccountId, @ParameterObject Pageable pageable, TransactionFilterRequestDto filter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Page<TransactionDto> page = transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName(), pageable);
+        Page<TransactionDto> page = transactionService.getByAccountIdAndCustomer(bankAccountId, authentication.getName(), pageable, filter);
         return new PageResponseDto<>(page);
     }
 
@@ -117,8 +119,8 @@ public class TransactionController extends BaseController {
     )
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public PageResponseDto<TransactionDto> getAllTransactions(@ParameterObject Pageable pageable) {
-        Page<TransactionDto> page = transactionService.getAll(pageable);
+    public PageResponseDto<TransactionDto> getAllTransactions(@ParameterObject Pageable pageable, AllTransactionFilterRequestDto filter) {
+        Page<TransactionDto> page = transactionService.getAll(pageable, filter);
         return new PageResponseDto<>(page);
     }
 

@@ -255,4 +255,76 @@ class UserServiceJpaTest {
         assertEquals(UserStatus.ACTIVE, result.getStatus());
         verify(bankAccountService, times(2)).create(eq(user), any(), any(), any());
     }
+
+    @Test
+    void updatePassword_validUser_updatesPassword() {
+        User user = new User();
+        user.setId(1L);
+
+        UpdateUserPasswordRequestDto requestDto = new UpdateUserPasswordRequestDto();
+        requestDto.setNewPassword("newPassword");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(userRepository.save(any())).thenReturn(user);
+
+        UserDto result = userService.updatePassword(1L, requestDto);
+
+        assertEquals("encodedNewPassword", user.getPassword());
+    }
+
+    @Test
+    void updateOwnPassword_validRequest_updatesPassword() {
+        User user = new User();
+        user.setEmail("user@example.com");
+        user.setPassword("oldEncodedPassword");
+        user.setRoles(List.of(UserRole.ROLE_USER));
+
+        UpdatePasswordRequestDto dto = new UpdatePasswordRequestDto();
+        dto.setCurrentPassword("oldPassword");
+        dto.setNewPassword("newPassword");
+
+        when(userRepository.getByEmail("user@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("oldPassword", "oldEncodedPassword")).thenReturn(true);
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("access-token");
+        when(jwtTokenProvider.createRefreshToken(any())).thenReturn("refresh-token");
+        when(userRepository.save(any())).thenReturn(user);
+
+        AuthResponseDto response = userService.updateOwnPassword("user@example.com", dto);
+
+        assertEquals("access-token", response.getAccessToken());
+        assertEquals("encodedNewPassword", user.getPassword());
+    }
+
+    @Test
+    void updateOwnPassword_wrongCurrentPassword_throwsException() {
+        User user = new User();
+        user.setEmail("user@example.com");
+        user.setPassword("correctEncodedPassword");
+
+        UpdatePasswordRequestDto dto = new UpdatePasswordRequestDto();
+        dto.setCurrentPassword("wrongPassword");
+        dto.setNewPassword("newPassword");
+
+        when(userRepository.getByEmail("user@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongPassword", "correctEncodedPassword")).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> userService.updateOwnPassword("user@example.com", dto));
+    }
+
+    @Test
+    void updateSelf_emailMismatch_throwsException() {
+        User user = new User();
+        user.setEmail("original@example.com");
+
+        UpdateSelfRequestDto dto = new UpdateSelfRequestDto();
+        dto.setEmail("different@example.com");
+        dto.setPhoneNumber("123456");
+
+        when(userRepository.getByEmail("original@example.com")).thenReturn(Optional.of(user));
+
+        assertThrows(IllegalArgumentException.class, () -> userService.updateSelf("original@example.com", dto));
+    }
+
 }
