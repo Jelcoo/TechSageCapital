@@ -6,6 +6,7 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.TransactionType;
 import com.techsage.banking.repositories.TransactionRepository;
@@ -78,33 +79,36 @@ class TransactionServiceJpaTest {
     @Test
     void testGetByAccountId_WhenAccountExists() {
         Pageable pageable = PageRequest.of(0, 5);
+        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(fromAccount, pageable))
+        when(transactionRepository.findAllByBankAccount(fromAccount, pageable, filterRequestDto))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-        Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable);
+        Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
 
         assertEquals(1, result.getTotalElements());
     }
 
     @Test
     void testGetByAccountId_WhenAccountNotExists_ThrowsException() {
+        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(TransactionException.class, () -> transactionServiceJpa.getByAccountId(1L, PageRequest.of(0, 5)));
+        assertThrows(TransactionException.class, () -> transactionServiceJpa.getByAccountId(1L, PageRequest.of(0, 5), filterRequestDto));
     }
 
     @Test
     void testGetByAccountIdAndCustomer_ValidRequest() {
+        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(userService.getByEmailRaw("user@example.com")).thenReturn(user);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(), any()))
+        when(transactionRepository.findAllByBankAccount(any(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-        Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5));
+        Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto);
 
         assertEquals(1, result.getTotalElements());
     }
@@ -114,11 +118,12 @@ class TransactionServiceJpaTest {
         User anotherUser = new User();
         anotherUser.setEmail("other@example.com");
 
+        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(userService.getByEmailRaw("user@example.com")).thenReturn(anotherUser);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
 
         assertThrows(TransactionException.class,
-                () -> transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5)));
+                () -> transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto));
     }
 
     @Test

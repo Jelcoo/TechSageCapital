@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/user";
 import axiosClient, { type PaginatedResponse } from "@/axios";
 import type { Transaction } from "@/types";
@@ -21,7 +21,7 @@ const bankAccountId = Number(useRoute().params.id);
 const page = ref(1);
 const startDate = ref("");
 const endDate = ref("");
-const amountFilterType = ref("");
+const amountFilterType = ref<string>("");
 const amountFilterValue = ref<number | null>(null);
 const ibanFilter = ref("");
 const showFilters = ref(false);
@@ -31,12 +31,28 @@ async function fetchTransactions() {
     errorMessage.value = "";
     try {
         if (userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) {
-            const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions/${bankAccountId}?page=${page.value}`);
+            const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions/${bankAccountId}?page=${page.value}`, {
+                params: {
+                    startDate: startDate.value || null,
+                    endDate: endDate.value || null,
+                    amountFilterType: amountFilterType.value || null,
+                    amountFilterValue: amountFilterValue.value || null,
+                    ibanFilter: ibanFilter.value ? ibanFilter.value.replace(/\s+/g, "") : null
+                }
+            });
             transactions.value = response.data;
         }
         else {
             if (userStore.bankAccounts.some((account) => account.id === bankAccountId)) {
-                const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions/${bankAccountId}/me?page=${page.value}`);
+                const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions/${bankAccountId}/me?page=${page.value}`, {
+                    params: {
+                        startDate: startDate.value || null,
+                        endDate: endDate.value || null,
+                        amountFilterType: amountFilterType.value || null,
+                        amountFilterValue: amountFilterValue.value || null,
+                        ibanFilter: ibanFilter.value ? ibanFilter.value.replace(/\s+/g, "") : null
+                    }
+                });
                 transactions.value = response.data;
             } else {
                 errorMessage.value = "Bank account not found or you do not have access.";
@@ -56,41 +72,11 @@ function handlePageSelect(pageNumber: number) {
     fetchTransactions();
 }
 
-const filteredTransactions = computed(() => {
-    if (!transactions.value?.content) return [];
-    return transactions.value.content.filter((transaction) => {
-        const transactionDate = new Date(transaction.createdAt);
-        const start = new Date(startDate.value);
-        const end = endDate.value
-            ? new Date(new Date(endDate.value).setHours(23, 59, 59, 999))
-            : null;
-
-        const dateMatch =
-            (!startDate.value || transactionDate >= start) &&
-            (!endDate.value || (end !== null && transactionDate <= end));
-
-        let amountMatch = true;
-        if (amountFilterType.value && amountFilterValue.value !== null && amountFilterValue.value !== undefined) {
-            if (amountFilterType.value === "lt") {
-                amountMatch = transaction.amount < amountFilterValue.value;
-            } else if (amountFilterType.value === "eq") {
-                amountMatch = transaction.amount === amountFilterValue.value;
-            } else if (amountFilterType.value === "gt") {
-                amountMatch = transaction.amount > amountFilterValue.value;
-            }
-        }
-
-        const iban = ibanFilter.value.replace(/\s/g, "").trim().toUpperCase();
-        const ibanMatch =
-            !iban ||
-            (transaction.fromAccount?.iban?.toUpperCase().includes(iban)) ||
-            (transaction.toAccount?.iban?.toUpperCase().includes(iban));
-
-        return dateMatch && amountMatch && ibanMatch;
-    });
+onMounted(() => {
+    fetchTransactions();
 });
 
-onMounted(() => {
+watch([startDate, endDate, amountFilterType, amountFilterValue, ibanFilter], () => {
     fetchTransactions();
 });
 
@@ -122,10 +108,10 @@ onMounted(() => {
                     <div class="col">
                         <label for="amountFilterType" class="form-label">Amount Filter</label>
                         <select id="amountFilterType" v-model="amountFilterType" class="form-select">
-                            <option value="">Any</option>
-                            <option value="lt">Less than</option>
-                            <option value="eq">Equal to</option>
-                            <option value="gt">Greater than</option>
+                            <option default value="">Any</option>
+                            <option value="LESS_THAN">Less than</option>
+                            <option value="EQUALS">Equal to</option>
+                            <option value="GREATER_THAN">Greater than</option>
                         </select>
                     </div>
                     <div class="col">
@@ -151,12 +137,12 @@ onMounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="transaction in filteredTransactions" :key="transaction.id">
+                            <tr v-for="transaction in transactions.content" :key="transaction.id">
                                 <td>{{ formatDate(transaction.createdAt) }}</td>
                                 <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban
                                     ??
                                     "")
-                                }}</td>
+                                    }}</td>
                                 <td v-else-if="transaction.type === 'DEPOSIT'">{{
                                     formatIban(transaction.fromAccount?.iban
                                         ?? "") }}</td>
@@ -169,7 +155,7 @@ onMounted(() => {
                                 <td class="text-danger text-end"
                                     v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">
                                     <span class="badge text-bg-danger fs-6"> -{{ formatMoney(transaction.amount)
-                                        }}</span>
+                                    }}</span>
                                 </td>
                                 <td class="text-success text-end" v-else><span class="badge text-bg-success fs-6"> +{{
                                     formatMoney(transaction.amount) }}</span></td>
