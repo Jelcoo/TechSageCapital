@@ -24,4 +24,6 @@ public interface UserService {
     User getByEmailRaw(String email);
     Page<UserDto> findByStatus(UserStatus status, Pageable pageable);
     UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) throws IllegalArgumentException;
+    UserDto updatePassword(long id, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) throws IllegalArgumentException;
+    AuthResponseDto updateOwnPassword(String currentEmail, UpdatePasswordRequestDto updateSelfPasswordRequestDto) throws IllegalArgumentException;
 }

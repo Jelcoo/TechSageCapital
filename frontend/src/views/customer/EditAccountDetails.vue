@@ -7,9 +7,9 @@ import { Role } from "@/types";
 import type { AxiosError } from "axios";
 import { useRoute } from "vue-router";
 import { AccountStatus } from "@/types/user";
-import router from "@/router";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatMoney } from "@/utils";
+import BackButton from "@/components/BackButton.vue";
 
 const route = useRoute();
 const userIdParam = route.params.id;
@@ -84,10 +84,6 @@ const editSelf = async (event: Event) => {
     }
 };
 
-function returnToPreviousPage() {
-    router.back();
-}
-
 onMounted(() => {
     fetchUser();
 });
@@ -102,10 +98,7 @@ const submitHandler = computed(() =>
 <template>
     <main>
         <div class="container py-5">
-            <button class="btn btn-secondary mb-3" @click="returnToPreviousPage">
-                <i class="bi bi-arrow-left"></i> Back
-            </button>
-
+            <BackButton />
             <h1 class="display-4 fw-bold text-left mb-5">Edit account details</h1>
 
             <div v-if="loading" class="text-center">

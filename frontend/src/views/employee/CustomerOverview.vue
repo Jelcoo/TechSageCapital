@@ -4,6 +4,7 @@ import { AccountStatus, type User } from '@/types';
 import axiosClient, { type PaginatedResponse } from '@/axios';
 import type { AxiosError } from 'axios';
 import PageIndicator from '@/components/PageIndicator.vue';
+import BackButton from '@/components/BackButton.vue';
 
 const customers = ref<PaginatedResponse<User>>();
 const errorMessage = ref('');
@@ -58,6 +59,7 @@ onMounted(() => {
 <template>
     <main>
         <div class="container py-5">
+            <BackButton />
             <h1 class="display-4 fw-bold text-center mb-4">Customers</h1>
 
             <div v-if="loading || !customers" class="text-center">

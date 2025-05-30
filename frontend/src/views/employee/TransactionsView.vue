@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/dates";
 import { formatIban } from "@/utils/prettyIban";
 import { formatMoney } from "@/utils";
 import PageIndicator from "@/components/PageIndicator.vue";
+import BackButton from "@/components/BackButton.vue";
 
 const loading = ref(false);
 const errorMessage = ref("");
@@ -40,7 +41,8 @@ onMounted(() => {
 
 <template>
     <main>
-        <div class="container">
+        <div class="container py-5">
+            <BackButton />
             <h1>Transactions</h1>
             <div v-if="loading || !transactions" class="spinner-border" role="status">
                 <span class="sr-only"></span>
@@ -68,10 +70,12 @@ onMounted(() => {
                             <td>{{ formatIban(transaction.toAccount?.iban ?? "") }}</td>
                             <td>{{ transaction.description }}</td>
                             <td class="text-danger text-end"
-                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
-                                    formatMoney(transaction.amount) }}
+                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'"><span
+                                    class="badge text-bg-danger fs-6"> -{{ formatMoney(transaction.amount)
+                                    }}</span>
                             </td>
-                            <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
+                            <td class="text-success text-end" v-else><span class="badge text-bg-success fs-6"> +{{
+                                formatMoney(transaction.amount) }}</span></td>
                         </tr>
                     </tbody>
                 </table>

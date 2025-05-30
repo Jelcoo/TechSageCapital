@@ -2,10 +2,8 @@ package com.techsage.banking.controllers;
 
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
-import com.techsage.banking.models.dto.requests.ApprovalRequestDto;
-import com.techsage.banking.models.dto.requests.UpdateSelfRequestDto;
+import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.dto.responses.*;
-import com.techsage.banking.models.dto.requests.UpdateUserRequestDto;
 import com.techsage.banking.models.enums.*;
 import com.techsage.banking.services.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -348,4 +346,93 @@ public class UserController extends BaseController {
             return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
+
+    @Operation(
+            summary = "Edit password",
+            description = "Edits a password and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}/updatePassword")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<BaseDto> updatePassword(@Valid @RequestBody UpdateUserPasswordRequestDto requestBody, @PathVariable long id) {
+        try{
+            return ResponseEntity.ok().body(userService.updatePassword(id, requestBody));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
+    @Operation(
+            summary = "Edit password",
+            description = "Edits a password and returns a 200 status code.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful update",
+                            content = @Content(schema = @Schema(implementation = UserDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(schema = @Schema(implementation = MessageDto.class))
+                    )
+            }
+    )
+    @PutMapping("/me/updatePassword")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseDto> updateOwnPassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            return ResponseEntity.ok().body(userService.updateOwnPassword(email, requestBody));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
+        }
+    }
+
 }

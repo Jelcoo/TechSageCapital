@@ -9,6 +9,7 @@ import type { AxiosError } from "axios";
 import { formatDate } from "@/utils/dates";
 import { formatIban } from "@/utils/prettyIban";
 import { formatMoney } from "@/utils";
+import BackButton from "@/components/BackButton.vue";
 import PageIndicator from "@/components/PageIndicator.vue";
 
 const loading = ref(false);
@@ -57,41 +58,46 @@ onMounted(() => {
 
 <template>
     <main>
-        <h1>Transactions history for {{ bankAccount }}</h1>
-        <div v-if="loading || !transactions" class="spinner-border" role="status">
-            <span class="sr-only"></span>
-        </div>
-        <div v-else-if="errorMessage">{{ errorMessage }}</div>
+        <div class="container py-5">
+            <BackButton />
+            <h1>Transactions history for {{ bankAccount }}</h1>
+            <div v-if="loading || !transactions" class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+            <div v-else-if="errorMessage">{{ errorMessage }}</div>
 
-        <PageIndicator v-else :pagination="transactions" @pageSelect="handlePageSelect">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Account</th>
-                        <th>Description</th>
-                        <th class="text-end">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="transaction in transactions.content" :key="transaction.id">
-                        <td>{{ formatDate(transaction.createdAt) }}</td>
-                        <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ?? "")
-                            }}</td>
-                        <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
-                            ?? "") }}</td>
-                        <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">ATM
-                        </td>
-                        <td v-else>Error</td>
-                        <td>{{ transaction.description }}</td>
-                        <td class="text-danger text-end"
-                            v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
-                                formatMoney(transaction.amount) }}
-                        </td>
-                        <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </PageIndicator>
+            <PageIndicator v-else :pagination="transactions" @pageSelect="handlePageSelect">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Account</th>
+                            <th>Description</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="transaction in transactions.content" :key="transaction.id">
+                            <td>{{ formatDate(transaction.createdAt) }}</td>
+                            <td v-if="transaction.type === 'WITHDRAWAL'">{{ formatIban(transaction.toAccount?.iban ??
+                                "")
+                                }}</td>
+                            <td v-else-if="transaction.type === 'DEPOSIT'">{{ formatIban(transaction.fromAccount?.iban
+                                ?? "") }}</td>
+                            <td v-else-if="transaction.type === 'ATM_WITHDRAWAL' || transaction.type === 'ATM_DEPOSIT'">
+                                ATM
+                            </td>
+                            <td v-else>Error</td>
+                            <td>{{ transaction.description }}</td>
+                            <td class="text-danger text-end"
+                                v-if="transaction.type === 'WITHDRAWAL' || transaction.type === 'ATM_WITHDRAWAL'">-{{
+                                    formatMoney(transaction.amount) }}
+                            </td>
+                            <td class="text-success text-end" v-else>+{{ formatMoney(transaction.amount) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </PageIndicator>
+        </div>
     </main>
 </template>
