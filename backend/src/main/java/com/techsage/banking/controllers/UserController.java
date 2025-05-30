@@ -422,7 +422,7 @@ public class UserController extends BaseController {
             }
     )
     @PutMapping("/me/updatePassword")
-    @PreAuthorize("hasRole('CUSTOMER') || hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseDto> updateOwnPassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
