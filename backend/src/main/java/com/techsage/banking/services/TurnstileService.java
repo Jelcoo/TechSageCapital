@@ -21,7 +21,7 @@ public class TurnstileService {
         this.restTemplate = restTemplate;
     }
 
-    public void verifyToken(String token) throws TurnstileFailedException {
+    public boolean verifyToken(String token) throws TurnstileFailedException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("secret", secretKey);
         params.add("response", token);
@@ -34,6 +34,8 @@ public class TurnstileService {
         if (response.getBody() == null || !response.getBody().isSuccess()) {
             throw new TurnstileFailedException();
         }
+
+        return true;
     }
 
     @Data
