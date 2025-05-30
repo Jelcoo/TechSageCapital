@@ -43,6 +43,7 @@ class TransactionServiceJpaTest {
     private BankAccount fromAccount;
     private BankAccount toAccount;
     private TransactionRequestDto requestDto;
+    private TransactionFilterRequestDto filterRequestDto;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +64,8 @@ class TransactionServiceJpaTest {
         requestDto.setToIban(Iban.random().toString());
         requestDto.setAmount(BigDecimal.valueOf(100));
         requestDto.setDescription("Test transaction");
+
+        filterRequestDto = new TransactionFilterRequestDto();
     }
 
     @Test
@@ -80,10 +83,9 @@ class TransactionServiceJpaTest {
     @Test
     void testGetByAccountId_WhenAccountExists() {
         Pageable pageable = PageRequest.of(0, 5);
-        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), any(TransactionFilterRequestDto.class)))
+        when(transactionRepository.findAllByBankAccount(any(BankAccount.class), any(Pageable.class), eq(filterRequestDto)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
         Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
@@ -94,7 +96,6 @@ class TransactionServiceJpaTest {
 
     @Test
     void testGetByAccountId_WhenAccountNotExists_ThrowsException() {
-        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(false);
 
@@ -103,7 +104,6 @@ class TransactionServiceJpaTest {
 
     @Test
     void testGetByAccountIdAndCustomer_ValidRequest() {
-        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(userService.getByEmailRaw("user@example.com")).thenReturn(user);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
@@ -121,7 +121,6 @@ class TransactionServiceJpaTest {
         User anotherUser = new User();
         anotherUser.setEmail("other@example.com");
 
-        TransactionFilterRequestDto filterRequestDto = new TransactionFilterRequestDto();
         when(userService.getByEmailRaw("user@example.com")).thenReturn(anotherUser);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
 
