@@ -65,17 +65,17 @@ class TransactionServiceJpaTest {
         requestDto.setDescription("Test transaction");
     }
 
-@Test
-void testGetAllTransactions() {
-    Pageable pageable = PageRequest.of(0, 5);
-    when(transactionRepository.findAll(any(Specification.class), eq(pageable)))
-            .thenReturn(new PageImpl<>(List.of(new Transaction())));
+    @Test
+    void testGetAllTransactions() {
+        Pageable pageable = PageRequest.of(0, 5);
+        when(transactionRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-    Page<TransactionDto> result = transactionServiceJpa.getAll(pageable, new AllTransactionFilterRequestDto());
+        Page<TransactionDto> result = transactionServiceJpa.getAll(pageable, new AllTransactionFilterRequestDto());
 
-    assertEquals(1, result.getTotalElements());
-    verify(transactionRepository).findAll(any(Specification.class), eq(pageable));
-}
+        assertEquals(1, result.getTotalElements());
+        verify(transactionRepository).findAll(any(Specification.class), eq(pageable));
+    }
 
     @Test
     void testGetByAccountId_WhenAccountExists() {
