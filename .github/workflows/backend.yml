@@ -48,7 +48,8 @@ jobs:
   deploy:
     name: Deploy
     needs:
-      - test
+      - unit-test
+      - integration-test
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
 
