@@ -29,4 +29,9 @@ public class BaseController {
     public ResponseEntity<BaseDto> handleNoResourceFoundException(NoResourceFoundException ex) {
         return ResponseEntity.status(404).body(new MessageDto(404, "Not found"));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseDto> handleException(Exception ex) {
+        return ResponseEntity.status(500).body(new MessageDto(404, ex.getMessage()));
+    }
 }

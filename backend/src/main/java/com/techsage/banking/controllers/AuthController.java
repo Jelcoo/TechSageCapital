@@ -59,8 +59,6 @@ public class AuthController extends BaseController {
             return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -88,8 +86,6 @@ public class AuthController extends BaseController {
             return ResponseEntity.ok().body(userService.register(registerRequest));
         } catch (TurnstileFailedException | AuthenticationException e) {
             return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
-        }  catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -118,7 +114,7 @@ public class AuthController extends BaseController {
     public ResponseEntity<BaseDto> refreshToken(@RequestBody RefreshRequestDto refreshRequest) {
         try {
             return ResponseEntity.ok().body(userService.refreshToken(refreshRequest));
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
         }
     }
