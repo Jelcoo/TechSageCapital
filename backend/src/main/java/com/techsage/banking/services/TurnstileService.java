@@ -1,5 +1,6 @@
 package com.techsage.banking.services;
 
+import com.fasterxml.jackson.annotation.*;
 import com.techsage.banking.exceptions.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +42,8 @@ public class TurnstileService {
     @Data
     public static class TurnstileResponse {
         private boolean success;
+        
+        @JsonProperty("error-codes")
         private String[] errorCodes;
     }
 }
