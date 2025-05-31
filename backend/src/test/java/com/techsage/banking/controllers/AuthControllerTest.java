@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.techsage.banking.models.enums.AuthenticationScope;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Order(1)
 class AuthControllerTest extends ControllerTestBase {
 
