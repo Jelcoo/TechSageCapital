@@ -32,7 +32,7 @@ public class User {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<UserRole> roles = List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER);
+    private List<UserRole> roles = new ArrayList<>(Arrays.asList(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER));
 
     private BigDecimal dailyLimit = BigDecimal.valueOf(0.0);
     private BigDecimal transferLimit = BigDecimal.valueOf(0.0);
@@ -50,5 +50,5 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
-    private List<BankAccount> bankAccounts;
+    private List<BankAccount> bankAccounts = new ArrayList<>();
 }

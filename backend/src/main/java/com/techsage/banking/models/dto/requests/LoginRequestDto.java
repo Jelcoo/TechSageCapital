@@ -24,6 +24,9 @@ public class LoginRequestDto extends BaseDto {
     private AuthenticationScope authenticationScope;
 
     public void setAuthenticationScope(String scope) {
+        if (scope == null) {
+            return;
+        }
         this.authenticationScope = AuthenticationScope.valueOf(scope);
     }
 }
