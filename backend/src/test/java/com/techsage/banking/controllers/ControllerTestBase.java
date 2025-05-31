@@ -15,6 +15,9 @@ public abstract class ControllerTestBase {
     private static String jwtToken;
 
     @Setter
+    private static String atmToken;
+
+    @Setter
     @Getter
     private static String refreshToken;
 
@@ -25,6 +28,17 @@ public abstract class ControllerTestBase {
 
         return request -> {
             request.addHeader("Authorization", "Bearer " + jwtToken);
+            return request;
+        };
+    }
+
+    public static RequestPostProcessor atmAuthorized() {
+        if (atmToken == null) {
+            throw new IllegalStateException("ATM JWT token not set. Make sure AuthControllerTest.loginAtm_Successful runs first.");
+        }
+
+        return request -> {
+            request.addHeader("Authorization", "Bearer " + atmToken);
             return request;
         };
     }

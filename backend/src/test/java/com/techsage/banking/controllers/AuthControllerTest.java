@@ -49,6 +49,29 @@ class AuthControllerTest extends ControllerTestBase {
         setRefreshToken(refreshToken);
     }
 
+
+    @Test
+    @Order(1)
+    void loginAtm_Successful() throws Exception {
+        LoginRequestDto loginRequest = new LoginRequestDto();
+        loginRequest.setEmail("johncustomer@example.com");
+        loginRequest.setPassword("password123");
+        loginRequest.setCfTurnstileResponse("XXXX.DUMMY.TOKEN.XXXX");
+        loginRequest.setAuthenticationScope(AuthenticationScope.ATM.toString());
+
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.scope").value(AuthenticationScope.ATM.toString()))
+                .andReturn();
+
+        String atmToken = JsonPath.read(result.getResponse().getContentAsString(), "$.accessToken");
+        setAtmToken(atmToken);
+    }
+
     /*
      * This code is here to demonstrate that this test was in fact written.
      * Due to a bug, mistake or incompetence by Cloudflare, testing this is not possible.

@@ -30,7 +30,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isOk())
@@ -47,7 +47,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isBadRequest())
@@ -63,7 +63,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isNotFound())
@@ -79,7 +79,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isBadRequest())
@@ -95,7 +95,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isBadRequest())
@@ -110,7 +110,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/deposit")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(depositRequest)))
                 .andExpect(status().isBadRequest())
@@ -118,7 +118,7 @@ class AtmControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void deposit_Unauthorized() throws Exception {
+    void deposit_UnatmAuthorized() throws Exception {
         AtmDepositDto depositRequest = new AtmDepositDto();
         depositRequest.setDepositTo("NL91ABNA0417164300");
         depositRequest.setAmount(new BigDecimal("100.00"));
@@ -138,7 +138,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isOk())
@@ -155,7 +155,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isBadRequest())
@@ -171,7 +171,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isNotFound())
@@ -187,7 +187,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isBadRequest())
@@ -203,7 +203,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isBadRequest())
@@ -219,7 +219,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isBadRequest())
@@ -234,7 +234,7 @@ class AtmControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/atm/withdraw")
                         .with(csrf())
-                        .with(authorized())
+                        .with(atmAuthorized())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(withdrawRequest)))
                 .andExpect(status().isBadRequest())
@@ -242,7 +242,7 @@ class AtmControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void withdraw_Unauthorized() throws Exception {
+    void withdraw_UnatmAuthorized() throws Exception {
         AtmWithdrawDto withdrawRequest = new AtmWithdrawDto();
         withdrawRequest.setWithdrawFrom("NL91ABNA0417164300");
         withdrawRequest.setAmount(new BigDecimal("50.00"));
