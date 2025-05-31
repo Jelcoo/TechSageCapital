@@ -1,9 +1,7 @@
 package com.techsage.banking.services;
 
-import org.junit.jupiter.api.*;
 import org.junit.platform.suite.api.*;
 
-@Tag("unit")
 @Suite
 @SelectClasses({
         AtmServiceJpaTest.class,

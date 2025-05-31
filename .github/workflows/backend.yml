@@ -24,7 +24,7 @@ jobs:
       - name: Run Unit tests
         run: |
           cd backend
-          mvn clean test -Dgroups=unit
+          mvn clean -Dtest=ServiceTestSuite test
 
   integration-test:
     name: Integration Tests
@@ -64,7 +64,7 @@ jobs:
           TURNSTILE_SECRET: 1x0000000000000000000000000000000AA
         run: |
           cd backend
-          mvn clean test -Dgroups=integration
+          mvn clean -Dtest=ControllerTestSuite test
 
   deploy:
     name: Deploy
