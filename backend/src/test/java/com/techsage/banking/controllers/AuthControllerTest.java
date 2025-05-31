@@ -20,6 +20,7 @@ import com.techsage.banking.models.dto.requests.LoginRequestDto;
 import com.techsage.banking.models.enums.AuthenticationScope;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Order(1)
 class AuthControllerTest extends ControllerTestBase {
 
     @Autowired
@@ -65,7 +66,7 @@ class AuthControllerTest extends ControllerTestBase {
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Invalid turnstile token"));
+                .andExpect(jsonPath("$.message").value("Turnstile verification failed"));
     }
 //
 //    @Test

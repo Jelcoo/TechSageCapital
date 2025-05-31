@@ -61,7 +61,7 @@ jobs:
 
       - name: Run Integration tests
         env:
-          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+          TURNSTILE_SECRET: 1x0000000000000000000000000000000AA
         run: |
           cd backend
           mvn clean test -Dgroups=integration
