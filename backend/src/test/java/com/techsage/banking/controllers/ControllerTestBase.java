@@ -1,13 +1,14 @@
 package com.techsage.banking.controllers;
 
-import jakarta.transaction.*;
-import lombok.*;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.*;
-import org.springframework.boot.test.autoconfigure.web.servlet.*;
-import org.springframework.boot.test.context.*;
-import org.springframework.test.context.junit.jupiter.*;
-import org.springframework.test.web.servlet.request.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+
+import jakarta.transaction.Transactional;
+import lombok.Setter;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -20,7 +21,7 @@ public abstract class ControllerTestBase {
 
     public static RequestPostProcessor authorized() {
         if (jwtToken == null) {
-
+            throw new IllegalStateException("JWT token not set. Make sure AuthControllerTest.login_Successful runs first.");
         }
 
         return request -> {

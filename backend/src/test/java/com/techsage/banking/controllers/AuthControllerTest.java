@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthControllerTest extends ControllerTestBase {
 
     @Autowired
@@ -25,6 +26,7 @@ class AuthControllerTest extends ControllerTestBase {
     private ObjectMapper objectMapper;
 
     @Test
+    @Order(1)
     void login_Successful() throws Exception {
         LoginRequestDto loginRequest = new LoginRequestDto();
         loginRequest.setEmail("johnadmin@example.com");
