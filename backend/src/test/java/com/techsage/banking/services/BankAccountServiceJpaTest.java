@@ -20,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
-@Tag("unit")
-class BankAccountServiceJpaTest {
+class BankAccountServiceJpaTest extends ServiceTestBase {
 
     @Mock
     private BankAccountRepository bankAccountRepository;

@@ -12,13 +12,11 @@ import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@Tag("unit")
-class StatisticsServiceJpaTest {
+class StatisticsServiceJpaTest extends ServiceTestBase {
 
     private UserRepository userRepository;
     private TransactionRepository transactionRepository;

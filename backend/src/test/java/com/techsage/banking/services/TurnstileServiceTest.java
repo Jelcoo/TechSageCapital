@@ -11,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@Tag("unit")
-class TurnstileServiceTest {
+class TurnstileServiceTest extends ServiceTestBase {
 
     @Mock
     private RestTemplate restTemplate;

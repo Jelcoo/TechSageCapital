@@ -12,8 +12,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@Tag("unit")
-class UserDetailsServiceJpaTest {
+class UserDetailsServiceJpaTest extends ServiceTestBase {
 
     @Mock
     private UserRepository userRepository;
