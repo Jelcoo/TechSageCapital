@@ -122,8 +122,6 @@ public class BankAccountController extends BaseController {
             return ResponseEntity.ok(bankAccountService.updateAbsoluteMinimumBalance(id, updateAbsoluteMinimumBalanceRequestDto.getAbsoluteMinimumBalance()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 }

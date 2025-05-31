@@ -126,8 +126,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.softDelete(id));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -166,8 +164,6 @@ public class UserController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -211,8 +207,6 @@ public class UserController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(new MessageDto(404, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -254,8 +248,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.reinstateUser(id));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -297,8 +289,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.update(id, userDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -342,8 +332,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.updateSelf(currentEmail, requestBody));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -385,8 +373,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.updatePassword(id, requestBody));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 
@@ -430,8 +416,6 @@ public class UserController extends BaseController {
             return ResponseEntity.ok().body(userService.updateOwnPassword(email, requestBody));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
         }
     }
 

@@ -162,8 +162,6 @@ public class TransactionController extends BaseController {
             return ResponseEntity.badRequest().body(new MessageDto(400, e.getReason().getMessage()));
         } catch (InvalidCheckDigitException | IbanFormatException e) {
             return ResponseEntity.status(400).body(new MessageDto(400, "Invalid IBAN"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, "Internal server error"));
         }
     }
 
