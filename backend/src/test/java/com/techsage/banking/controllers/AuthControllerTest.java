@@ -1,20 +1,23 @@
 package com.techsage.banking.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.*;
-import com.techsage.banking.models.dto.requests.LoginRequestDto;
-import com.techsage.banking.models.enums.AuthenticationScope;
-import org.junit.jupiter.api.*;
+import com.techsage.banking.exceptions.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.*;
-
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.techsage.banking.models.dto.requests.LoginRequestDto;
+import com.techsage.banking.models.enums.AuthenticationScope;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthControllerTest extends ControllerTestBase {
@@ -48,28 +51,22 @@ class AuthControllerTest extends ControllerTestBase {
         setJwtToken(token);
     }
 
-//    @Test
-//    void login_TurnstileVerificationFailed() throws Exception {
-//        // Arrange
-//        LoginRequestDto loginRequest = new LoginRequestDto();
-//        loginRequest.setEmail("test@example.com");
-//        loginRequest.setPassword("password123");
-//        loginRequest.setCfTurnstileResponse("invalid-turnstile-token");
-//        loginRequest.setAuthenticationScope(AuthenticationScope.BANK.toString());
-//
-//        doThrow(new TurnstileFailedException("Invalid turnstile token")).when(turnstileService).verifyToken(any());
-//
-//        // Act & Assert
-//        mockMvc.perform(post("/auth/login")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(loginRequest)))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.status").value(400))
-//                .andExpect(jsonPath("$.message").value("Invalid turnstile token"));
+    @Test
+    void login_TurnstileVerificationFailed() throws Exception {
+        LoginRequestDto loginRequest = new LoginRequestDto();
+        loginRequest.setEmail("johnadmin@example.com");
+        loginRequest.setPassword("password123");
+        loginRequest.setCfTurnstileResponse("invalid-turnstile-token");
+        loginRequest.setAuthenticationScope(AuthenticationScope.BANK.toString());
 
-//        verify(turnstileService).verifyToken("invalid-turnstile-token");
-//        verify(userService, never()).login(any());
-//    }
+        // Act & Assert
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid turnstile token"));
+    }
 //
 //    @Test
 //    void login_InvalidCredentials() throws Exception {

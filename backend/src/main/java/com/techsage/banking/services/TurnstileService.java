@@ -42,7 +42,7 @@ public class TurnstileService {
     @Data
     public static class TurnstileResponse {
         private boolean success;
-        
+
         @JsonProperty("error-codes")
         private String[] errorCodes;
     }
