@@ -4,14 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.*;
 import com.techsage.banking.models.dto.requests.LoginRequestDto;
 import com.techsage.banking.models.enums.AuthenticationScope;
-import jakarta.transaction.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.*;
-import org.springframework.boot.test.context.*;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.*;
 import org.springframework.test.web.servlet.*;
 
 import static org.hamcrest.Matchers.notNullValue;
@@ -21,13 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
-@Transactional
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Tag("integration")
-class AuthControllerTest {
+class AuthControllerTest extends ControllerTestBase {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +25,6 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @BeforeAll
     void login_Successful() throws Exception {
         LoginRequestDto loginRequest = new LoginRequestDto();
         loginRequest.setEmail("johnadmin@example.com");
@@ -55,7 +43,7 @@ class AuthControllerTest {
                 .andReturn();
 
         String token = JsonPath.read(result.getResponse().getContentAsString(), "$.accessToken");
-        ControllerTestSuite.setJwtToken(token);
+        setJwtToken(token);
     }
 
 //    @Test
