@@ -28,6 +28,8 @@ jobs:
 
   integration-test:
     name: Integration Tests
+    needs:
+      - unit-test
     runs-on: self-hosted
 
     steps:
@@ -39,6 +41,23 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+
+      - name: Copy application.properties
+        run: |
+          cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
+
+      - name: Generate JWT keystore
+        run: |
+          cd backend/src/main/resources
+          keytool -genkeypair \
+            -keyalg RSA \
+            -validity 365 \
+            -alias inholland \
+            -keystore inholland.p12 \
+            -storetype PKCS12 \
+            -storepass yourpassword \
+            -keypass yourpassword \
+            -dname "CN=inholland, OU=TechSage, O=Inholland, L=City, S=State, C=NL"
 
       - name: Run Integration tests
         run: |
