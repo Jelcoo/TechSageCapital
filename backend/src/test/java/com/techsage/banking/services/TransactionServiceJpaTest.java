@@ -6,6 +6,8 @@ import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.Transaction;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.TransactionDto;
+import com.techsage.banking.models.dto.requests.AllTransactionFilterRequestDto;
+import com.techsage.banking.models.dto.requests.TransactionFilterRequestDto;
 import com.techsage.banking.models.dto.requests.TransactionRequestDto;
 import com.techsage.banking.models.enums.TransactionType;
 import com.techsage.banking.repositories.TransactionRepository;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,6 +42,7 @@ class TransactionServiceJpaTest extends ServiceTestBase {
     private BankAccount fromAccount;
     private BankAccount toAccount;
     private TransactionRequestDto requestDto;
+    private TransactionFilterRequestDto filterRequestDto;
 
     @BeforeEach
     void setUp() {
@@ -59,19 +63,20 @@ class TransactionServiceJpaTest extends ServiceTestBase {
         requestDto.setToIban(Iban.random().toString());
         requestDto.setAmount(BigDecimal.valueOf(100));
         requestDto.setDescription("Test transaction");
+
+        filterRequestDto = new TransactionFilterRequestDto();
     }
 
     @Test
     void testGetAllTransactions() {
         Pageable pageable = PageRequest.of(0, 5);
-        Transaction transaction = new Transaction();
-        when(transactionRepository.findAllByOrderByCreatedAtDesc(pageable))
-                .thenReturn(new PageImpl<>(List.of(transaction)));
+        when(transactionRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-        Page<TransactionDto> result = transactionServiceJpa.getAll(pageable);
+        Page<TransactionDto> result = transactionServiceJpa.getAll(pageable, new AllTransactionFilterRequestDto());
 
         assertEquals(1, result.getTotalElements());
-        verify(transactionRepository).findAllByOrderByCreatedAtDesc(pageable);
+        verify(transactionRepository).findAll(any(Specification.class), eq(pageable));
     }
 
     @Test
@@ -79,11 +84,12 @@ class TransactionServiceJpaTest extends ServiceTestBase {
         Pageable pageable = PageRequest.of(0, 5);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(fromAccount, pageable))
+        when(transactionRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-        Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable);
+        Page<TransactionDto> result = transactionServiceJpa.getByAccountId(1L, pageable, filterRequestDto);
 
+        assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
 
@@ -92,7 +98,7 @@ class TransactionServiceJpaTest extends ServiceTestBase {
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(TransactionException.class, () -> transactionServiceJpa.getByAccountId(1L, PageRequest.of(0, 5)));
+        assertThrows(TransactionException.class, () -> transactionServiceJpa.getByAccountId(1L, PageRequest.of(0, 5), filterRequestDto));
     }
 
     @Test
@@ -100,11 +106,12 @@ class TransactionServiceJpaTest extends ServiceTestBase {
         when(userService.getByEmailRaw("user@example.com")).thenReturn(user);
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
         when(transactionRepository.existsById(1L)).thenReturn(true);
-        when(transactionRepository.findAllByBankAccount(any(), any()))
+        when(transactionRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(new Transaction())));
 
-        Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5));
+        Page<TransactionDto> result = transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto);
 
+        assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
 
@@ -117,7 +124,7 @@ class TransactionServiceJpaTest extends ServiceTestBase {
         when(bankAccountService.getById(1L)).thenReturn(fromAccount);
 
         assertThrows(TransactionException.class,
-                () -> transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5)));
+                () -> transactionServiceJpa.getByAccountIdAndCustomer(1L, "user@example.com", PageRequest.of(0, 5), filterRequestDto));
     }
 
     @Test

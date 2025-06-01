@@ -13,12 +13,28 @@ const loading = ref(false);
 const errorMessage = ref("");
 const transactions = ref<PaginatedResponse<Transaction>>();
 const page = ref(1);
+const showFilters = ref(false);
+const startDate = ref("");
+const endDate = ref("");
+const amountFilterType = ref("");
+const amountFilterValue = ref<number | null>(null);
+const fromIbanFilter = ref("");
+const toIbanFilter = ref("");
 
 async function fetchTransactions() {
     loading.value = true;
     errorMessage.value = "";
     try {
-        const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions?page=${page.value}`);
+        const response = await axiosClient.get<PaginatedResponse<Transaction>>(`/transactions?page=${page.value}`, {
+            params: {
+                startDate: startDate.value || null,
+                endDate: endDate.value || null,
+                amountFilterType: amountFilterType.value || null,
+                amountFilterValue: amountFilterValue.value || null,
+                fromIbanFilter: fromIbanFilter.value ? fromIbanFilter.value.replace(/\s+/g, "") : null,
+                toIbanFilter: toIbanFilter.value ? toIbanFilter.value.replace(/\s+/g, "") : null
+            }
+        });
         transactions.value = response.data;
     } catch (error) {
         errorMessage.value = (error as AxiosError).response
@@ -31,6 +47,10 @@ async function fetchTransactions() {
 
 function handlePageSelect(pageNumber: number) {
     page.value = pageNumber;
+    fetchTransactions();
+}
+
+function applyFilters() {
     fetchTransactions();
 }
 
@@ -48,8 +68,51 @@ onMounted(() => {
                 <span class="sr-only"></span>
             </div>
             <div v-else-if="errorMessage">{{ errorMessage }}</div>
-
-            <PageIndicator v-else :pagination="transactions" @pageSelect="handlePageSelect">
+            <button class="btn btn-primary mb-3" @click="showFilters = !showFilters">
+                {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
+            </button>
+            <div class="mb-3" v-show="showFilters">
+                <div class="row">
+                    <div class="col">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input id="startDate" type="date" v-model="startDate" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input id="endDate" type="date" v-model="endDate" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="amountFilterType" class="form-label">Amount Filter</label>
+                        <select id="amountFilterType" v-model="amountFilterType" class="form-select">
+                            <option value="">Any</option>
+                            <option value="LESS_THAN">Less than</option>
+                            <option value="EQUALS">Equal to</option>
+                            <option value="GREATER_THAN">Greater than</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="amountFilterValue" class="form-label">Amount</label>
+                        <input id="amountFilterValue" type="number" v-model.number="amountFilterValue"
+                            class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label for="fromIbanFilter" class="form-label">From IBAN</label>
+                        <input id="fromIbanFilter" type="text" v-model="fromIbanFilter" class="form-control"
+                            placeholder="From IBAN" />
+                    </div>
+                    <div class="col">
+                        <label for="toIbanFilter" class="form-label">To IBAN</label>
+                        <input id="toIbanFilter" type="text" v-model="toIbanFilter" class="form-control"
+                            placeholder="To IBAN" />
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col d-flex align-items-end">
+                        <button class="btn btn-primary" @click="applyFilters">Apply</button>
+                    </div>
+                </div>
+            </div>
+            <PageIndicator v-if="transactions" :pagination="transactions" @pageSelect="handlePageSelect">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -62,7 +125,7 @@ onMounted(() => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="transaction in transactions.content" :key="transaction.id">
+                        <tr v-for="transaction in transactions.content" v-show="transactions" :key="transaction.id">
                             <td>{{ formatDate(transaction.createdAt) }}</td>
                             <td>{{ transaction.initiator.firstName }} {{
                                 transaction.initiator.lastName }}</td>
@@ -80,6 +143,8 @@ onMounted(() => {
                     </tbody>
                 </table>
             </PageIndicator>
+
+
         </div>
     </main>
 </template>
