@@ -67,16 +67,7 @@ public class AtmController extends BaseController {
     public ResponseEntity<BaseDto> deposit(@Valid @RequestBody AtmDepositDto deposit) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
-        try {
-            return ResponseEntity.status(200).body(atmService.deposit(deposit, user));
-        } catch (TransactionException e) {
-            if (e.getReason() == TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND) {
-                return ResponseEntity.status(404).body(new MessageDto(404, e.getReason().getMessage()));
-            }
-            return ResponseEntity.badRequest().body(new MessageDto(400, e.getReason().getMessage()));
-        } catch (InvalidCheckDigitException | IbanFormatException e) {
-            return ResponseEntity.status(400).body(new MessageDto(400, "Invalid IBAN"));
-        }
+        return ResponseEntity.status(200).body(atmService.deposit(deposit, user));
     }
 
     @Operation(
@@ -110,15 +101,6 @@ public class AtmController extends BaseController {
     public ResponseEntity<BaseDto> withdraw(@Valid @RequestBody AtmWithdrawDto withdraw) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
-        try {
-            return ResponseEntity.status(200).body(atmService.withdraw(withdraw, user));
-        } catch (TransactionException e) {
-            if (e.getReason() == TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND) {
-                return ResponseEntity.status(404).body(new MessageDto(404, e.getReason().getMessage()));
-            }
-            return ResponseEntity.badRequest().body(new MessageDto(400, e.getReason().getMessage()));
-        } catch (InvalidCheckDigitException | IbanFormatException e) {
-            return ResponseEntity.status(400).body(new MessageDto(400, "Invalid IBAN"));
-        }
+        return ResponseEntity.status(200).body(atmService.withdraw(withdraw, user));
     }
 }
