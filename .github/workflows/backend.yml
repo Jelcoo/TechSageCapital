@@ -101,15 +101,15 @@ jobs:
           mvn clean package -DskipTests
 
       - name: Build Docker image
-        env:
-          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
         run: |
           cd backend
           docker build -t springboot-app .
 
       - name: Run Docker container
+        env:
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
         run: |
           cd backend
           docker stop springboot-app || true
           docker rm springboot-app || true
-          docker run -d --restart=always --name springboot-app -p 8080:8080 springboot-app
+          docker run -d --restart=always --name springboot-app -p 8080:8080 -e TURNSTILE_SECRET=$TURNSTILE_SECRET springboot-app
