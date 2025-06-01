@@ -83,7 +83,8 @@ export const useUserStore = defineStore('user', {
                     'cf-turnstile-response': turnstileToken,
                 });
 
-                this.handleAuthSuccess(response.data);
+                await this.handleAuthSuccess(response.data);
+                await this.autoLogin();
                 return response;
             } catch (error) {
                 return Promise.reject(error);
