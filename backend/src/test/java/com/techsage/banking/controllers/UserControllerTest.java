@@ -29,7 +29,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void me_Successful() throws Exception {
         mockMvc.perform(get("/users/me")
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.CUSTOMER)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.firstName").exists())
@@ -49,7 +49,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void getAll_Successful() throws Exception {
         mockMvc.perform(get("/users")
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .param("status", "ACTIVE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
@@ -62,7 +62,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void getAll_WithPagination() throws Exception {
         mockMvc.perform(get("/users")
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .param("status", "ACTIVE")
                         .param("page", "0")
                         .param("size", "10"))
@@ -74,7 +74,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void getAll_DefaultStatus() throws Exception {
         mockMvc.perform(get("/users")
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
     }
@@ -87,9 +87,8 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void getAll_ForbiddenForCustomer() throws Exception {
-        // This would need a customer token instead of admin token
         mockMvc.perform(get("/users")
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.CUSTOMER)))
                 .andExpect(status().isForbidden());
     }
 
@@ -97,7 +96,7 @@ class UserControllerTest extends ControllerTestBase {
     void softDeleteUser_Successful() throws Exception {
         mockMvc.perform(delete("/users/2/softDelete")
                         .with(csrf())
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DELETED"));
     }
@@ -106,7 +105,7 @@ class UserControllerTest extends ControllerTestBase {
     void softDeleteUser_UserNotFound() throws Exception {
         mockMvc.perform(delete("/users/99999/softDelete")
                         .with(csrf())
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.message").exists());
@@ -122,7 +121,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void getById_Successful() throws Exception {
         mockMvc.perform(get("/users/1")
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.firstName").exists())
@@ -133,7 +132,7 @@ class UserControllerTest extends ControllerTestBase {
     @Test
     void getById_UserNotFound() throws Exception {
         mockMvc.perform(get("/users/99999")
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").exists());
@@ -155,7 +154,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/users/2/approve")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(approvalRequest)))
                 .andExpect(status().isOk())
@@ -172,7 +171,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/users/2/approve")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(approvalRequest)))
                 .andExpect(status().isBadRequest())
@@ -190,7 +189,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/users/2/approve")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(approvalRequest)))
                 .andExpect(status().isBadRequest());
@@ -206,7 +205,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(post("/users/99999/approve")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(approvalRequest)))
                 .andExpect(status().isNotFound())
@@ -218,7 +217,7 @@ class UserControllerTest extends ControllerTestBase {
     void reinstateUser_Successful() throws Exception {
         mockMvc.perform(put("/users/2/reinstate")
                         .with(csrf())
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
@@ -227,7 +226,7 @@ class UserControllerTest extends ControllerTestBase {
     void reinstateUser_UserNotFound() throws Exception {
         mockMvc.perform(put("/users/99999/reinstate")
                         .with(csrf())
-                        .with(authorized()))
+                        .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.message").exists());
@@ -248,7 +247,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/2/update")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -267,7 +266,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/2/update")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
@@ -285,7 +284,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/me")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -301,7 +300,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/me")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
@@ -330,7 +329,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/2/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk());
@@ -344,7 +343,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/2/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
@@ -359,7 +358,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/2/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest());
@@ -374,7 +373,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/me/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk());
@@ -389,7 +388,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/me/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
@@ -406,7 +405,7 @@ class UserControllerTest extends ControllerTestBase {
 
         mockMvc.perform(put("/users/me/updatePassword")
                         .with(csrf())
-                        .with(authorized())
+                        .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())

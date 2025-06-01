@@ -26,9 +26,9 @@ class AuthControllerTest extends ControllerTestBase {
 
     @Test
     @Order(1)
-    void login_Successful() throws Exception {
+    void loginEmployee_Successful() throws Exception {
         LoginRequestDto loginRequest = new LoginRequestDto();
-        loginRequest.setEmail("johnadmin@example.com");
+        loginRequest.setEmail("johnemployee@example.com");
         loginRequest.setPassword("password123");
         loginRequest.setCfTurnstileResponse("XXXX.DUMMY.TOKEN.XXXX");
         loginRequest.setAuthenticationScope(AuthenticationScope.BANK.toString());
@@ -45,10 +45,32 @@ class AuthControllerTest extends ControllerTestBase {
 
         String jwtToken = JsonPath.read(result.getResponse().getContentAsString(), "$.accessToken");
         String refreshToken = JsonPath.read(result.getResponse().getContentAsString(), "$.refreshToken");
-        setJwtToken(jwtToken);
+        setEmployeeToken(jwtToken);
         setRefreshToken(refreshToken);
     }
 
+    @Test
+    @Order(1)
+    void loginCustomer_Successful() throws Exception {
+        LoginRequestDto loginRequest = new LoginRequestDto();
+        loginRequest.setEmail("johncustomer@example.com");
+        loginRequest.setPassword("password123");
+        loginRequest.setCfTurnstileResponse("XXXX.DUMMY.TOKEN.XXXX");
+        loginRequest.setAuthenticationScope(AuthenticationScope.BANK.toString());
+
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty())
+                .andExpect(jsonPath("$.scope").value(AuthenticationScope.BANK.toString()))
+                .andReturn();
+
+        String jwtToken = JsonPath.read(result.getResponse().getContentAsString(), "$.accessToken");
+        setCustomerToken(jwtToken);
+    }
 
     @Test
     @Order(1)
@@ -65,6 +87,7 @@ class AuthControllerTest extends ControllerTestBase {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isEmpty())
                 .andExpect(jsonPath("$.scope").value(AuthenticationScope.ATM.toString()))
                 .andReturn();
 
@@ -79,7 +102,7 @@ class AuthControllerTest extends ControllerTestBase {
      * Kind regards, Jelco
      */
     @Test
-    @Disabled
+    @Disabled(value = "Cloudflare always passes in test mode")
     void login_TurnstileVerificationFailed() throws Exception {
         LoginRequestDto loginRequest = new LoginRequestDto();
         loginRequest.setEmail("johnadmin@example.com");

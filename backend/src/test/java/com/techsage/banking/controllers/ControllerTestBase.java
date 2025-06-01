@@ -12,7 +12,10 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 @ExtendWith(SpringExtension.class)
 public abstract class ControllerTestBase {
     @Setter
-    private static String jwtToken;
+    private static String customerToken;
+
+    @Setter
+    private static String employeeToken;
 
     @Setter
     private static String atmToken;
@@ -21,25 +24,26 @@ public abstract class ControllerTestBase {
     @Getter
     private static String refreshToken;
 
-    public static RequestPostProcessor authorized() {
-        if (jwtToken == null) {
-            throw new IllegalStateException("JWT token not set. Make sure AuthControllerTest.login_Successful runs first.");
+    public static RequestPostProcessor authorized(AuthMethod method) {
+        String token = switch (method) {
+            case CUSTOMER -> customerToken;
+            case EMPLOYEE -> employeeToken;
+            case ATM -> atmToken;
+        };
+
+        if (token == null) {
+            throw new IllegalStateException("JWT token not set. Make sure AuthControllerTest runs first.");
         }
 
         return request -> {
-            request.addHeader("Authorization", "Bearer " + jwtToken);
+            request.addHeader("Authorization", "Bearer " + token);
             return request;
         };
     }
 
-    public static RequestPostProcessor atmAuthorized() {
-        if (atmToken == null) {
-            throw new IllegalStateException("ATM JWT token not set. Make sure AuthControllerTest.loginAtm_Successful runs first.");
-        }
-
-        return request -> {
-            request.addHeader("Authorization", "Bearer " + atmToken);
-            return request;
-        };
+    public enum AuthMethod {
+        CUSTOMER,
+        EMPLOYEE,
+        ATM;
     }
 }
