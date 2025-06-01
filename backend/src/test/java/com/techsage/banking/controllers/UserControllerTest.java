@@ -86,7 +86,7 @@ class UserControllerTest extends ControllerTestBase {
     void getAll_ForbiddenForCustomer() throws Exception {
         mockMvc.perform(get("/users")
                         .with(authorized(AuthMethod.CUSTOMER)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -149,7 +149,7 @@ class UserControllerTest extends ControllerTestBase {
         approvalRequest.setAbsoluteLimitChecking(new BigDecimal("-100.00"));
         approvalRequest.setAbsoluteLimitSavings(new BigDecimal("0.00"));
 
-        mockMvc.perform(post("/users/1/approve")
+        mockMvc.perform(post("/users/5/approve")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -267,10 +267,13 @@ class UserControllerTest extends ControllerTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.firstName").exists())
-                .andExpect(jsonPath("$.lastName").exists())
+                .andExpect(jsonPath("$.phoneNumber").exists())
+                .andExpect(jsonPath("$.transferLimit").exists())
+                .andExpect(jsonPath("$.roles").exists())
+                .andExpect(jsonPath("$.dailyLimit").exists())
+                .andExpect(jsonPath("$.bsn").exists())
                 .andExpect(jsonPath("$.email").exists())
-                .andExpect(jsonPath("$.bsn").exists());
+                .andExpect(jsonPath("$.status").exists());
     }
 
     @Test
@@ -363,6 +366,7 @@ class UserControllerTest extends ControllerTestBase {
     }
 
     @Test
+    @Transactional
     void updateOwnPassword_Successful() throws Exception {
         UpdatePasswordRequestDto updateRequest = new UpdatePasswordRequestDto();
         updateRequest.setCurrentPassword("password123");
@@ -411,15 +415,17 @@ class UserControllerTest extends ControllerTestBase {
                 .andExpect(jsonPath("$.newPassword").exists());
     }
 
-//    @Test
-//    void updateOwnPassword_Unauthorized() throws Exception {
-//        UpdatePasswordRequestDto updateRequest = new UpdatePasswordRequestDto();
-//        updateRequest.setCurrentPassword("password123");
-//        updateRequest.setNewPassword("NewPassword123!");
-//        updateRequest.setConfirmNewPassword("NewPassword123!");
-//
-//        mockMvc.perform(put("/users/me/updatePassword")
-//                .with(csrf())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper
+    @Test
+    void updateOwnPassword_Unauthorized() throws Exception {
+        UpdatePasswordRequestDto updateRequest = new UpdatePasswordRequestDto();
+        updateRequest.setCurrentPassword("password123");
+        updateRequest.setNewPassword("NewPassword123!");
+        updateRequest.setConfirmNewPassword("NewPassword123!");
+
+        mockMvc.perform(put("/users/me/updatePassword")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isUnauthorized());
+    }
 }
