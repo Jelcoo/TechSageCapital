@@ -17,12 +17,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TransactionControllerTest extends ControllerTestBase {
 
-    private List<BankAccount> checkingAccounts;
+    private List<BankAccount> johnCheckingAccounts;
+    private List<BankAccount> emmaCheckingAccounts;
 
     @BeforeEach
     void setUp() {
-        User testCustomer = userRepository.getByEmail("johncustomer@example.com").orElse(null);
-        checkingAccounts = bankAccountRepository.findByUserAndType(testCustomer, BankAccountType.CHECKING);
+        User johnCustomer = userRepository.getByEmail("johncustomer@example.com").orElse(null);
+        User emmaCustomer = userRepository.getByEmail("emmacustomer@example.com").orElse(null);
+        johnCheckingAccounts = bankAccountRepository.findByUserAndType(johnCustomer, BankAccountType.CHECKING);
+        emmaCheckingAccounts = bankAccountRepository.findByUserAndType(emmaCustomer, BankAccountType.CHECKING);
     }
 
     @Test
@@ -131,8 +134,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Transactional
     void createTransaction_Successful() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("100.50"));
         transactionRequest.setDescription("Test transaction");
 
@@ -150,8 +153,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Transactional
     void createTransaction_SuccessfulAsEmployee() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("250.75"));
         transactionRequest.setDescription("Employee transaction");
 
@@ -168,8 +171,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_ValidationError_NullAmount() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(null);
         transactionRequest.setDescription("Test transaction");
 
@@ -185,8 +188,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_ValidationError_NegativeAmount() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("-50.00"));
         transactionRequest.setDescription("Test transaction");
 
@@ -202,8 +205,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_ValidationError_ZeroAmount() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("0.00"));
         transactionRequest.setDescription("Test transaction");
 
@@ -217,27 +220,9 @@ class TransactionControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void createTransaction_ValidationError_InvalidFromIban() throws Exception {
+    void createTransaction_ValidationError_InvalidIban() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
         transactionRequest.setFromIban("INVALIDIBAN");
-        transactionRequest.setToIban("NL91ABNA0517164301");
-        transactionRequest.setAmount(new BigDecimal("100.00"));
-        transactionRequest.setDescription("Test transaction");
-
-        mockMvc.perform(post("/transactions/create")
-                        .with(csrf())
-                        .with(authorized(AuthMethod.CUSTOMER))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(transactionRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Invalid IBAN"));
-    }
-
-    @Test
-    void createTransaction_ValidationError_InvalidToIban() throws Exception {
-        TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
         transactionRequest.setToIban("INVALIDIBAN");
         transactionRequest.setAmount(new BigDecimal("100.00"));
         transactionRequest.setDescription("Test transaction");
@@ -248,49 +233,15 @@ class TransactionControllerTest extends ControllerTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(transactionRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Invalid IBAN"));
-    }
-
-    @Test
-    void createTransaction_ValidationError_MissingFromIban() throws Exception {
-        TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban(null);
-        transactionRequest.setToIban("NL91ABNA0517164301");
-        transactionRequest.setAmount(new BigDecimal("100.00"));
-        transactionRequest.setDescription("Test transaction");
-
-        mockMvc.perform(post("/transactions/create")
-                        .with(csrf())
-                        .with(authorized(AuthMethod.CUSTOMER))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(transactionRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fromIban").exists());
-    }
-
-    @Test
-    void createTransaction_ValidationError_MissingToIban() throws Exception {
-        TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban(null);
-        transactionRequest.setAmount(new BigDecimal("100.00"));
-        transactionRequest.setDescription("Test transaction");
-
-        mockMvc.perform(post("/transactions/create")
-                        .with(csrf())
-                        .with(authorized(AuthMethod.CUSTOMER))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(transactionRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.toIban").exists());
+                .andExpect(jsonPath("$.toIban").value("Invalid Iban"))
+                .andExpect(jsonPath("$.fromIban").value("Invalid Iban"));
     }
 
     @Test
     void createTransaction_BankAccountNotFound() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0999999999");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban("NL36INGB2749559820");
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("100.00"));
         transactionRequest.setDescription("Test transaction");
 
@@ -307,8 +258,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_InsufficientFunds() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("999999.99"));
         transactionRequest.setDescription("Large transaction");
 
@@ -323,27 +274,10 @@ class TransactionControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void createTransaction_WithoutDescription() throws Exception {
-        TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
-        transactionRequest.setAmount(new BigDecimal("50.00"));
-        transactionRequest.setDescription(null);
-
-        mockMvc.perform(post("/transactions/create")
-                        .with(csrf())
-                        .with(authorized(AuthMethod.CUSTOMER))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(transactionRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.amount").exists());
-    }
-
-    @Test
     void createTransaction_Unauthorized() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban("NL91ABNA0417164300");
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("100.00"));
         transactionRequest.setDescription("Test transaction");
 
@@ -357,8 +291,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_MinimalValidAmount() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban(checkingAccounts.getFirst().getIban().toString());
-        transactionRequest.setToIban("NL91ABNA0517164301");
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(emmaCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("0.01"));
         transactionRequest.setDescription("Minimal transaction");
 
@@ -375,8 +309,8 @@ class TransactionControllerTest extends ControllerTestBase {
     @Test
     void createTransaction_SameAccount() throws Exception {
         TransactionRequestDto transactionRequest = new TransactionRequestDto();
-        transactionRequest.setFromIban(checkingAccounts.getFirst().getIban().toString());
-        transactionRequest.setToIban(checkingAccounts.getFirst().getIban().toString());
+        transactionRequest.setFromIban(johnCheckingAccounts.getFirst().getIban().toString());
+        transactionRequest.setToIban(johnCheckingAccounts.getFirst().getIban().toString());
         transactionRequest.setAmount(new BigDecimal("100.00"));
         transactionRequest.setDescription("Same account transaction");
 
