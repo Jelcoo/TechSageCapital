@@ -1,5 +1,6 @@
 package com.techsage.banking.services;
 
+import com.fasterxml.jackson.annotation.*;
 import com.techsage.banking.exceptions.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ public class TurnstileService {
         this.restTemplate = restTemplate;
     }
 
-    public void verifyToken(String token) throws TurnstileFailedException {
+    public boolean verifyToken(String token) throws TurnstileFailedException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("secret", secretKey);
         params.add("response", token);
@@ -34,11 +35,15 @@ public class TurnstileService {
         if (response.getBody() == null || !response.getBody().isSuccess()) {
             throw new TurnstileFailedException();
         }
+
+        return true;
     }
 
     @Data
     public static class TurnstileResponse {
         private boolean success;
+
+        @JsonProperty("error-codes")
         private String[] errorCodes;
     }
 }

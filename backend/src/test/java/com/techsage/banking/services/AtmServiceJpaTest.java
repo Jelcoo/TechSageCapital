@@ -15,7 +15,7 @@ import java.math.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AtmServiceJpaTest {
+class AtmServiceJpaTest extends ServiceTestBase {
 
     private BankAccountService bankAccountService;
     private TransactionRepository transactionRepository;

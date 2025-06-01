@@ -155,18 +155,8 @@ public class TransactionController extends BaseController {
     public ResponseEntity<BaseDto> createTransaction(@Valid @RequestBody TransactionRequestDto transaction) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmailRaw(authentication.getName());
-        try {
-            return ResponseEntity.status(201).body(transactionService.create(transaction, user));
-        } catch (TransactionException e) {
-            if (e.getReason() == TransactionException.Reason.BANK_ACCOUNT_NOT_FOUND) {
-                return ResponseEntity.status(404).body(new MessageDto(404, e.getReason().getMessage()));
-            }
-            return ResponseEntity.badRequest().body(new MessageDto(400, e.getReason().getMessage()));
-        } catch (InvalidCheckDigitException | IbanFormatException e) {
-            return ResponseEntity.status(400).body(new MessageDto(400, "Invalid IBAN"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, "Internal server error"));
-        }
+
+        return ResponseEntity.status(201).body(transactionService.create(transaction, user));
     }
 
 }

@@ -7,7 +7,7 @@ import java.util.*;
 
 @Data
 public class PageResponseDto<T> {
-    private List<T> content;
+    private List<T> content = new ArrayList<>();
     private int currentPage;
     private long totalRecords;
     private int recordsPerPage;
@@ -17,6 +17,9 @@ public class PageResponseDto<T> {
     private List<Integer> nextPages = new ArrayList<>();
 
     public PageResponseDto(Page<T> page) {
+        if (page == null) {
+            return;
+        }
         this.content = page.getContent();
         this.currentPage = page.getNumber() + 1;
         this.totalRecords = page.getTotalElements();

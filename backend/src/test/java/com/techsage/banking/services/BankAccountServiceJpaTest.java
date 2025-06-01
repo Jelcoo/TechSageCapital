@@ -8,8 +8,7 @@ import com.techsage.banking.models.enums.BankAccountType;
 import com.techsage.banking.models.info.BankAccountInfoWithoutBalance;
 import com.techsage.banking.repositories.BankAccountRepository;
 import org.iban4j.Iban;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.data.domain.*;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
-class BankAccountServiceJpaTest {
+class BankAccountServiceJpaTest extends ServiceTestBase {
 
     @Mock
     private BankAccountRepository bankAccountRepository;

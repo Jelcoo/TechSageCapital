@@ -68,7 +68,7 @@ export const useUserStore = defineStore('user', {
             phoneNumber: string,
             bsn: string,
             password: string,
-            passwordConfirmation: string,
+            confirmPassword: string,
             turnstileToken: string,
         ) {
             try {
@@ -79,7 +79,7 @@ export const useUserStore = defineStore('user', {
                     phoneNumber,
                     bsn,
                     password,
-                    passwordConfirmation,
+                    confirmPassword,
                     'cf-turnstile-response': turnstileToken,
                 });
 

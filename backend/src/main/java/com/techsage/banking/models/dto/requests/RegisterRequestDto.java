@@ -31,8 +31,8 @@ public class RegisterRequestDto extends BaseDto {
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$", 
-            message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, and one special character")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_])\\S{8,}$",
+            message = "Password must be at least 8 characters, contain at least one digit, one lowercase letter, one uppercase letter, and one special character, and have no whitespace")
     private String password;
 
     @NotBlank(message = "Confirm password is required")

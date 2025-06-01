@@ -1,7 +1,6 @@
 package com.techsage.banking.models.dto.requests;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,11 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateSelfRequestDto
 {
-    @NotNull(message = "Email is required")
+    @NotEmpty(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotNull(message = "Phone number is required")
+    @NotEmpty(message = "Phone number is required")
     private String phoneNumber;
 
     public void setEmail(String email) {

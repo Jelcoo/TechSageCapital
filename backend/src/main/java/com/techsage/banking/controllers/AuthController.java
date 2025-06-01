@@ -50,18 +50,10 @@ public class AuthController extends BaseController {
             }
     )
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
-        try {
-            turnstileService.verifyToken(loginRequest.getCfTurnstileResponse());
+    public ResponseEntity<BaseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) throws AuthenticationException {
+        turnstileService.verifyToken(loginRequest.getCfTurnstileResponse());
 
-            return ResponseEntity.ok().body(userService.login(loginRequest));
-        } catch (TurnstileFailedException e) {
-            return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
-        }
+        return ResponseEntity.ok().body(userService.login(loginRequest));
     }
 
     @Operation(
@@ -81,16 +73,10 @@ public class AuthController extends BaseController {
             }
     )
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
-        try {
-            turnstileService.verifyToken(registerRequest.getCfTurnstileResponse());
+    public ResponseEntity<BaseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) throws AuthenticationException {
+        turnstileService.verifyToken(registerRequest.getCfTurnstileResponse());
 
-            return ResponseEntity.ok().body(userService.register(registerRequest));
-        } catch (TurnstileFailedException | AuthenticationException e) {
-            return ResponseEntity.status(400).body(new MessageDto(400, e.getMessage()));
-        }  catch (Exception e) {
-            return ResponseEntity.status(500).body(new MessageDto(500, e.getMessage()));
-        }
+        return ResponseEntity.ok().body(userService.register(registerRequest));
     }
 
     @Operation(
@@ -115,11 +101,7 @@ public class AuthController extends BaseController {
             }
     )
     @PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseDto> refreshToken(@RequestBody RefreshRequestDto refreshRequest) {
-        try {
-            return ResponseEntity.ok().body(userService.refreshToken(refreshRequest));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(new MessageDto(401, e.getMessage()));
-        }
+    public ResponseEntity<BaseDto> refreshToken(@RequestBody RefreshRequestDto refreshRequest) throws AuthenticationException {
+        return ResponseEntity.ok().body(userService.refreshToken(refreshRequest));
     }
 }

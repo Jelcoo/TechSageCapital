@@ -21,7 +21,7 @@
 
                             <FormInput name="password" label="Password" type="password" placeholder="Password" />
 
-                            <FormInput name="passwordConfirmation" label="Password confirmation" type="password"
+                            <FormInput name="confirmPassword" label="Password confirmation" type="password"
                                 placeholder="Password confirmation" />
 
                             <VueTurnstile ref="turnstile" :site-key="turnstileToken" v-model="turnstileRef" />
@@ -60,7 +60,7 @@ const onSubmit = (values: GenericObject, actions: SubmissionContext) => {
             values.phoneNumber,
             values.bsn,
             values.password,
-            values.passwordConfirmation,
+            values.confirmPassword,
             turnstileRef.value
         )
         .then(() => {

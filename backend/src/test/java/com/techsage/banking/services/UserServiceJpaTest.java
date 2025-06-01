@@ -22,7 +22,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UserServiceJpaTest {
+class UserServiceJpaTest extends ServiceTestBase {
 
     @Mock private UserRepository userRepository;
     @Mock private BCryptPasswordEncoder passwordEncoder;
