@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class UserControllerTest extends ControllerTestBase {
@@ -45,6 +46,7 @@ class UserControllerTest extends ControllerTestBase {
         mockMvc.perform(get("/users")
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .param("status", "ACTIVE"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.currentPage").exists())
@@ -88,7 +90,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void softDeleteUser_Successful() throws Exception {
-        mockMvc.perform(delete("/users/2/softDelete")
+        mockMvc.perform(delete("/users/1/softDelete")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
@@ -100,14 +102,14 @@ class UserControllerTest extends ControllerTestBase {
         mockMvc.perform(delete("/users/99999/softDelete")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     void softDeleteUser_Unauthorized() throws Exception {
-        mockMvc.perform(delete("/users/2/softDelete")
+        mockMvc.perform(delete("/users/1/softDelete")
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
@@ -193,7 +195,7 @@ class UserControllerTest extends ControllerTestBase {
     void approveUser_UserNotFound() throws Exception {
         ApprovalRequestDto approvalRequest = new ApprovalRequestDto();
         approvalRequest.setTransferLimit(new BigDecimal("1000.00"));
-        approvalRequest.setDailyTransferLimit(new BigDecimal("500.00"));
+        approvalRequest.setDailyTransferLimit(new BigDecimal("1000.00"));
         approvalRequest.setAbsoluteLimitChecking(new BigDecimal("-100.00"));
         approvalRequest.setAbsoluteLimitSavings(new BigDecimal("0.00"));
 
@@ -221,8 +223,8 @@ class UserControllerTest extends ControllerTestBase {
         mockMvc.perform(put("/users/99999/reinstate")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").exists());
     }
 
@@ -233,7 +235,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setLastName("User");
         updateRequest.setEmail("updated@example.com");
         updateRequest.setPhoneNumber("+31612345679");
-        updateRequest.setBsn("123456789");
+        updateRequest.setBsn("642590473");
         updateRequest.setRoles(Arrays.asList(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER));
         updateRequest.setDailyLimit(750.0);
         updateRequest.setTransferLimit(1500.0);

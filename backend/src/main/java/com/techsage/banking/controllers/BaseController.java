@@ -30,8 +30,13 @@ public class BaseController {
         return ResponseEntity.status(404).body(new MessageDto(404, "Not found"));
     }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<BaseDto> handleNoSuchElementException(NoSuchElementException ex) {
+        return ResponseEntity.status(404).body(new MessageDto(404, ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseDto> handleException(Exception ex) {
-        return ResponseEntity.status(500).body(new MessageDto(404, ex.getMessage()));
+        return ResponseEntity.status(500).body(new MessageDto(500, ex.getMessage()));
     }
 }

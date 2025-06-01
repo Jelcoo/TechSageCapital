@@ -410,7 +410,7 @@ public class UserController extends BaseController {
     @PutMapping("/me/updatePassword")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseDto> updateOwnPassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             return ResponseEntity.ok().body(userService.updateOwnPassword(email, requestBody));
