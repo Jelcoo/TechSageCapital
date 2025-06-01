@@ -208,4 +208,15 @@ public class UserServiceJpa implements UserService {
         user.setPassword(bCryptPasswordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
         return this.setUserJwt(user);
     }
+
+    @Override
+    public UserDto updateRole(long id, UserRole role) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
+        List<UserRole> roles = new ArrayList<>(user.getRoles());
+        roles.remove(UserRole.ROLE_EMPLOYEE);
+        roles.remove(UserRole.ROLE_CUSTOMER);
+        roles.add(role);
+        user.setRoles(roles);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
 }

@@ -30,7 +30,7 @@
                         </ul>
                     </li>
                     <li class="nav-item"
-                        v-if="userStore.roles.includes(Role.CUSTOMER) && userStore.status == AccountStatus.ACTIVE">
+                        v-if="userStore.bankAccounts.length > 0 && userStore.status == AccountStatus.ACTIVE">
                         <RouterLink to="/transfer" class="nav-link" active-class="active">Transfer</RouterLink>
                     </li>
                 </ul>
