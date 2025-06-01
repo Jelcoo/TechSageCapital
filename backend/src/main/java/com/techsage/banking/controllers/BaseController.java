@@ -35,6 +35,11 @@ public class BaseController {
         return ResponseEntity.status(400).body(new MessageDto(400, ex.getMessage()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<BaseDto> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(400).body(new MessageDto(400, ex.getMessage()));
+    }
+
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<BaseDto> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         return ResponseEntity.status(401).body(new MessageDto(401, "Unauthorized, please log in"));
