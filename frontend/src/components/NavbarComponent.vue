@@ -58,7 +58,7 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <button class="nav-link p2" @click="logout">Logout</button>
+                                <button class="dropdown-item p2" @click="logout">Logout</button>
                             </li>
                         </ul>
                     </li>
