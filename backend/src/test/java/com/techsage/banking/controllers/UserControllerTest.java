@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.enums.UserRole;
 import com.techsage.banking.models.enums.UserStatus;
+import jakarta.transaction.*;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -144,7 +145,7 @@ class UserControllerTest extends ControllerTestBase {
     void approveUser_Successful() throws Exception {
         ApprovalRequestDto approvalRequest = new ApprovalRequestDto();
         approvalRequest.setTransferLimit(new BigDecimal("1000.00"));
-        approvalRequest.setDailyTransferLimit(new BigDecimal("500.00"));
+        approvalRequest.setDailyTransferLimit(new BigDecimal("1000.00"));
         approvalRequest.setAbsoluteLimitChecking(new BigDecimal("-100.00"));
         approvalRequest.setAbsoluteLimitSavings(new BigDecimal("0.00"));
 
@@ -273,6 +274,7 @@ class UserControllerTest extends ControllerTestBase {
     }
 
     @Test
+    @Transactional
     void updateSelf_Successful() throws Exception {
         UpdateSelfRequestDto updateRequest = new UpdateSelfRequestDto();
         updateRequest.setEmail("newemail@example.com");
