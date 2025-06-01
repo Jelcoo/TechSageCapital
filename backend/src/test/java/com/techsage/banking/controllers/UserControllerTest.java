@@ -428,4 +428,75 @@ class UserControllerTest extends ControllerTestBase {
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void promoteUser_Unauthorized() throws Exception {
+        mockMvc.perform(put("/users/4/promote")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void promoteUser_ForbiddenForCustomer() throws Exception {
+        mockMvc.perform(put("/users/4/promote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.CUSTOMER))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void promoteUser_ForbiddenForEmployee() throws Exception {
+        mockMvc.perform(put("/users/4/promote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.EMPLOYEE))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void promoteUser_Successful() throws Exception {
+        mockMvc.perform(put("/users/4/promote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void demoteUser_Unauthorized() throws Exception {
+        mockMvc.perform(put("/users/4/demote")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void demoteUser_ForbiddenForCustomer() throws Exception {
+        mockMvc.perform(put("/users/2/demote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.CUSTOMER))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void demoteUser_ForbiddenForEmployee() throws Exception {
+        mockMvc.perform(put("/users/2/demote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.EMPLOYEE))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void demoteUser_Successful() throws Exception {
+        mockMvc.perform(put("/users/2/demote")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
