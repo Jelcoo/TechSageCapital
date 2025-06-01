@@ -37,6 +37,7 @@ public class BaseController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseDto> handleException(Exception ex) {
-        return ResponseEntity.status(500).body(new MessageDto(500, ex.getMessage()));
+        ex.printStackTrace(); // consider logging instead
+        return ResponseEntity.status(500).body(new MessageDto(500, "Internal server error"));
     }
 }

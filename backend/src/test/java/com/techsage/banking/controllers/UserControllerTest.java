@@ -148,7 +148,7 @@ class UserControllerTest extends ControllerTestBase {
         approvalRequest.setAbsoluteLimitChecking(new BigDecimal("-100.00"));
         approvalRequest.setAbsoluteLimitSavings(new BigDecimal("0.00"));
 
-        mockMvc.perform(post("/users/2/approve")
+        mockMvc.perform(post("/users/1/approve")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -165,7 +165,7 @@ class UserControllerTest extends ControllerTestBase {
         approvalRequest.setTransferLimit(new BigDecimal("-100.00"));
         approvalRequest.setDailyTransferLimit(new BigDecimal("-50.00"));
 
-        mockMvc.perform(post("/users/2/approve")
+        mockMvc.perform(post("/users/1/approve")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +183,7 @@ class UserControllerTest extends ControllerTestBase {
         approvalRequest.setAbsoluteLimitChecking(new BigDecimal("-100.00"));
         approvalRequest.setAbsoluteLimitSavings(new BigDecimal("0.00"));
 
-        mockMvc.perform(post("/users/2/approve")
+        mockMvc.perform(post("/users/1/approve")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -211,7 +211,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void reinstateUser_Successful() throws Exception {
-        mockMvc.perform(put("/users/2/reinstate")
+        mockMvc.perform(put("/users/1/reinstate")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE)))
                 .andExpect(status().isOk())
@@ -241,7 +241,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setTransferLimit(1500.0);
         updateRequest.setStatus(UserStatus.ACTIVE);
 
-        mockMvc.perform(put("/users/2/update")
+        mockMvc.perform(put("/users/1/update")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -260,7 +260,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setEmail("invalid-email");
         updateRequest.setBsn("invalid-bsn");
 
-        mockMvc.perform(put("/users/2/update")
+        mockMvc.perform(put("/users/1/update")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -323,7 +323,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setNewPassword("NewPassword123!");
         updateRequest.setConfirmNewPassword("NewPassword123!");
 
-        mockMvc.perform(put("/users/2/updatePassword")
+        mockMvc.perform(put("/users/1/updatePassword")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -337,7 +337,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setNewPassword("weak");
         updateRequest.setConfirmNewPassword("different");
 
-        mockMvc.perform(put("/users/2/updatePassword")
+        mockMvc.perform(put("/users/1/updatePassword")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -352,7 +352,7 @@ class UserControllerTest extends ControllerTestBase {
         updateRequest.setNewPassword("ValidPassword123!");
         updateRequest.setConfirmNewPassword("DifferentPassword123!");
 
-        mockMvc.perform(put("/users/2/updatePassword")
+        mockMvc.perform(put("/users/1/updatePassword")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON)
