@@ -376,13 +376,13 @@ public class UserController extends BaseController {
         return ResponseEntity.ok().body(userService.updateOwnPassword(email, requestBody));
     }
 
-    @PutMapping("/{id}/promote")
+    @PostMapping("/{id}/promote")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseDto> promoteUserRole(@PathVariable long id) {
         return ResponseEntity.ok().body(userService.updateRole(id, UserRole.ROLE_EMPLOYEE));
     }
 
-    @PutMapping("/{id}/demote")
+    @PostMapping("/{id}/demote")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseDto> demoteUserRole(@PathVariable long id) {
         return ResponseEntity.ok().body(userService.updateRole(id, UserRole.ROLE_CUSTOMER));

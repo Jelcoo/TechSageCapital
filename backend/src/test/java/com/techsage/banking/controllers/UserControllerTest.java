@@ -1,16 +1,11 @@
 package com.techsage.banking.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsage.banking.models.dto.requests.*;
 import com.techsage.banking.models.enums.UserRole;
 import com.techsage.banking.models.enums.UserStatus;
 import jakarta.transaction.*;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -20,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 class UserControllerTest extends ControllerTestBase {
 
     @Test
@@ -277,7 +273,6 @@ class UserControllerTest extends ControllerTestBase {
     }
 
     @Test
-    @Transactional
     void updateSelf_Successful() throws Exception {
         UpdateSelfRequestDto updateRequest = new UpdateSelfRequestDto();
         updateRequest.setEmail("newemail@example.com");
@@ -366,7 +361,6 @@ class UserControllerTest extends ControllerTestBase {
     }
 
     @Test
-    @Transactional
     void updateOwnPassword_Successful() throws Exception {
         UpdatePasswordRequestDto updateRequest = new UpdatePasswordRequestDto();
         updateRequest.setCurrentPassword("password123");
@@ -431,7 +425,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void promoteUser_Unauthorized() throws Exception {
-        mockMvc.perform(put("/users/4/promote")
+        mockMvc.perform(post("/users/4/promote")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -439,7 +433,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void promoteUser_ForbiddenForCustomer() throws Exception {
-        mockMvc.perform(put("/users/4/promote")
+        mockMvc.perform(post("/users/4/promote")
                         .with(csrf())
                         .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -448,7 +442,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void promoteUser_ForbiddenForEmployee() throws Exception {
-        mockMvc.perform(put("/users/4/promote")
+        mockMvc.perform(post("/users/4/promote")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -457,7 +451,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void promoteUser_Successful() throws Exception {
-        mockMvc.perform(put("/users/4/promote")
+        mockMvc.perform(post("/users/4/promote")
                         .with(csrf())
                         .with(authorized(AuthMethod.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -467,7 +461,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void demoteUser_Unauthorized() throws Exception {
-        mockMvc.perform(put("/users/4/demote")
+        mockMvc.perform(post("/users/4/demote")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -475,7 +469,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void demoteUser_ForbiddenForCustomer() throws Exception {
-        mockMvc.perform(put("/users/2/demote")
+        mockMvc.perform(post("/users/4/demote")
                         .with(csrf())
                         .with(authorized(AuthMethod.CUSTOMER))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -484,7 +478,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void demoteUser_ForbiddenForEmployee() throws Exception {
-        mockMvc.perform(put("/users/2/demote")
+        mockMvc.perform(post("/users/4/demote")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -493,7 +487,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void demoteUser_Successful() throws Exception {
-        mockMvc.perform(put("/users/2/demote")
+        mockMvc.perform(post("/users/4/demote")
                         .with(csrf())
                         .with(authorized(AuthMethod.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
