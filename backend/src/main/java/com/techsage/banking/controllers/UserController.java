@@ -20,8 +20,6 @@ import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.NoSuchElementException;
-
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Endpoints for user management")

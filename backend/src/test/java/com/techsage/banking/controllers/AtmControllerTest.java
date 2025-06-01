@@ -1,16 +1,12 @@
 package com.techsage.banking.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsage.banking.models.BankAccount;
 import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.requests.AtmDepositDto;
 import com.techsage.banking.models.dto.requests.AtmWithdrawDto;
 import com.techsage.banking.models.enums.*;
-import com.techsage.banking.repositories.*;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
