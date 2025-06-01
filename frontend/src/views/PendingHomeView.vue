@@ -3,7 +3,6 @@ import StatusPage from '@/components/StatusPage.vue';
 </script>
 
 <template>
-    <StatusPage title="Pending"
-        :message="'Your account is still being processed. Please wait a few minutes and try again later.'"
+    <StatusPage title="Pending" :message="'Your account is still being processed. Please wait until it is approved.'"
         :home-visible="false" />
 </template>
