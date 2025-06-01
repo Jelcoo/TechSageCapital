@@ -376,4 +376,16 @@ public class UserController extends BaseController {
         return ResponseEntity.ok().body(userService.updateOwnPassword(email, requestBody));
     }
 
+    @PostMapping("/{id}/promote")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseDto> promoteUserRole(@PathVariable long id) {
+        return ResponseEntity.ok().body(userService.updateRole(id, UserRole.ROLE_EMPLOYEE));
+    }
+
+    @PostMapping("/{id}/demote")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseDto> demoteUserRole(@PathVariable long id) {
+        return ResponseEntity.ok().body(userService.updateRole(id, UserRole.ROLE_CUSTOMER));
+    }
+
 }

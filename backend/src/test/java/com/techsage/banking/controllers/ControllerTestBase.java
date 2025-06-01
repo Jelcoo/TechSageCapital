@@ -31,6 +31,9 @@ public abstract class ControllerTestBase {
     private static String customerToken;
 
     @Setter
+    private static String adminToken;
+
+    @Setter
     private static String employeeToken;
 
     @Setter
@@ -44,6 +47,7 @@ public abstract class ControllerTestBase {
         String token = switch (method) {
             case CUSTOMER -> customerToken;
             case EMPLOYEE -> employeeToken;
+            case ADMIN -> adminToken;
             case ATM -> atmToken;
         };
 
@@ -60,6 +64,7 @@ public abstract class ControllerTestBase {
     public enum AuthMethod {
         CUSTOMER,
         EMPLOYEE,
+        ADMIN,
         ATM;
     }
 }

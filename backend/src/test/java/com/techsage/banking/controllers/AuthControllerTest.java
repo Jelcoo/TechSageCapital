@@ -20,6 +20,29 @@ class AuthControllerTest extends ControllerTestBase {
 
     @Test
     @Order(1)
+    void loginAdmin_Successful() throws Exception {
+        LoginRequestDto loginRequest = new LoginRequestDto();
+        loginRequest.setEmail("johnadmin@example.com");
+        loginRequest.setPassword("password123");
+        loginRequest.setCfTurnstileResponse("XXXX.DUMMY.TOKEN.XXXX");
+        loginRequest.setAuthenticationScope(AuthenticationScope.BANK.toString());
+
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty())
+                .andExpect(jsonPath("$.scope").value(AuthenticationScope.BANK.toString()))
+                .andReturn();
+
+        String jwtToken = JsonPath.read(result.getResponse().getContentAsString(), "$.accessToken");
+        setAdminToken(jwtToken);
+    }
+
+    @Test
+    @Order(1)
     void loginEmployee_Successful() throws Exception {
         LoginRequestDto loginRequest = new LoginRequestDto();
         loginRequest.setEmail("johnemployee@example.com");

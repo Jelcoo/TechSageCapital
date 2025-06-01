@@ -9,7 +9,7 @@ import { useRoute } from "vue-router";
 import { formatMoney } from "@/utils";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faArrowUp19, faKey, faMoneyBillTransfer, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp19, faKey, faMoneyBillTransfer, faPencil, faPersonArrowDownToLine, faPersonArrowUpFromLine, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Modal } from "bootstrap";
 import BackButton from "@/components/BackButton.vue";
 
@@ -86,6 +86,22 @@ async function updateAbsoluteLimit() {
     closeModal();
     fetchUser();
 };
+
+async function toggleRole() {
+    try {
+        errorMessage.value = "";
+        successMessage.value = "";
+        const response = await axiosClient.put<User>(`/users/${userIdParam}/${user.value?.roles.includes(Role.CUSTOMER) ? 'promote' : 'demote'}`);
+        if (response.status === 200) {
+            successMessage.value = user.value?.roles.includes(Role.CUSTOMER) ? "User promoted to employee successfully." : "User demoted to customer successfully.";
+        }
+    } catch (error) {
+        errorMessage.value = (error as AxiosError).response
+            ? ((error as AxiosError).response?.data as { message?: string })?.message ?? "An unknown error occurred."
+            : "An error occurred while updating the role. " + (error as AxiosError).message; // remove error.message later if it's for debugging
+    }
+    fetchUser();
+}
 
 onMounted(() => {
     fetchUser();
@@ -173,6 +189,14 @@ onMounted(() => {
                                 class="text-white text-decoration-none">
                                 <FontAwesomeIcon :icon="faMoneyBillTransfer" class="me-2" /> Transfer
                             </RouterLink>
+                        </button>
+                        <button :class="user.roles.includes(Role.CUSTOMER) ? 'btn btn-primary' : 'btn btn-danger'"
+                            v-if="userStore.roles.includes(Role.ADMIN) && Number(userIdParam) !== userStore.id && route.path !== '/accountdetails'"
+                            @click="toggleRole()">
+                            <FontAwesomeIcon
+                                :icon="user.roles.includes(Role.CUSTOMER) ? faPersonArrowUpFromLine : faPersonArrowDownToLine"
+                                class="me-2" />
+                            {{ user.roles.includes(Role.CUSTOMER) ? "Promote to Employee" : "Demote to Customer" }}
                         </button>
                         <button class="btn btn-danger"
                             v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"

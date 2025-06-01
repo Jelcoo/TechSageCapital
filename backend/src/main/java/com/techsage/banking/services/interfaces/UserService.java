@@ -26,4 +26,5 @@ public interface UserService {
     UserDto approveUser(long id, ApprovalRequestDto approvalRequestDto) throws IllegalArgumentException;
     UserDto updatePassword(long id, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) throws IllegalArgumentException;
     AuthResponseDto updateOwnPassword(String currentEmail, UpdatePasswordRequestDto updateSelfPasswordRequestDto) throws IllegalArgumentException;
+    UserDto updateRole(long id, UserRole role);
 }

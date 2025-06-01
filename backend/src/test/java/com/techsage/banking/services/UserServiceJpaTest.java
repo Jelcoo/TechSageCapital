@@ -327,4 +327,29 @@ class UserServiceJpaTest extends ServiceTestBase {
         assertThrows(IllegalArgumentException.class, () -> userService.updateSelf("original@example.com", dto));
     }
 
+    @Test
+    void promoteUser_validRequest_promotesUserToEmployee() {
+        User user = new User();
+        user.setId(1L);
+        user.setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_CUSTOMER));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+
+        UserDto result = userService.updateRole(1L, UserRole.ROLE_EMPLOYEE);
+        assertTrue(result.getRoles().contains(UserRole.ROLE_EMPLOYEE));
+    }
+
+    @Test
+    void demoteUser_validRequest_demotesUserToCustomer() {
+        User user = new User();
+        user.setId(1L);
+        user.setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_EMPLOYEE));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+
+        UserDto result = userService.updateRole(1L, UserRole.ROLE_CUSTOMER);
+        assertTrue(result.getRoles().contains(UserRole.ROLE_CUSTOMER));
+    }
 }
