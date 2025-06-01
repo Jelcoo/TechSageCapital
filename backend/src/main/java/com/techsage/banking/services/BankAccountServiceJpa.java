@@ -58,19 +58,21 @@ public class BankAccountServiceJpa implements BankAccountService {
     @Override
     public BankAccount create(User user, BankAccountType bankAccountType, BigDecimal absoluteMinimumBalance, BigDecimal balance) {
         BankAccount bankAccount = new BankAccount();
-        boolean exists = false;
-        do {
-            Iban iban = IbanHelper.generateIban();
-            if (this.getByIban(iban) == null) {
-                bankAccount.setIban(iban);
-                exists = true;
-            }
-        } while (!exists);
+        bankAccount.setIban(generateUniqueIban());
         bankAccount.setUser(user);
         bankAccount.setType(bankAccountType);
         bankAccount.setAbsoluteMinimumBalance(absoluteMinimumBalance);
         bankAccount.setBalance(balance);
+
         return bankAccountRepository.save(bankAccount);
+    }
+
+    private Iban generateUniqueIban() {
+        Iban iban;
+        do {
+            iban = IbanHelper.generateIban();
+        } while (getByIban(iban) != null);
+        return iban;
     }
 
     @Override
