@@ -20,12 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserControllerTest extends ControllerTestBase {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     void me_Successful() throws Exception {
         mockMvc.perform(get("/users/me")

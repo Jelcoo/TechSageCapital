@@ -15,7 +15,9 @@ import java.util.*;
 public interface BankAccountRepository extends CrudRepository<BankAccount, Long> {
     BankAccount findByIban(Iban iban);
     Page<BankAccount> findByUserFirstNameStartingWithIgnoreCaseAndUserLastNameStartingWithIgnoreCaseAndType(String firstName, String lastName, BankAccountType bankAccountType, Pageable pageable);
+    List<BankAccount> findByUser(User user);
     Page<BankAccount> findByUser(User user, Pageable pageable);
+    List<BankAccount> findByUserAndType(User user, BankAccountType type);
     Page<BankAccount> findByUserAndType(User user, BankAccountType type, Pageable pageable);
 
     @Query("SELECT SUM(ba.balance) FROM BankAccount ba")

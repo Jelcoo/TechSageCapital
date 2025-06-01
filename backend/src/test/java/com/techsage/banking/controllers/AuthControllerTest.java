@@ -18,12 +18,6 @@ import com.techsage.banking.models.enums.AuthenticationScope;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthControllerTest extends ControllerTestBase {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     @Order(1)
     void loginEmployee_Successful() throws Exception {
