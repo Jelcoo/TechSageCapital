@@ -91,7 +91,7 @@ async function toggleRole() {
     try {
         errorMessage.value = "";
         successMessage.value = "";
-        const response = await axiosClient.put<User>(`/users/${userIdParam}/${user.value?.roles.includes(Role.CUSTOMER) ? 'promote' : 'demote'}`);
+        const response = await axiosClient.post<User>(`/users/${userIdParam}/${user.value?.roles.includes(Role.CUSTOMER) ? 'promote' : 'demote'}`);
         if (response.status === 200) {
             successMessage.value = user.value?.roles.includes(Role.CUSTOMER) ? "User promoted to employee successfully." : "User demoted to customer successfully.";
         }
