@@ -87,11 +87,27 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void softDeleteUser_Successful() throws Exception {
+        mockMvc.perform(delete("/users/2/softDelete")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.ADMIN)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DELETED"));
+    }
+
+    @Test
+    void softDeleteUser_DeleteSelf() throws Exception {
+        mockMvc.perform(delete("/users/1/softDelete")
+                        .with(csrf())
+                        .with(authorized(AuthMethod.ADMIN)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void softDeleteUser_DeleteAdmin() throws Exception {
         mockMvc.perform(delete("/users/1/softDelete")
                         .with(csrf())
                         .with(authorized(AuthMethod.EMPLOYEE)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("DELETED"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
