@@ -68,37 +68,39 @@ const submitHandler = computed(() =>
 <template>
     <div class="container py-5">
         <BackButton />
-        <h1
-            v-if="(userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) && userIdParam !== userId">
-            Change users Password
-        </h1>
-        <h1 v-else>Change Password</h1>
+        <div class="container-password-change">
+            <h1
+                v-if="(userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)) && userIdParam !== userId">
+                Change users Password
+            </h1>
+            <h1 v-else>Change Password</h1>
 
-        <div v-if="loading" class="text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden"></span>
+            <div v-if="loading" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
             </div>
+
+            <div v-if="errorMessage" class="alert alert-danger text-center">
+                {{ errorMessage }}
+            </div>
+
+            <div v-if="successMessage" class="alert alert-success text-center">
+                {{ successMessage }}
+            </div>
+
+
+            <form @submit.prevent="submitHandler">
+                <FormInput
+                    v-if="(!userStore.roles.includes(Role.EMPLOYEE) && !userStore.roles.includes(Role.ADMIN)) || userId === userIdParam"
+                    name="currentPassword" label="Current Password" type="password"
+                    placeholder="Enter your current password" />
+                <FormInput name="newPassword" label="New Password" type="password" placeholder="Enter a new password" />
+                <FormInput name="confirmNewPassword" label="Confirm New Password" type="password"
+                    placeholder="Re-enter your new password" />
+                <button class="btn btn-primary w-100 py-2 my-3" type="submit">Change Password</button>
+            </form>
         </div>
-
-        <div v-if="errorMessage" class="alert alert-danger text-center">
-            {{ errorMessage }}
-        </div>
-
-        <div v-if="successMessage" class="alert alert-success text-center">
-            {{ successMessage }}
-        </div>
-
-        <form @submit.prevent="submitHandler">
-            <FormInput
-                v-if="(!userStore.roles.includes(Role.EMPLOYEE) && !userStore.roles.includes(Role.ADMIN)) || userId === userIdParam"
-                name="currentPassword" label="Current Password" type="password"
-                placeholder="Enter your current password" />
-            <FormInput name="newPassword" label="New Password" type="password" placeholder="Enter a new password" />
-            <FormInput name="confirmNewPassword" label="Confirm New Password" type="password"
-                placeholder="Re-enter your new password" />
-            <button class="btn btn-primary w-100 py-2 my-3" type="submit">Change Password</button>
-        </form>
-
     </div>
 
 </template>
