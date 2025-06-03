@@ -24,7 +24,6 @@ const absoluteLimit = ref(0);
 const bankAccountId = ref(0);
 const updateModal = ref<HTMLElement | null>(null);
 let modalInstance: Modal | null = null;
-console.log("User ID Param:", userIdParam);
 
 async function fetchUser() {
     loading.value = true;
