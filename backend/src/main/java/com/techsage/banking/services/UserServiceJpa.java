@@ -74,12 +74,36 @@ public class UserServiceJpa implements UserService {
     }
 
     @Override
-    public UserDto softDelete(long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found"));
-        user.setStatus(UserStatus.DELETED);
-        return modelMapper.map(userRepository.save(user), UserDto.class);
+    public UserDto softDelete(long id, User authenticatedUser) {
+        User targetUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found."));
+
+        if (authenticatedUser.getEmail().equals(targetUser.getEmail())) {
+            throw new IllegalArgumentException("You cannot delete your own account.");
+        }
+
+        if (targetUser.getStatus() == UserStatus.DELETED) {
+            throw new IllegalArgumentException("User is already marked as deleted.");
+        }
+
+        boolean isEmployee = targetUser.getRoles().contains(UserRole.ROLE_EMPLOYEE);
+        boolean isAdmin = targetUser.getRoles().contains(UserRole.ROLE_ADMIN);
+        boolean isAuthenticatedAdmin = authenticatedUser.getRoles().contains(UserRole.ROLE_ADMIN);
+
+        if (isEmployee && !isAuthenticatedAdmin) {
+            throw new IllegalArgumentException("You are not authorized to delete an employee account.");
+        }
+
+        if (isAdmin && !isAuthenticatedAdmin) {
+            throw new IllegalArgumentException("You are not authorized to delete an admin account.");
+        }
+
+        targetUser.setStatus(UserStatus.DELETED);
+        userRepository.save(targetUser);
+
+        return modelMapper.map(targetUser, UserDto.class);
     }
+
 
     @Override
     public UserDto reinstateUser(long id){

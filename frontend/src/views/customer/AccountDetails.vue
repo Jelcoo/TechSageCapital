@@ -24,6 +24,7 @@ const absoluteLimit = ref(0);
 const bankAccountId = ref(0);
 const updateModal = ref<HTMLElement | null>(null);
 let modalInstance: Modal | null = null;
+console.log("User ID Param:", userIdParam);
 
 async function fetchUser() {
     loading.value = true;
@@ -198,9 +199,9 @@ onMounted(() => {
                                 class="me-2" />
                             {{ user.roles.includes(Role.CUSTOMER) ? "Promote to Employee" : "Demote to Customer" }}
                         </button>
-                        <button class="btn btn-danger"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
-                            @click="softDeleteAccount()">
+                        <button class="btn btn-danger" v-if="(userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))
+                            && Number(userIdParam) !== Number(userStore.id)
+                            && userIdParam !== undefined" @click="softDeleteAccount()">
                             <FontAwesomeIcon :icon="faTrash" class="me-2" /> Delete
                         </button>
 
