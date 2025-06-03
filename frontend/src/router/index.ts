@@ -48,7 +48,7 @@ const router = createRouter({
                     name: 'transactions-specific',
                     component: () => import('@/views/customer/TransactionList.vue'),
                 },
-                                {
+                {
                     path: 'editpassword',
                     name: 'accountdetails-change-own-password',
                     component: () => import('@/views/customer/ChangePassword.vue'),
