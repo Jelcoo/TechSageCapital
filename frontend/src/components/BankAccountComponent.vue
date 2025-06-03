@@ -12,6 +12,9 @@ const props = defineProps<{
 <template>
     <li class="list-group-item d-flex justify-content-between align-items-center" :class="props.customClass">
         <div class="text-white">
+            <div v-if="'firstName' in props.bankAccount && 'lastName' in props.bankAccount">
+                <strong>Name:</strong> {{ props.bankAccount.firstName }} {{ props.bankAccount.lastName }}
+            </div>
             <div>
                 <strong>Account Type:</strong> {{ props.bankAccount.type }}
             </div>
