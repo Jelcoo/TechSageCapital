@@ -116,8 +116,8 @@
                                 <PageIndicator v-if="searchResults" :pagination="searchResults"
                                     @pageSelect="handlePageSelect">
                                     <ul class="list-group">
-                                        <BankAccountComponent v-for="account in searchResults.content" :key="account.id"
-                                            :bankAccount="account"
+                                        <SearchBankAccountComponent v-for="account in searchResults.content"
+                                            :key="account.id" :bankAccount="account"
                                             :custom-class="toAccount === account.iban ? 'list-group-item-light selected' : ''">
                                             <template v-slot:button>
                                                 <button
@@ -127,7 +127,7 @@
                                                     {{ toAccount === account.iban ? 'Selected' : 'Select' }}
                                                 </button>
                                             </template>
-                                        </BankAccountComponent>
+                                        </SearchBankAccountComponent>
                                     </ul>
                                 </PageIndicator>
                             </div>
@@ -154,6 +154,7 @@ import { useDebounceFn } from "@vueuse/core";
 import PageIndicator from "@/components/PageIndicator.vue";
 import BankAccountComponent from "@/components/BankAccountComponent.vue";
 import BackButton from "@/components/BackButton.vue";
+import SearchBankAccountComponent from "@/components/SearchBankAccountComponent.vue";
 
 const route = useRoute();
 
