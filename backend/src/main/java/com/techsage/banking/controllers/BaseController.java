@@ -5,6 +5,7 @@ import com.techsage.banking.models.dto.*;
 import com.techsage.banking.models.dto.responses.*;
 import org.springframework.http.*;
 import org.springframework.security.authorization.*;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.*;
@@ -42,6 +43,11 @@ public class BaseController {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<BaseDto> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        return ResponseEntity.status(401).body(new MessageDto(401, "Unauthorized, please log in"));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<BaseDto> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return ResponseEntity.status(401).body(new MessageDto(401, "Unauthorized, please log in"));
     }
 

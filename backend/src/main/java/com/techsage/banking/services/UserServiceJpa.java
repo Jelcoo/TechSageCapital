@@ -12,6 +12,7 @@ import com.techsage.banking.services.interfaces.BankAccountService;
 import com.techsage.banking.services.interfaces.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.Service;
 
@@ -116,20 +117,29 @@ public class UserServiceJpa implements UserService {
 
     @Override
     public AuthResponseDto login(LoginRequestDto loginRequest) throws AuthenticationException {
-        Optional<User> user = userRepository.getByEmail(loginRequest.getEmail());
+        User user = userRepository.getByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new AuthenticationException("Invalid username/password"));
 
-        if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
+        if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new AuthenticationException("Invalid username/password");
         }
 
-        if (user.get().getStatus() == UserStatus.DELETED) {
+        if (user.getStatus() == UserStatus.DELETED) {
             throw new AuthenticationException("Account is not accessible");
         }
 
+        if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM) && !user.getRoles().contains(UserRole.ROLE_CUSTOMER)) {
+            throw new AuthenticationException("You cannot log into the ATM");
+        }
+
+        if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM) && user.getBankAccounts().isEmpty()) {
+            throw new AuthenticationException("You don't have any bank accounts, so the ATM is not accessible");
+        }
+
         if (loginRequest.getAuthenticationScope().equals(AuthenticationScope.ATM)) {
-            return this.setUserAtmJwt(user.get());
+            return this.setUserAtmJwt(user);
         } else {
-            return this.setUserJwt(user.get());
+            return this.setUserJwt(user);
         }
     }
 
