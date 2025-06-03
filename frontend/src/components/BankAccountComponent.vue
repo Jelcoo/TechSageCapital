@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { BankAccount } from '@/types';
+import type { BankAccount, SearchResponseBankaccount } from '@/types';
 import { formatMoney } from '@/utils';
 
 const props = defineProps<{
-    bankAccount: BankAccount
+    bankAccount: BankAccount | SearchResponseBankaccount
     showTransactionsButton?: boolean
     customClass?: string
 }>();
@@ -18,7 +18,7 @@ const props = defineProps<{
             <div>
                 <strong>IBAN:</strong> {{ props.bankAccount.iban }}
             </div>
-            <div>
+            <div v-if="'balance' in props.bankAccount">
                 <strong>Account Balance:</strong> {{ formatMoney(props.bankAccount.balance) }}
             </div>
         </div>

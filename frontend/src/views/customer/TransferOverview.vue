@@ -116,7 +116,7 @@
                                 <PageIndicator v-if="searchResults" :pagination="searchResults"
                                     @pageSelect="handlePageSelect">
                                     <ul class="list-group">
-                                        <BankAccountComponent v-for="account in user?.bankAccounts" :key="account.id"
+                                        <BankAccountComponent v-for="account in searchResults.content" :key="account.id"
                                             :bankAccount="account"
                                             :custom-class="toAccount === account.iban ? 'list-group-item-light selected' : ''">
                                             <template v-slot:button>
