@@ -97,3 +97,11 @@ body{
 .cls-4 {
     fill: #F5F1ED;
 }
+
+.container-password-change{
+    width: 30%;
+    min-width: 200px;
+    height:auto;
+    justify-content: center;
+    margin:auto;
+}

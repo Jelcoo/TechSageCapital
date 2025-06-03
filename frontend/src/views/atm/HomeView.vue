@@ -53,7 +53,7 @@ import { formatMoney, processFormError } from '@/utils';
 import { faMoneyBillTransfer, faMoneyBillTrendUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Form as VeeForm, type GenericObject, type SubmissionContext } from 'vee-validate';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onUnmounted, ref } from 'vue';
 import confetti from 'canvas-confetti';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
@@ -63,9 +63,9 @@ const router = useRouter();
 const bankAccounts = ref<PaginatedResponse<BankAccount>>();
 const selectedAccount = ref<BankAccount | null>(null);
 const confettiCanvas = document.getElementById('status') as HTMLCanvasElement;
+const statusConfetti = confetti.create(confettiCanvas, { resize: true });
 
 const createConfetti = (shape: confetti.Shape) => {
-    const statusConfetti = confetti.create(confettiCanvas, { resize: true });
     statusConfetti({
         shapes: [shape],
         scalar: 10
@@ -126,6 +126,10 @@ onBeforeMount(() => {
         .catch(error => {
             console.error('Error fetching bank accounts:', error);
         });
+});
+
+onUnmounted(() => {
+    statusConfetti.reset();
 });
 </script>
 
