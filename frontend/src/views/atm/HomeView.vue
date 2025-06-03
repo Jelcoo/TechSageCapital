@@ -2,7 +2,7 @@
     <canvas id="confetti"></canvas>
     <div class="container">
         <div class="atm-card text-center">
-            <img src="/images/TechSageCapital-Logo-ATM.png" alt="Tech Sage Captial Logo" class="mb-4"
+            <img src="/images/TechSageCapital-Logo-ATM.svg" alt="Tech Sage Captial Logo" class="mb-4"
                 style="width: 250px;">
             <h3 class="mb-4">Welcome to TechSageATM&trade;</h3>
             <div class="mb-3">
