@@ -47,7 +47,7 @@
                         <label for="toAccount" class="form-label">To:</label>
                         <div class="d-flex align-items-center justify-content-between">
                             <input type="text" name="toAccount" id="toAccount" class="form-control w-75"
-                                placeholder="NLxxINHOxxxxxxxxxx" v-model="toAccount">
+                                placeholder="NLxxTESCxxxxxxxxxx" v-model="toAccount">
                             <button type="button" class="btn btn-primary" @click="openModal">
                                 Address book
                             </button>

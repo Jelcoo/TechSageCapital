@@ -13,7 +13,7 @@ import java.math.*;
 public class AtmDepositDto extends BaseDto {
     @Schema(type = "string",
             format = "iban",
-            example = "NLxxINHOxxxxxxxxxx")
+            example = "NLxxTESCxxxxxxxxxx")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @com.techsage.banking.validators.Iban
     private String depositTo;
