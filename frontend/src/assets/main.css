@@ -68,3 +68,32 @@ body{
 .caption{
     font-size:14px;
 }
+
+
+.navbar-brand {
+    width: 100%;
+    max-width: 30px;
+    height: auto;
+}
+
+.footer-brand{
+    width: 100%;
+    max-width: 75px;
+    height: auto;
+}
+
+.cls-1 {
+    fill: #ca031a;
+}
+
+.cls-2 {
+    fill: #F5F1ED;
+}
+
+.cls-3 {
+    fill: #ca031a;
+}
+
+.cls-4 {
+    fill: #F5F1ED;
+}
