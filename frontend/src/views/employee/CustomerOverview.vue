@@ -5,12 +5,14 @@ import axiosClient, { type PaginatedResponse } from '@/axios';
 import type { AxiosError } from 'axios';
 import PageIndicator from '@/components/PageIndicator.vue';
 import BackButton from '@/components/BackButton.vue';
+import { useUserStore } from '@/stores/user';
 
 const customers = ref<PaginatedResponse<User>>();
 const errorMessage = ref('');
 const loading = ref(false);
 const searchQuery = ref('ACTIVE');
 const page = ref(1);
+const userStore = useUserStore();
 
 function fetchCustomers() {
     axiosClient.get<PaginatedResponse<User>>(`/users?status=${searchQuery.value}&page=${page.value}`).then(({ data }) => {
@@ -115,7 +117,7 @@ onMounted(() => {
                                             <RouterLink :to="`/accountdetails/${customer.id}`"
                                                 class="text-white text-decoration-none">Details</RouterLink>
                                         </button>
-                                        <button class="btn btn-danger"
+                                        <button class="btn btn-danger" v-if="customer.id !== userStore.id"
                                             @click="softDeleteCustomer(customer.id)">Delete</button>
                                     </div>
                                     <div v-else-if="customer.status === AccountStatus.PENDING" class="d-flex gap-2">

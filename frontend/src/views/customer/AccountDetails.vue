@@ -198,9 +198,9 @@ onMounted(() => {
                                 class="me-2" />
                             {{ user.roles.includes(Role.CUSTOMER) ? "Promote to Employee" : "Demote to Customer" }}
                         </button>
-                        <button class="btn btn-danger"
-                            v-if="userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN)"
-                            @click="softDeleteAccount()">
+                        <button class="btn btn-danger" v-if="(userStore.roles.includes(Role.EMPLOYEE) || userStore.roles.includes(Role.ADMIN))
+                            && Number(userIdParam) !== Number(userStore.id)
+                            && userIdParam !== undefined" @click="softDeleteAccount()">
                             <FontAwesomeIcon :icon="faTrash" class="me-2" /> Delete
                         </button>
 

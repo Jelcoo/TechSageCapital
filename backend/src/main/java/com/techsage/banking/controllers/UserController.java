@@ -1,5 +1,6 @@
 package com.techsage.banking.controllers;
 
+import com.techsage.banking.models.User;
 import com.techsage.banking.models.dto.BaseDto;
 import com.techsage.banking.models.dto.UserDto;
 import com.techsage.banking.models.dto.requests.*;
@@ -120,7 +121,9 @@ public class UserController extends BaseController {
     @DeleteMapping("/{id}/softDelete")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<BaseDto> softDeleteUser(@PathVariable long id) {
-        return ResponseEntity.ok().body(userService.softDelete(id));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User authenticatedUser = userService.getByEmailRaw(email);
+        return ResponseEntity.ok().body(userService.softDelete(id, authenticatedUser));
     }
 
     @Operation(

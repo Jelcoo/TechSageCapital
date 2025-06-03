@@ -97,16 +97,25 @@ class UserServiceJpaTest extends ServiceTestBase {
 
     @Test
     void softDelete_existingUser_setsDeletedStatus() {
-        User user = new User();
-        user.setId(1L);
-        user.setStatus(UserStatus.ACTIVE);
+        User targetUser = new User();
+        targetUser.setId(1L);
+        targetUser.setStatus(UserStatus.ACTIVE);
+        targetUser.setEmail("emmacustomer@example.com");
+        targetUser.setRoles(List.of(UserRole.ROLE_CUSTOMER));
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any())).thenReturn(user);
+        User authenticatedUser = new User();
+        authenticatedUser.setId(2L);
+        authenticatedUser.setEmail("admin@example.com");
+        authenticatedUser.setRoles(List.of(UserRole.ROLE_ADMIN));
 
-        UserDto result = userService.softDelete(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(targetUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserDto result = userService.softDelete(1L, authenticatedUser);
+
         assertEquals(UserStatus.DELETED, result.getStatus());
     }
+
 
     @Test
     void reinstateUser_deletedUser_setsStatusActive() {
